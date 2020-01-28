@@ -1,0 +1,19 @@
+Package: NewWave
+Type: Package
+Title: Single cell RNA-seq dimensionality reduction
+Version: 0.1.0
+Author: Agostinis Federico, Chiara romualdi, Gabriele Sales, Davide Risso
+Maintainer: Federico Agostinis <federico.agostinis@outlook.com>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+Depends: 
+   R (>= 3.4),
+   methods,
+   SummarizedExperiment,
+   SharedObject,
+   SingleCellExperiment
+Imports: 
+   stats
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
