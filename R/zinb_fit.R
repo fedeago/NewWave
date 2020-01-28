@@ -436,13 +436,7 @@ optimd <- function(J, mu, cluster, children, num_gene = NULL, commondispersion, 
 
   } else {
 
-    locfun <- function(zeta, Y, mu){
-      nb.loglik.dispersion(zeta, Y, mu)
-    }
-
-    locgrad <- function(zeta, Y, mu){
-      nb.loglik.dispersion.gradient(zeta, Y, mu)
-    }
+    
 
     clusterApply(cluster, seq.int(children), "optim_genwise_dispersion",num_gene = num_gene)
   }

@@ -189,7 +189,15 @@ nb.loglik.regression.gradient <- function(alpha, Y,
 
 
 optim_genwise_dispersion <- function(k, num_gene) {
-
+  
+  locfun <- function(zeta, Y, mu){
+    nb.loglik.dispersion(zeta, Y, mu)
+  }
+  
+  locgrad <- function(zeta, Y, mu){
+    nb.loglik.dispersion.gradient(zeta, Y, mu)
+  }
+  
   step <- ceiling(ncol(Y_sh) / children)
   j1 <- (k-1) * step + 1
   j2 <- min(k * step, ncol(Y_sh))
