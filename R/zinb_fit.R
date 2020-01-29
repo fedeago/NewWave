@@ -5,7 +5,7 @@
 #' @import SharedObject
 #' @import SummarizedExperiment
 #' @importFrom stats model.matrix as.formula
-#'
+#' 
 #' @param which_assay numeric or character. Which assay of Y to use (only if Y
 #'   is a SummarizedExperiment).
 #' @examples
@@ -30,7 +30,7 @@ setMethod("nbFit", "SummarizedExperiment",
                   }
               } else {
                   if(!(is.character(which_assay) | is.numeric(which_assay))) {
-                      stop("assay needs to be a numeric or character specifying which assay to use")
+                      stop("Assay needs to be a numeric or character specifying which assay to use")
                   } else {
                       dataY <- assay(Y, which_assay)
                   }
