@@ -29,7 +29,7 @@ gamma_init <- function(k) {
 
   for (j in seq.int(from = j1, to = j2)) {
     out <- solveRidgeRegression(x = V_sh, y = L_sh[j,] - Xbeta[j,],
-                                 epsilon = epsilon_gamma)
+                                 beta = gamma_sh[,j], epsilon = epsilon_gamma)
 
     gamma_sh[,j] <- out
   }
@@ -38,14 +38,14 @@ gamma_init <- function(k) {
 
 beta_init <- function(k) {
 
-  Vgamma <- V_sh %*% gamma_sh
+  Vgamma <- t(V_sh %*% gamma_sh)
   step <- ceiling(ncol(Y_sh) / children)
   j1 <- (k-1) * step + 1
   j2 <- min(k * step, ncol(Y_sh))
 
   for (j in seq.int(from = j1, to = j2)) {
-    out <- solveRidgeRegression(x=X_sh, y=L_sh[,j] - t(Vgamma)[, j],
-                                 epsilon = epsilon_beta)
+    out <- solveRidgeRegression(x=X_sh, y=L_sh[,j] - Vgamma[, j],
+                                 beta = beta_sh[,j], epsilon = epsilon_beta)
 
 
     beta_sh[,j] <- out
@@ -253,7 +253,65 @@ optimr <- function(k, num_gene) {
 
 }
 
+optimr_delayed <- function(k, num_gene) {
+    
+    step <- ceiling(ncol(Y_sh) / children)
+    j1 <- (k-1) * step + 1
+    j2 <- min(k * step, ncol(Y_sh))
+    
+    if(is.null(num_gene)){
+      
+      intervall <- seq.int(from = j1, to = j2)
+      
+    } else {
+      
+      intervall <- sample(x = seq.int(from = j1, to = j2), size = num_gene/children)
+    }
+    
+    blockApply(
+      x = Y_sh[,intervall],
+      FUN = over_optr,
+      grid = RegularArrayGrid(
+        refdim = dim(Y_sh[,intervall]),
+        spacings = c(nrow(Y_sh[,intervall]), 1L)),
+      BPPARAM = SerialParam(),
+      beta = beta_sh[,intervall, drop = F], alpha = alpha_sh[,intervall, drop = F], X = X_sh,
+      W = W_sh, V = V_sh[intervall,,drop = F], gamma = gamma_sh, 
+      zeta = zeta_sh[intervall], n = nrow(Y_sh),epsilonright = epsilonright,
+      intervall = intervall
+    )
+    
+  }
 
+
+over_optr <- function(x, beta, alpha, X , W,
+                      V , gamma , zeta,
+                      n , epsilonright, intervall ){
+  j = attr(x,"block_id")
+  out <- optimright_fun_nb(
+    beta[,j], alpha[,j], x, X,
+    W, V[j,], gamma, zeta[j],
+    n, epsilonright)
+  
+  params <- split_params(out, "right")
+  beta_sh[,intervall[j]] <- params$beta
+  alpha_sh[,intervall[j]] <- params$alpha
+}
+
+
+optimright_fun_nb <- function(beta, alpha, Y, X, W,
+                              V, gamma, zeta, n, epsilonright) {
+  optim( fn=nb.loglik.regression,
+         gr=nb.loglik.regression.gradient,
+         par=c(beta, alpha),
+         Y=Y,
+         A.mu=cbind(X, W),
+         C.mu=t(V %*% gamma),
+         C.theta=matrix(zeta, nrow = n, ncol = 1),
+         epsilon=epsilonright,
+         control=list(fnscale=-1,trace=0),
+         method="BFGS")$par
+}
 
 optiml <- function(k, num_cell){
 
@@ -280,22 +338,51 @@ optiml <- function(k, num_cell){
       gamma_sh[,i] <- params$gamma
       W_sh[i,] <- params$W
     }
-  }
-
-optimright_fun_nb <- function(beta, alpha, Y, X, W,
-                              V, gamma, zeta, n, epsilonright) {
-  optim( fn=nb.loglik.regression,
-         gr=nb.loglik.regression.gradient,
-         par=c(beta, alpha),
-         Y=Y,
-         A.mu=cbind(X, W),
-         C.mu=t(V %*% gamma),
-         C.theta=matrix(zeta, nrow = n, ncol = 1),
-         epsilon=epsilonright,
-         control=list(fnscale=-1,trace=0),
-         method="BFGS")$par
 }
 
+
+optiml_delayed <- function(k, num_cell){
+    
+    step <- ceiling( nrow(Y_sh) / children)
+    j1 <- (k-1) * step + 1
+    j2 <- min(k * step, nrow(Y_sh))
+    
+    if(is.null(num_cell)){
+      
+      intervall <- seq.int(from = j1, to = j2)
+      
+    } else {
+      
+      intervall <- sample(x = seq.int(from = j1, to = j2), size = num_cell/children)
+      
+    }
+    
+    blockApply(
+      x = Y_sh[intervall,],
+      FUN = over_optl,
+      grid = RegularArrayGrid(
+        refdim = dim(Y_sh[intervall,]),
+        spacings = c( 1L, ncol(Y_sh[intervall,]))),
+      BPPARAM = SerialParam(),
+      gamma = gamma_sh[,intervall, drop = F],  W = W_sh[intervall,, drop = F], V = V_sh,
+      alpha = alpha_sh, X = X_sh[intervall,, drop = F], beta = beta_sh,  
+      zeta = zeta_sh, epsilonleft = epsilonleft,
+      intervall = intervall)
+    
+  }
+
+over_optl <- function(x, gamma,  W, V , alpha,
+                      X ,beta, zeta ,
+                      epsilonleft, intervall){
+  i = attr(x,"block_id")
+  out <- optimleft_fun_nb(gamma[,i],
+                          W[i,], x , V, alpha,
+                          X[i,], beta, zeta, epsilonleft)
+  
+  params <- split_params(out, eq = "left")
+  gamma_sh[,intervall[i]] <- params$gamma
+  W_sh[intervall[i],] <- params$W
+}
 
 
 optimleft_fun_nb <- function(gamma, W, Y, V, alpha,
