@@ -826,7 +826,7 @@ getTheta <- function(object) {
 #' @describeIn nbModel returns the regularization parameters for
 #'   \code{beta}.
 getEpsilon_beta <- function(object) {
-              e <- rep(object@epsilon_beta, ncol(X))
+              e <- rep(object@epsilon_beta, ncol(object@X))
               if (object@X_intercept) {
                   e[1] <- 0
               }
