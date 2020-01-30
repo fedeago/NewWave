@@ -1,15 +1,15 @@
-solveRidgeRegression <- function(x, y, beta=rep(0,NCOL(x)), epsilon=1e-6, offset=rep(0,NROW(x))) {
+solveRidgeRegression <- function(x, y, beta=rep(0,NCOL(x)), epsilon=1e-6) {
 
   # loglik
   f <-function(b) {
-    eta <- x %*% b + offset
+    eta <- x %*% b
     l <- sum((y-eta)^2)/2
     l + sum(epsilon*b^2)/2
   }
 
   # gradient of loglik
   g <-function(b) {
-    eta <- x %*% b + offset
+    eta <- x %*% b
     l <- t(x) %*% (eta - y)
     l + epsilon*b
   }
