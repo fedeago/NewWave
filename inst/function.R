@@ -53,12 +53,11 @@ beta_init <- function(k) {
 }
 
 nb.loglik <- function(Y, mu, theta) {
-
+  
   # log-probabilities of counts under the NB model
   logPnb <- suppressWarnings(dnbinom(Y, size = theta, mu = mu, log = TRUE))
-
   sum(logPnb)
-
+  
 }
 
 

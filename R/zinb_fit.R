@@ -137,8 +137,9 @@ setMethod("nbFit", "matrix",
 
     # If the set the value of parameters is zero we must do the initialization
     if(random_init){ random_start = T}
+    
     setup(cluster = cl, model = m, random_start = random_start, children = children,
-          random_init = random_init, verbose = verbose, Y = Y)
+          random_init = random_init, verbose = verbose, Y = Y, mode = "matrix")
 
     # Initializize value
 
@@ -162,57 +163,57 @@ setMethod("nbFit", "matrix",
 })
 
 
-# setMethod("nbFit", "DelayedArray",
-#           function(Y, X, V, K, 
-#                    commondispersion, verbose,
-#                    nb_repeat, maxiter_optimize,
-#                    stop_epsilon, children,
-#                    random_start, n_gene_disp,
-#                    n_cell_par, n_gene_par,
-#                    ... ) {
-#             
-#             # if(!all(.is_wholenumber(Y))) {
-#             #   stop("The input matrix should contain only whole numbers.")
-#             # }
-#             
-#             # Transpose Y: UI wants genes in rows, internals genes in columns!
-#             Y <- t(Y)
-#             
-#             # Create a nbModel object
-#             m <- nbModel(n=NROW(Y), J=NCOL(Y), K=K, X=X)
-#             
-#             cl <- makePSOCKcluster(children)
-#             on.exit(stopCluster(cl), add = TRUE)
-#             clusterEvalQ(cluster, library(DelayedArray))
-#             
-#             # If the set the value of parameters is zero we must do the initialization
-#             random_init = T
-#             random_start = T
-#             
-#             # Exporting values to the main and the child process
-#             setup(cluster = cl, model = m, random_start = random_start, children = children,
-#                   random_init = random_init, verbose = verbose, Y = Y)
-#             
-#             # Initializize value
-#             
-#             if (!random_init){
-#               
-#               initialization(cluster = cl, children = children, model = m,
-#                              nb_repeat = nb_repeat, verbose = verbose)
-#               
-#             }
-#             
-#             orthog <- (nFactors(m)>0)
-#             
-#             # Optimize value
-#             
-#             info <- optimization(cluster = cl, children = children, model = m, max_iter = maxiter_optimize,
-#                                  orthog = orthog, stop_epsilon = stop_epsilon,
-#                                  commondispersion = commondispersion,  n_gene_disp = n_gene_disp,
-#                                  n_cell_par = n_cell_par, n_gene_par = n_gene_par, verbose =  verbose)
-#             #   rm(beta_sh)
-#             return(info)
-#           })
+setMethod("nbFit", "DelayedMatrix",
+          function(Y, X, V, K,
+                   commondispersion, verbose,
+                   nb_repeat, maxiter_optimize,
+                   stop_epsilon, children,
+                   random_start, n_gene_disp,
+                   n_cell_par, n_gene_par,
+                   ... ) {
+
+            # if(!all(.is_wholenumber(Y))) {
+            #   stop("The input matrix should contain only whole numbers.")
+            # }
+
+            # Transpose Y: UI wants genes in rows, internals genes in columns!
+            Y <- t(Y)
+
+            # Create a nbModel object
+            m <- nbModel(n=NROW(Y), J=NCOL(Y), K=K, X=X)
+
+            cl <- makePSOCKcluster(children)
+            on.exit(stopCluster(cl), add = TRUE)
+            clusterEvalQ(cl, library(DelayedArray))
+
+            # If the set the value of parameters is zero we must do the initialization
+            random_init = T
+            random_start = T
+
+            # Exporting values to the main and the child process
+            setup(cluster = cl, model = m, random_start = random_start, children = children,
+                  random_init = random_init, verbose = verbose, Y = Y, mode = "Deleyed")
+
+            # Initializize value
+
+            if (!random_init){
+
+              initialization(cluster = cl, children = children, model = m,
+                             nb_repeat = nb_repeat, verbose = verbose)
+
+            }
+
+            orthog <- (nFactors(m)>0)
+
+            # Optimize value
+
+            info <- optimization(cluster = cl, children = children, model = m, max_iter = maxiter_optimize,
+                                 orthog = orthog, stop_epsilon = stop_epsilon,
+                                 commondispersion = commondispersion,  n_gene_disp = n_gene_disp,
+                                 n_cell_par = n_cell_par, n_gene_par = n_gene_par, verbose =  verbose)
+            
+            return(info)
+          })
             
 #' @describeIn nbFit Y is a sparse matrix of counts (genes in rows).
 #' @export
@@ -249,12 +250,18 @@ setMethod("nbFit", "dgCMatrix",
 #' m <- nbInitialize(m, Y)
 #'
 
-setup <- function(cluster, model, random_start = F, children, random_init = F, verbose, Y) {
+setup <- function(cluster, model, random_start = F, children, 
+                  random_init = F, verbose, Y, mode = NULL) {
 
   ptm <- proc.time()
+  
+  if (mode == "matrix"){
   Y_sh <<- share(Y)
+  } else Y_sh <<- Y
+  
   X_sh <<- share(model@X)
   V_sh <<- share(model@V)
+  
   if (!random_start){
     beta_sh <<- share(model@beta, copyOnWrite=FALSE)
     alpha_sh <<- share(model@alpha, copyOnWrite=FALSE)
@@ -308,7 +315,7 @@ initialization <- function(cluster, children, model, nb_repeat = 2, verbose){
 
 
     clusterApply(cluster, seq.int(children), "gamma_init")
-
+    
     clusterApply(cluster, seq.int(children), "beta_init")
 
     iter <- iter+1
@@ -361,17 +368,20 @@ optimization <- function(cluster, children = 1, model ,
   orthog <- nFactors(model) > 0
   total.lik=rep(NA,max_iter)
   iter <- 0
-
+  
+  mu <<- share(exp(getX(model) %*% beta_sh + t(getV(model) %*% gamma_sh) +
+                    W_sh %*% alpha_sh))
+  clusterExport(cl = cluster, "mu",
+                envir = environment())
+  
   for (iter in seq.int(max_iter)){
 
     ptm <- proc.time()
 
-    mu <- share(exp(getX(model) %*% beta_sh + t(getV(model) %*% gamma_sh) +
+    mu[] <- share(exp(getX(model) %*% beta_sh + t(getV(model) %*% gamma_sh) +
                       W_sh %*% alpha_sh))
-    clusterExport(cl = cluster, "mu",
-                  envir = environment())
 
-    total.lik[iter] <- ll_calc(mu = mu, model  = model, Y_sh = Y_sh, z = zeta_sh,
+    total.lik[iter] <- ll_calc(mu = mu, model  = model, Y_sh = as.matrix(Y_sh), z = zeta_sh,
                                alpha_sh, beta_sh, gamma_sh, W_sh)
     if(verbose){
     message("Iteration ",iter)
@@ -383,30 +393,32 @@ optimization <- function(cluster, children = 1, model ,
              total.lik[iter-1])<stop_epsilon)
         break
     }
-
+    
+   
     optimd(ncol(Y_sh), mu = mu, cluster = cluster,
            children = children,commondispersion = commondispersion,
            num_gene = n_gene_disp, iter = iter)
-
+    
+    
     if(verbose){
     print(proc.time()-ptm)
 
-    l_pen <- ll_calc(mu = mu, model  = model, Y_sh = Y_sh, z = zeta_sh,
+    l_pen <- ll_calc(mu = mu, model  = model, Y_sh = as.matrix(Y_sh), z = zeta_sh,
                      alpha_sh, beta_sh, gamma_sh, W_sh)
     message("after optimize dispersion = ",  l_pen)
     }
 
     ptm <- proc.time()
 
-    # optimr(cl = cluster, children = children, num_gene = n_gene_par)
     clusterApply(cluster, seq.int(children), "optimr",  num_gene = n_gene_par)
+    # clusterApply(cluster, seq.int(children), "optimr_delayed",  num_gene = n_gene_par)
 
 
     if(verbose){
     print(proc.time()-ptm)
     itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
                     W_sh %*% alpha_sh)
-    l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = Y_sh, z = zeta_sh,
+    l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = as.matrix(Y_sh), z = zeta_sh,
                      alpha_sh, beta_sh, gamma_sh, W_sh)
     message("after right optimization= ",  l_pen)
     }
@@ -420,7 +432,7 @@ optimization <- function(cluster, children = 1, model ,
     if(verbose){
     itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
                       W_sh %*% alpha_sh)
-    l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = Y_sh, z = zeta_sh,
+    l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = as.matrix(Y_sh), z = zeta_sh,
                      alpha_sh, beta_sh, gamma_sh, W_sh)
     message("after orthogonalization = ",  l_pen)
     }
@@ -434,7 +446,7 @@ optimization <- function(cluster, children = 1, model ,
     print(proc.time()-ptm)
     itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
                     W_sh %*% alpha_sh)
-    l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = Y_sh, z = zeta_sh,
+    l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = as.matrix(Y_sh), z = zeta_sh,
                      alpha_sh, beta_sh, gamma_sh, W_sh)
     message("after left optimization= ",  l_pen)
     }
@@ -448,7 +460,7 @@ optimization <- function(cluster, children = 1, model ,
     if(verbose){
     itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
                       W_sh %*% alpha_sh)
-    l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = Y_sh, z = zeta_sh,
+    l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = as.matrix(Y_sh), z = zeta_sh,
                      alpha_sh, beta_sh, gamma_sh, W_sh)
     message("after orthogonalization = ",  l_pen)
     }
@@ -483,7 +495,7 @@ optimd <- function(J, mu, cluster, children, num_gene = NULL, commondispersion, 
 
     }
 
-    g=optimize(f=nb.loglik.dispersion, Y=Y_sh[,genes], mu=mu,
+    g=optimize(f=nb.loglik.dispersion, Y=as.matrix(Y_sh[,genes]), mu=mu,
                maximum=TRUE, interval=c(-50,50))
     zeta_sh[] <- rep(g$maximum,J)
 
@@ -509,7 +521,7 @@ nb.loglik <- function(Y, mu, theta) {
 
 
 ll_calc <- function(mu, model, Y_sh, z, alpha , beta, gamma, W){
-
+  
   theta <- exp(z)
 
   loglik <- nb.loglik(Y_sh, mu, theta)
