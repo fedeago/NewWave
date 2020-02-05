@@ -154,6 +154,8 @@ setMethod("nbwave", "SummarizedExperiment",
                    n_cell_par = NULL, n_gene_par = NULL,
                    normalizedValues = FALSE, residuals = FALSE,
                    observationalWeights = FALSE, ...) {
+            
+            
               
               fitted_model <- nbFit(Y, X, V, K,
                                       which_assay, commondispersion,
@@ -163,6 +165,8 @@ setMethod("nbwave", "SummarizedExperiment",
                                       random_start, n_gene_disp,
                                       n_cell_par, n_gene_par, ...)
               
+            
+            
               out <- as(Y, "SingleCellExperiment")
               
               if (nFactors(fitted_model) > 0){

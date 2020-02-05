@@ -26,10 +26,12 @@ gamma_init <- function(k) {
   step <- ceiling(nrow(Y_sh) / children)
   j1 <- (k-1) * step + 1
   j2 <- min(k * step, nrow(Y_sh))
-
-  for (j in seq.int(from = j1, to = j2)) {
+  intervall <- seq.int(from = j1, to = j2)
+  
+  for (j in intervall) {
     out <- solveRidgeRegression(x = V_sh, y = L_sh[j,] - Xbeta[j,],
-                                 beta = gamma_sh[,j], epsilon = epsilon_gamma)
+                                 beta = gamma_sh[,j],
+                                epsilon = epsilon_gamma)
 
     gamma_sh[,j] <- out
   }
@@ -42,10 +44,12 @@ beta_init <- function(k) {
   step <- ceiling(ncol(Y_sh) / children)
   j1 <- (k-1) * step + 1
   j2 <- min(k * step, ncol(Y_sh))
-
-  for (j in seq.int(from = j1, to = j2)) {
+  intervall <- seq.int(from = j1, to = j2)
+  
+  for (j in intervall) {
     out <- solveRidgeRegression(x=X_sh, y=L_sh[,j] - Vgamma[, j],
-                                 beta = beta_sh[,j], epsilon = epsilon_beta)
+                                 beta = beta_sh[,j],
+                                epsilon = epsilon_beta)
 
 
     beta_sh[,j] <- out
@@ -336,7 +340,10 @@ optiml <- function(k, num_cell){
       params <- split_params(out, eq = "left")
       gamma_sh[,i] <- params$gamma
       W_sh[i,] <- params$W
+      
+      
     }
+    
 }
 
 
