@@ -490,9 +490,11 @@ optimization <- function(cluster, children = 1, model ,
 }
 
 optimd <- function(J, mu, cluster, children, num_gene = NULL, commondispersion, iter){
-
-  if (commondispersion || iter == 1){
-
+  
+  
+  if (commondispersion || iter < 3){
+    
+    
     genes = seq.int(J)
 
     if(!is.null(num_gene)){
@@ -508,9 +510,7 @@ optimd <- function(J, mu, cluster, children, num_gene = NULL, commondispersion, 
 
   } else {
 
-    
-
-    clusterApply(cluster, seq.int(children), "optim_genwise_dispersion",num_gene = num_gene)
+    clusterApply(cluster, seq.int(children), "optim_genwise_dispersion",num_gene = num_gene, iter=iter)
   }
 
 }

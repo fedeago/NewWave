@@ -66,22 +66,7 @@ nb.loglik <- function(Y, mu, theta) {
 
 
 
-nb.loglik.dispersion <- function(zeta, Y, mu){
 
-  nb.loglik(Y, mu, exp(zeta))
-
-}
-
-nb.loglik.dispersion.gradient <- function(zeta, Y, mu) {
-
-  theta <- exp(zeta)
-
-  grad <- sum(theta * (digamma(Y + theta) - digamma(theta) +
-                         zeta - log(mu + theta) + 1 -
-                         (Y + theta)/(mu + theta) ) )
-  grad <- grad
-  grad
-}
 
 
 nb.regression.parseModel <- function(alpha, A.mu, B.mu, C.mu) {
@@ -191,7 +176,26 @@ nb.loglik.regression.gradient <- function(alpha, Y,
 }
 
 
-optim_genwise_dispersion <- function(k, num_gene) {
+nb.loglik.dispersion <- function(zeta, Y, mu){
+  
+  # zeta <- rbind(zeta)[rep(1,nrow(Y)),]
+  nb.loglik(Y, mu, exp(zeta))
+  
+}
+
+nb.loglik.dispersion.gradient <- function(zeta, Y, mu) {
+  
+  theta <- exp(zeta)
+  
+  grad <- theta * (digamma(Y + theta) - digamma(theta) +
+                         log(theta) - log(mu + theta) + 1 -
+                         (Y + theta)/(mu + theta) ) 
+  grad <-sum(grad)
+}
+
+
+
+optim_genwise_dispersion <- function(k, num_gene, iter) {
   
   locfun <- function(zeta, Y, mu){
     nb.loglik.dispersion(zeta, Y, mu)
@@ -214,13 +218,23 @@ optim_genwise_dispersion <- function(k, num_gene) {
     intervall <- sample(x = seq.int(from = j1, to = j2), size = num_gene/children)
 
   }
-
-  for (j in intervall) {
-
-    zeta_sh[j] <- optim(fn=locfun , gr=locgrad,
-                        par=zeta_sh[j], Y = Y_sh[,j], mu = mu[,j],
-                        control=list(fnscale=-1,trace=0), method="BFGS")$par
+  
+  out <- list()
+  
+  for (j in intervall){
+    
+    out[[j]] <- optim(fn=locfun , gr=locgrad,
+                      par=zeta_sh[j],Y = Y_sh[,j], mu = mu[,j],
+                      control=list(fnscale=-1,trace=0), method="BFGS")
+    zeta_sh[j] <- out[[j]]$par
   }
+  
+  # likelihood <- t(matrix(unlist(out), nrow = length(out[[length(out)]])))
+  # code <- Sys.getpid()
+  # filepath <- paste0("~/Scrivania/prove_zinb_par/like_genewise_dispersion/likelihood_",iter,"_",code,".RDS")
+  # saveRDS(likelihood[,2], file = filepath )
+  # 
+  
 }
 
 optimr <- function(k, num_gene) {
@@ -238,7 +252,7 @@ optimr <- function(k, num_gene) {
       intervall <- sample(x = seq.int(from = j1, to = j2), size = num_gene/children)
     }
 
-
+    
     for ( j in intervall){
 
       out <- optimright_fun_nb(
