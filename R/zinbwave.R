@@ -153,7 +153,7 @@ setMethod("nbwave", "SummarizedExperiment",
                    n_gene_disp = NULL,
                    n_cell_par = NULL, n_gene_par = NULL,
                    normalizedValues = FALSE, residuals = FALSE,
-                   observationalWeights = FALSE, ...) {
+                   observationalWeights = FALSE, cross_batch = FALSE, ...) {
             
             
               
@@ -163,7 +163,7 @@ setMethod("nbwave", "SummarizedExperiment",
                                       maxiter_optimize, stop_epsilon,
                                       children, random_init, 
                                       random_start, n_gene_disp,
-                                      n_cell_par, n_gene_par, ...)
+                                      n_cell_par, n_gene_par, cross_batch,...)
               
             
             
@@ -195,13 +195,13 @@ setMethod("nbwave", "SummarizedExperiment",
                 (nrow(Y) != nFeatures(fitted_model)) & K > 0
               
               if(refit) {
-                fitted_model <- nbFit(Y, X, V, K, which_assay,
-                                      commondispersion, verbose,
-                                      nb_repeat_initialize, maxiter_optimize,
-                                      stop_epsilon, children,
-                                      random_init, random_start,
-                                      n_gene_disp,
-                                      n_cell_par, n_gene_par)
+                fitted_model <- nbFit(Y, X, V, K,
+                                      which_assay, commondispersion,
+                                      verbose, nb_repeat,
+                                      maxiter_optimize, stop_epsilon,
+                                      children, random_init, 
+                                      random_start, n_gene_disp,
+                                      n_cell_par, n_gene_par, cross_batch,...)
               }
               
               if (normalizedValues){

@@ -20,7 +20,8 @@ setMethod("nbFit", "SummarizedExperiment",
                    stop_epsilon=.0001, children = 1,
                    random_init = FALSE, random_start = FALSE,
                    n_gene_disp = NULL,
-                   n_cell_par = NULL, n_gene_par = NULL,... ) {
+                   n_cell_par = NULL, n_gene_par = NULL,
+                   cross_batch = F,... ) {
 
               if(missing(which_assay)) {
                   if("counts" %in% assayNames(Y)) {
@@ -68,7 +69,7 @@ setMethod("nbFit", "SummarizedExperiment",
                            stop_epsilon = stop_epsilon, children = children,
                            random_init = random_init, random_start = random_start,
                            n_gene_disp = n_gene_disp , n_cell_par = n_cell_par,
-                           n_gene_par = n_gene_par)
+                           n_gene_par = n_gene_par, cross_batch = cross_batch)
 
               return(res)
 })
@@ -118,6 +119,7 @@ setMethod("nbFit", "matrix",
                    random_init, random_start,
                    n_gene_disp,
                    n_cell_par, n_gene_par,
+                   cross_batch,
                    ... ) {
 
     # Check that Y contains whole numbers
@@ -158,7 +160,7 @@ setMethod("nbFit", "matrix",
                          orthog = orthog, stop_epsilon = stop_epsilon,
                          commondispersion = commondispersion,  n_gene_disp = n_gene_disp,
                          n_cell_par = n_cell_par, n_gene_par = n_gene_par, verbose =  verbose,
-                         mode = "matrix")
+                         mode = "matrix", cross_batch = cross_batch)
     #   rm(beta_sh)
     return(info)
 })
@@ -362,7 +364,7 @@ optimization <- function(cluster, children = 1, model ,
                          max_iter = 50, stop_epsilon = .0001,
                          n_gene_disp = NULL,
                          n_cell_par = NULL, n_gene_par = NULL, orthog = T,
-                         commondispersion = T, verbose, mode){
+                         commondispersion = T, verbose, mode, cross_batch){
 
   orthog <- nFactors(model) > 0
   total.lik=rep(NA,max_iter)
@@ -413,7 +415,7 @@ optimization <- function(cluster, children = 1, model ,
     ptm <- proc.time()
     
     if(mode == "matrix"){
-    clusterApply(cluster, seq.int(children), "optimr",  num_gene = n_gene_par)
+    clusterApply(cluster, seq.int(children), "optimr",  num_gene = n_gene_par, cross_batch = cross_batch)
     } else clusterApply(cluster, seq.int(children), "optimr_delayed",  num_gene = n_gene_par)
 
     if(verbose){
@@ -444,7 +446,7 @@ optimization <- function(cluster, children = 1, model ,
     ptm <- proc.time()
     
     if(mode == "matrix"){
-    clusterApply(cluster, seq.int(children), "optiml" , num_cell = n_cell_par)
+    clusterApply(cluster, seq.int(children), "optiml" , num_cell = n_cell_par, cross_batch = cross_batch)
     } else clusterApply(cluster, seq.int(children), "optiml_delayed" , num_cell = n_cell_par)
     
     
@@ -505,8 +507,10 @@ optimd <- function(J, mu, cluster, children, num_gene = NULL, commondispersion, 
     }
 
     g=optimize(f=nb.loglik.dispersion, Y=as.matrix(Y_sh[,genes]), mu=mu,
-               maximum=TRUE, interval=c(-50,50))
+               maximum=TRUE,
+               interval=c(-50,50))
     zeta_sh[] <- rep(g$maximum,J)
+   
 
   } else {
 

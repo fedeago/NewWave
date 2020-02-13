@@ -178,7 +178,6 @@ nb.loglik.regression.gradient <- function(alpha, Y,
 
 nb.loglik.dispersion <- function(zeta, Y, mu){
   
-  # zeta <- rbind(zeta)[rep(1,nrow(Y)),]
   nb.loglik(Y, mu, exp(zeta))
   
 }
@@ -237,7 +236,7 @@ optim_genwise_dispersion <- function(k, num_gene, iter) {
   
 }
 
-optimr <- function(k, num_gene) {
+optimr <- function(k, num_gene, cross_batch) {
 
     step <- ceiling(ncol(Y_sh) / children)
     j1 <- (k-1) * step + 1
@@ -252,13 +251,17 @@ optimr <- function(k, num_gene) {
       intervall <- sample(x = seq.int(from = j1, to = j2), size = num_gene/children)
     }
 
+    if(cross_batch){
+      cells <- sample(x = nrow(Y_sh), size = 512)
+    } else {
+      cells <- seq.int(nrow(Y_sh))
+    }
+    for (j in intervall){
     
-    for ( j in intervall){
-
       out <- optimright_fun_nb(
-        beta_sh[,j], alpha_sh[,j], Y_sh[,j], X_sh,
-        W_sh, V_sh[j,], gamma_sh, zeta_sh[j],
-        nrow(Y_sh), epsilonright)
+        beta_sh[,j], alpha_sh[,j], Y_sh[cells,j], X_sh[cells,],
+        W_sh[cells,], V_sh[j,], gamma_sh[,cells], zeta_sh[j],
+        length(cells), epsilonright)
 
       params <- split_params(out, "right")
       beta_sh[,j] <- params$beta
@@ -326,11 +329,11 @@ optimright_fun_nb <- function(beta, alpha, Y, X, W,
          C.mu=t(V %*% gamma),
          C.theta=matrix(zeta, nrow = n, ncol = 1),
          epsilon=epsilonright,
-         control=list(fnscale=-1,trace=0),
+         control=list(fnscale = -1,trace=0),
          method="BFGS")$par
 }
 
-optiml <- function(k, num_cell){
+optiml <- function(k, num_cell, cross_batch){
 
     step <- ceiling( nrow(Y_sh) / children)
     j1 <- (k-1) * step + 1
@@ -345,11 +348,17 @@ optiml <- function(k, num_cell){
       intervall <- sample(x = seq.int(from = j1, to = j2), size = num_cell/children)
 
     }
-
+    
+    if(cross_batch){
+      genes <- sample(x = ncol(Y_sh), size = 512)
+    } else {
+      genes <- seq.int(ncol(Y_sh))
+    }
+    
     for (i in intervall){
       out <- optimleft_fun_nb(gamma_sh[,i],
-                              W_sh[i,], Y_sh[i,] , V_sh, alpha_sh,
-                              X_sh[i,], beta_sh, zeta_sh, epsilonleft)
+                              W_sh[i,], Y_sh[i,genes] , V_sh[genes,,drop=F], alpha_sh[,genes],
+                              X_sh[i,], beta_sh[,genes], zeta_sh[genes], epsilonleft)
 
       params <- split_params(out, eq = "left")
       gamma_sh[,i] <- params$gamma
@@ -416,7 +425,7 @@ optimleft_fun_nb <- function(gamma, W, Y, V, alpha,
          C.mu=t(X%*%beta),
          C.theta=zeta,
          epsilon=epsilonleft,
-         control=list(fnscale=-1,trace=0),
+         control=list(fnscale = -1,trace=0),
          method="BFGS")$par
 }
 
