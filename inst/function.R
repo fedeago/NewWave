@@ -69,36 +69,37 @@ nb.loglik <- function(Y, mu, theta) {
 
 
 
-nb.regression.parseModel <- function(alpha, A.mu, B.mu, C.mu) {
-
-  n <- nrow(A.mu)
+nb.regression.parseModel <- function(par, A.mu, B.mu, C.mu) {
+  
   logMu <- C.mu
-  dim.alpha <- rep(0,2)
-  start.alpha <- rep(NA,2)
+  dim.par <- rep(0,2)
+  start.par <- rep(NA,2)
   i <- 0
 
   j <- ncol(A.mu)
+  k <- ncol(C.mu)
+  
   if (j>0) {
-    logMu <- logMu + A.mu %*% alpha[(i+1):(i+j)]
-    dim.alpha[1] <- j
-    start.alpha[1] <- i+1
-    i <- i+j
+    logMu <- logMu + A.mu %*% matrix(par[(i+1):(i+k*j)], nrow = j)
+    dim.par[1] <- k*j
+    start.par[1] <- i+1
+    i <- i+k*j
   }
 
 
   j <- ncol(B.mu)
   if (j>0) {
-    logMu <- logMu + B.mu %*% alpha[(i+1):(i+j)]
-    dim.alpha[2] <- j
-    start.alpha[2] <- i+1
+    logMu <- logMu + B.mu %*% matrix(par[(i+1):(i+k*j)], nrow = j)
+    dim.par[2] <- k*j
+    start.par[2] <- i+1
   }
 
-  return(list(logMu=logMu, dim.alpha=dim.alpha,
-              start.alpha=start.alpha))
+  return(list(logMu=logMu, dim.par=dim.par,
+              start.par=start.par))
 }
 
 
-nb.loglik.regression <- function(alpha, Y,
+nb.loglik.regression <- function(par, Y,
                                  A.mu = matrix(nrow=length(Y), ncol=0),
                                  B.mu = matrix(nrow=length(Y), ncol=0),
                                  C.mu = matrix(0, nrow=length(Y), ncol=1),
@@ -106,7 +107,7 @@ nb.loglik.regression <- function(alpha, Y,
                                  epsilon=0) {
 
   # Parse the model
-  r <- nb.regression.parseModel(alpha=alpha,
+  r <- nb.regression.parseModel(par=par,
                                 A.mu = A.mu,
                                 B.mu = B.mu,
                                 C.mu = C.mu)
@@ -115,11 +116,11 @@ nb.loglik.regression <- function(alpha, Y,
   z <- nb.loglik(Y, exp(r$logMu), exp(C.theta))
 
   # Penalty
-  z <- z - sum(epsilon*alpha^2)/2
+  z <- z - sum(epsilon*par^2)/2
   z
 }
 
-nb.loglik.regression.gradient <- function(alpha, Y,
+nb.loglik.regression.gradient <- function(par, Y,
                                           A.mu = matrix(nrow=length(Y), ncol=0),
                                           B.mu = matrix(nrow=length(Y), ncol=0),
                                           C.mu = matrix(0, nrow=length(Y),
@@ -129,7 +130,7 @@ nb.loglik.regression.gradient <- function(alpha, Y,
                                           epsilon=0) {
 
   # Parse the model
-  r <- nb.regression.parseModel(alpha=alpha,
+  r <- nb.regression.parseModel(par=par,
                                 A.mu = A.mu,
                                 B.mu = B.mu,
                                 C.mu = C.mu)
@@ -140,7 +141,7 @@ nb.loglik.regression.gradient <- function(alpha, Y,
 
   # Check what we need to compute,
   # depending on the variables over which we optimize
-  need.wres.mu <- r$dim.alpha[1] >0 || r$dim.alpha[2] >0
+  need.wres.mu <- r$dim.par[1] >0 || r$dim.par[2] >0
 
   # Compute the partial derivatives we need
   ## w.r.t. mu
@@ -156,20 +157,20 @@ nb.loglik.regression.gradient <- function(alpha, Y,
   grad <- numeric(0)
 
   ## w.r.t. a_mu
-  if (r$dim.alpha[1] >0) {
-    istart <- r$start.alpha[1]
-    iend <- r$start.alpha[1]+r$dim.alpha[1]-1
+  if (r$dim.par[1] >0) {
+    istart <- r$start.par[1]
+    iend <- r$start.par[1]+r$dim.par[1]-1
     grad <- c(grad , colSums(wres_mu * A.mu) -
-                epsilon[istart:iend]*alpha[istart:iend])
+                epsilon[istart:iend]*par[istart:iend])
   }
 
 
   ## w.r.t. b
-  if (r$dim.alpha[2] >0) {
-    istart <- r$start.alpha[2]
-    iend <- r$start.alpha[2]+r$dim.alpha[2]-1
+  if (r$dim.par[2] >0) {
+    istart <- r$start.par[2]
+    iend <- r$start.par[2]+r$dim.par[2]-1
     grad <- c(grad , colSums(wres_mu * B.mu) -
-                epsilon[istart:iend]*alpha[istart:iend])
+                epsilon[istart:iend]*par[istart:iend])
   }
 
   grad
