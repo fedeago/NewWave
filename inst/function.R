@@ -257,16 +257,18 @@ optimr <- function(k, num_gene, cross_batch) {
     } else {
       cells <- seq.int(nrow(Y_sh))
     }
+    
+   
     for (j in intervall){
     
       out <- optimright_fun_nb(
-        beta_sh[,j], alpha_sh[,j], Y_sh[cells,j], X_sh[cells,],
-        W_sh[cells,], V_sh[j,], gamma_sh[,cells], zeta_sh[j],
+        beta_sh[,j,drop=F], alpha_sh[,j,drop=F], Y_sh[cells,j,drop=F], X_sh[cells,,drop=F],
+        W_sh[cells,,drop=F], V_sh[j,,drop=F], gamma_sh[,cells, drop=F], zeta_sh[j],
         length(cells), epsilonright)
 
-      params <- split_params(out, "right")
-      beta_sh[,j] <- params$beta
-      alpha_sh[,j] <- params$alpha
+      
+      beta_sh[,j] <- out[1:nrow(beta_sh)]
+      alpha_sh[,j] <-  out[(nrow(beta_sh)+1):(nrow(beta_sh)+nrow(alpha_sh))]
 
 
   }
@@ -328,7 +330,7 @@ optimright_fun_nb <- function(beta, alpha, Y, X, W,
          Y=Y,
          A.mu=cbind(X, W),
          C.mu=t(V %*% gamma),
-         C.theta=matrix(zeta, nrow = n, ncol = 1),
+         C.theta=matrix(zeta, nrow = n, ncol = ncol(t(V %*% gamma))),
          epsilon=epsilonright,
          control=list(fnscale = -1,trace=0),
          method="BFGS")$par
@@ -357,13 +359,13 @@ optiml <- function(k, num_cell, cross_batch){
     }
     
     for (i in intervall){
-      out <- optimleft_fun_nb(gamma_sh[,i],
-                              W_sh[i,], Y_sh[i,genes] , V_sh[genes,,drop=F], alpha_sh[,genes],
-                              X_sh[i,], beta_sh[,genes], zeta_sh[genes], epsilonleft)
-
-      params <- split_params(out, eq = "left")
-      gamma_sh[,i] <- params$gamma
-      W_sh[i,] <- params$W
+      out <- optimleft_fun_nb(gamma_sh[,i,drop=F],
+                              W_sh[i,,drop=F], Y_sh[i,genes,drop=F] , V_sh[genes,,drop=F], alpha_sh[,genes,drop=F],
+                              X_sh[i,,drop=F], beta_sh[,genes,drop=F], zeta_sh[genes,drop=F], epsilonleft)
+      
+      n_obs = 1
+      gamma_sh[,i] <- out[1:nrow(gamma_sh)]
+      W_sh[i,] <- matrix(out[(nrow(gamma_sh)+1):(nrow(gamma_sh)+ncol(W_sh))], nrow = n_obs, byrow = T)
       
       
     }
@@ -452,3 +454,23 @@ split_params <- function(merged, eq = NA) {
   }
 }
 
+multi_observation_split_params <- function(merged, eq = NA, observation_number) {
+  
+  if(eq == "right"){
+    beta_num <- nrow(beta_sh)
+    alpha_num <- nrow(alpha_sh)
+    
+    list(
+      beta = merged[seq.int(from = 1, length.out = beta_num)],
+      alpha = merged[seq.int(from = beta_num+1, length.out = alpha_num)]
+    )
+  } else {
+    gamma_num <- nrow(gamma_sh)
+    W_num <- ncol(W_sh)
+    
+    list(
+      gamma = merged[seq.int(from = 1, length.out = gamma_num)],
+      W = merged[seq.int(from = gamma_num+1, length.out = W_num)]
+    )
+  }
+}
