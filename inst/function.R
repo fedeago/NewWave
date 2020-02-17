@@ -134,9 +134,10 @@ nb.loglik.regression.gradient <- function(par, Y,
                                 A.mu = A.mu,
                                 B.mu = B.mu,
                                 C.mu = C.mu)
-  Y=as.vector(Y)
+  
+  
   theta <- exp(C.theta)
-  mu <- exp(r$logMu)
+  mu_temp <- exp(r$logMu)
   n <- length(Y)
 
   # Check what we need to compute,
@@ -146,10 +147,10 @@ nb.loglik.regression.gradient <- function(par, Y,
   # Compute the partial derivatives we need
   ## w.r.t. mu
   if (need.wres.mu) {
-    wres_mu <- numeric(length = n)
-    wres_mu <- Y - mu *
-      (Y + theta)/(mu + theta)
-    wres_mu <- as.vector(wres_mu)
+    
+    wres_mu <- Y - mu_temp *
+      (Y + theta)/(mu_temp + theta)
+   
   }
 
 
@@ -160,8 +161,8 @@ nb.loglik.regression.gradient <- function(par, Y,
   if (r$dim.par[1] >0) {
     istart <- r$start.par[1]
     iend <- r$start.par[1]+r$dim.par[1]-1
-    grad <- c(grad , colSums(wres_mu * A.mu) -
-                epsilon[istart:iend]*par[istart:iend])
+    grad <- c(grad , colSums(t(A.mu)%*%wres_mu) -
+                epsilon[istart:(iend/ncol(wres_mu))] * par[istart:iend])
   }
 
 
@@ -169,8 +170,8 @@ nb.loglik.regression.gradient <- function(par, Y,
   if (r$dim.par[2] >0) {
     istart <- r$start.par[2]
     iend <- r$start.par[2]+r$dim.par[2]-1
-    grad <- c(grad , colSums(wres_mu * B.mu) -
-                epsilon[istart:iend]*par[istart:iend])
+    grad <- c(grad , colSums(t(B.mu)%*%wres_mu) -
+                epsilon[istart:(iend/ncol(wres_mu))]*par[istart:iend])
   }
 
   grad
@@ -221,6 +222,7 @@ optim_genwise_dispersion <- function(k, num_gene, iter) {
   
   out <- list()
   
+  
   for (j in intervall){
     
     out[[j]] <- optim(fn=locfun , gr=locgrad,
@@ -237,7 +239,7 @@ optim_genwise_dispersion <- function(k, num_gene, iter) {
   
 }
 
-optimr <- function(k, num_gene, cross_batch) {
+optimr <- function(k, num_gene, cross_batch, multi_obs) {
 
     step <- ceiling(ncol(Y_sh) / children)
     j1 <- (k-1) * step + 1
@@ -258,7 +260,10 @@ optimr <- function(k, num_gene, cross_batch) {
       cells <- seq.int(nrow(Y_sh))
     }
     
-   
+    if(multi_obs){
+      intervall <- split(x = intervall, f = ceiling(seq_along(intervall)/10))[[1]]
+    }
+    
     for (j in intervall){
     
       out <- optimright_fun_nb(
@@ -336,7 +341,7 @@ optimright_fun_nb <- function(beta, alpha, Y, X, W,
          method="BFGS")$par
 }
 
-optiml <- function(k, num_cell, cross_batch){
+optiml <- function(k, num_cell, cross_batch, multi_obs){
 
     step <- ceiling( nrow(Y_sh) / children)
     j1 <- (k-1) * step + 1
@@ -358,14 +363,18 @@ optiml <- function(k, num_cell, cross_batch){
       genes <- seq.int(ncol(Y_sh))
     }
     
+    if(multi_obs){
+        intervall <- split(x = intervall, f = ceiling(seq_along(intervall)/10))[[1]]
+      
+    }
     for (i in intervall){
       out <- optimleft_fun_nb(gamma_sh[,i,drop=F],
                               W_sh[i,,drop=F], Y_sh[i,genes,drop=F] , V_sh[genes,,drop=F], alpha_sh[,genes,drop=F],
                               X_sh[i,,drop=F], beta_sh[,genes,drop=F], zeta_sh[genes,drop=F], epsilonleft)
       
-      n_obs = 1
+      
       gamma_sh[,i] <- out[1:nrow(gamma_sh)]
-      W_sh[i,] <- matrix(out[(nrow(gamma_sh)+1):(nrow(gamma_sh)+ncol(W_sh))], nrow = n_obs, byrow = T)
+      W_sh[i,] <- matrix(out[(nrow(gamma_sh)+1):(nrow(gamma_sh)+ncol(W_sh))], ncol = nrow(alpha_sh), byrow = T)
       
       
     }

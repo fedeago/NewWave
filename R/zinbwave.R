@@ -153,7 +153,8 @@ setMethod("nbwave", "SummarizedExperiment",
                    n_gene_disp = NULL,
                    n_cell_par = NULL, n_gene_par = NULL,
                    normalizedValues = FALSE, residuals = FALSE,
-                   observationalWeights = FALSE, cross_batch = FALSE, ...) {
+                   observationalWeights = FALSE, cross_batch = FALSE, 
+                   multi_obs = FALSE, ...) {
             
             
               
@@ -163,7 +164,8 @@ setMethod("nbwave", "SummarizedExperiment",
                                       maxiter_optimize, stop_epsilon,
                                       children, random_init, 
                                       random_start, n_gene_disp,
-                                      n_cell_par, n_gene_par, cross_batch,...)
+                                      n_cell_par, n_gene_par, cross_batch,
+                                      multi_obs,...)
               
             
             
