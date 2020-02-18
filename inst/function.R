@@ -271,7 +271,6 @@ optimr <- function(k, num_gene, cross_batch, multi_obs) {
         W_sh[cells,,drop=F], V_sh[j,,drop=F], gamma_sh[,cells, drop=F], zeta_sh[j],
         length(cells), epsilonright)
 
-      
       beta_sh[,j] <- out[1:nrow(beta_sh)]
       alpha_sh[,j] <-  out[(nrow(beta_sh)+1):(nrow(beta_sh)+nrow(alpha_sh))]
 

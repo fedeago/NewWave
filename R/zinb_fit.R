@@ -16,7 +16,7 @@
 setMethod("nbFit", "SummarizedExperiment",
           function(Y, X, V, K = 2, which_assay,
                    commondispersion = T, verbose=FALSE,
-                   nb_repeat = 2, maxiter_optimize = 100,
+                   maxiter_optimize = 100,
                    stop_epsilon=.0001, children = 1,
                    random_init = FALSE, random_start = FALSE,
                    n_gene_disp = NULL,
@@ -64,7 +64,7 @@ setMethod("nbFit", "SummarizedExperiment",
               # Apply nbFit on the assay of SummarizedExperiment
               res <- nbFit(Y = dataY, X = X, V = V, K = K,
                            commondispersion = commondispersion, 
-                           verbose = verbose, nb_repeat = nb_repeat, 
+                           verbose = verbose,
                            maxiter_optimize = maxiter_optimize,
                            stop_epsilon = stop_epsilon, children = children,
                            random_init = random_init, random_start = random_start,
@@ -115,7 +115,7 @@ setMethod("nbFit", "SummarizedExperiment",
 setMethod("nbFit", "matrix",
           function(Y, X, V, K,
                    commondispersion, verbose,
-                   nb_repeat, maxiter_optimize,
+                   maxiter_optimize,
                    stop_epsilon, children,
                    random_init, random_start,
                    n_gene_disp,
@@ -149,7 +149,7 @@ setMethod("nbFit", "matrix",
     if (!random_init){
 
       initialization(cluster = cl, children = children, model = m,
-                     nb_repeat = nb_repeat, verbose = verbose)
+                     verbose = verbose)
 
     }
 
@@ -309,19 +309,15 @@ setup <- function(cluster, model, random_start = F, children,
 }
 
 
-initialization <- function(cluster, children, model, nb_repeat = 2, verbose){
+initialization <- function(cluster, children, model, verbose){
 
   ptm <- proc.time()
-  iter <- 0
-  while (iter < nb_repeat) {
 
 
-    clusterApply(cluster, seq.int(children), "gamma_init")
+  clusterApply(cluster, seq.int(children), "gamma_init")
     
-    clusterApply(cluster, seq.int(children), "beta_init")
+  clusterApply(cluster, seq.int(children), "beta_init")
 
-    iter <- iter+1
-  }
 
   D <- L_sh - (X_sh %*% beta_sh) - t(V_sh %*% gamma_sh)
 
