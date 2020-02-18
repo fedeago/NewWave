@@ -154,7 +154,7 @@ setMethod("nbwave", "SummarizedExperiment",
                    n_cell_par = NULL, n_gene_par = NULL,
                    normalizedValues = FALSE, residuals = FALSE,
                    observationalWeights = FALSE, cross_batch = FALSE, 
-                   multi_obs = FALSE, ...) {
+                   multi_obs = 1, ...) {
             
             
               

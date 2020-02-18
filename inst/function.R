@@ -260,8 +260,8 @@ optimr <- function(k, num_gene, cross_batch, multi_obs) {
       cells <- seq.int(nrow(Y_sh))
     }
     
-    if(multi_obs){
-      intervall <- split(x = intervall, f = ceiling(seq_along(intervall)/10))[[1]]
+    if(multi_obs > 1){
+      intervall <- split(x = intervall, f = ceiling(seq_along(intervall)/multi_obs))[[1]]
     }
     
     for (j in intervall){
@@ -363,8 +363,8 @@ optiml <- function(k, num_cell, cross_batch, multi_obs){
       genes <- seq.int(ncol(Y_sh))
     }
     
-    if(multi_obs){
-        intervall <- split(x = intervall, f = ceiling(seq_along(intervall)/10))[[1]]
+    if(multi_obs > 1){
+        intervall <- split(x = intervall, f = ceiling(seq_along(intervall)/multiobs))[[1]]
       
     }
     for (i in intervall){

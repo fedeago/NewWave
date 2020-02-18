@@ -21,7 +21,7 @@ setMethod("nbFit", "SummarizedExperiment",
                    random_init = FALSE, random_start = FALSE,
                    n_gene_disp = NULL,
                    n_cell_par = NULL, n_gene_par = NULL,
-                   cross_batch = F, multi_obs = F,... ) {
+                   cross_batch = F, multi_obs = 1,... ) {
 
               if(missing(which_assay)) {
                   if("counts" %in% assayNames(Y)) {
