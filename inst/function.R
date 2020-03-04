@@ -187,7 +187,7 @@ nb.loglik.dispersion.gradient <- function(zeta, Y, mu) {
   grad <- theta * (digamma(Y + theta) - digamma(theta) +
                          zeta - log(mu + theta) + 1 -
                          (Y + theta)/(mu + theta) ) 
-  grad <- sum(grad)
+  grad <-sum(grad)
 }
 
 
@@ -222,7 +222,7 @@ optim_genwise_dispersion <- function(k, num_gene, iter) {
   
   out <- list()
   
-  for (j in intervall) {
+  for (j in intervall){
 
     out[[j]] <- optim(fn=locfun,
                       gr=locgrad,
@@ -230,7 +230,7 @@ optim_genwise_dispersion <- function(k, num_gene, iter) {
                       Y = Y_sh[,j],
                       mu = mu[,j],
                       control=list(fnscale=-1,trace=0),
-                      method="BFGS")$par
+                      method="BFGS")
     zeta_sh[j] <- out[[j]]$par
   }
   
@@ -241,7 +241,7 @@ optim_genwise_dispersion <- function(k, num_gene, iter) {
   
 }
 
-optimr <- function(k, num_gene) {
+optimr <- function(k, num_gene,cross_batch=F) {
 
     step <- ceiling(ncol(Y_sh) / children)
     j1 <- (k-1) * step + 1
@@ -256,13 +256,19 @@ optimr <- function(k, num_gene) {
       intervall <- sample(x = seq.int(from = j1, to = j2), size = num_gene/children)
     }
 
-
+    if(cross_batch){
+      cells <- sample(x = nrow(Y_sh), size = 512)
+    } else {
+      cells <- seq.int(nrow(Y_sh))
+    }
+    
+    
     for ( j in intervall){
 
       out <- optimright_fun_nb(
-        beta_sh[,j], alpha_sh[,j], Y_sh[,j], X_sh,
-        W_sh, V_sh[j,], gamma_sh, zeta_sh[j],
-        nrow(Y_sh), epsilonright)
+        beta_sh[,j,drop=F], alpha_sh[,j,drop=F], Y_sh[cells,j,drop=F], X_sh[cells,,drop=F],
+        W_sh[cells,,drop=F], V_sh[j,,drop=F], gamma_sh[,cells, drop=F], zeta_sh[j],
+        length(cells), epsilonright)
 
       params <- split_params(out, "right")
       beta_sh[,j] <- params$beta
@@ -328,9 +334,9 @@ optimright_fun_nb <- function(beta, alpha, Y, X, W,
          Y=Y,
          A.mu=cbind(X, W),
          C.mu=t(V %*% gamma),
-         C.theta=matrix(zeta, nrow = n, ncol = 1),
+         C.theta=matrix(zeta, nrow = n, ncol=1),
          epsilon=epsilonright,
-         control=list(fnscale=-1,trace=0),
+         control=list(fnscale = -1,trace=0),
          method="BFGS")$par
 }
 
