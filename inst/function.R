@@ -26,10 +26,11 @@ gamma_init <- function(k) {
   step <- ceiling(nrow(Y_sh) / children)
   j1 <- (k-1) * step + 1
   j2 <- min(k * step, nrow(Y_sh))
-
-  for (j in seq.int(from = j1, to = j2)) {
+  intervall <- seq.int(from = j1, to = j2)
+  
+  for (j in intervall) {
     out <- solveRidgeRegression(x = V_sh, y = L_sh[j,] - Xbeta[j,],
-                                 beta = gamma_sh[,j], epsilon = epsilon_gamma)
+                                 beta = gamma_sh[,j],epsilon = epsilon_gamma)
 
     gamma_sh[,j] <- out
   }
@@ -42,10 +43,11 @@ beta_init <- function(k) {
   step <- ceiling(ncol(Y_sh) / children)
   j1 <- (k-1) * step + 1
   j2 <- min(k * step, ncol(Y_sh))
-
-  for (j in seq.int(from = j1, to = j2)) {
+  intervall <- seq.int(from = j1, to = j2)
+  
+  for (j in intervall) {
     out <- solveRidgeRegression(x=X_sh, y=L_sh[,j] - Vgamma[, j],
-                                 beta = beta_sh[,j], epsilon = epsilon_beta)
+                                 beta = beta_sh[,j],epsilon = epsilon_beta)
 
 
     beta_sh[,j] <- out
@@ -56,61 +58,42 @@ nb.loglik <- function(Y, mu, theta) {
 
   # log-probabilities of counts under the NB model
   logPnb <- suppressWarnings(dnbinom(Y, size = theta, mu = mu, log = TRUE))
-
   sum(logPnb)
 
 }
 
 
-
-nb.loglik.dispersion <- function(zeta, Y, mu){
-
-  nb.loglik(Y, mu, exp(zeta))
-
-}
-
-nb.loglik.dispersion.gradient <- function(zeta, Y, mu) {
-
-  theta <- exp(zeta)
-
-  grad <- sum(theta * (digamma(Y + theta) - digamma(theta) +
-                         zeta - log(mu + theta) + 1 -
-                         (Y + theta)/(mu + theta) ) )
-  grad <- grad
-  grad
-}
-
-
-nb.regression.parseModel <- function(alpha, A.mu, B.mu, C.mu) {
+nb.regression.parseModel <- function(par, A.mu, B.mu, C.mu) {
 
   n <- nrow(A.mu)
   logMu <- C.mu
-  dim.alpha <- rep(0,2)
-  start.alpha <- rep(NA,2)
+  dim.par <- rep(0,2)
+  start.par <- rep(NA,2)
   i <- 0
 
   j <- ncol(A.mu)
   if (j>0) {
-    logMu <- logMu + A.mu %*% alpha[(i+1):(i+j)]
-    dim.alpha[1] <- j
-    start.alpha[1] <- i+1
+    logMu <- logMu + A.mu %*% par[(i+1):(i+j)]
+    dim.par[1] <- j
+    start.par[1] <- i+1
     i <- i+j
   }
 
 
   j <- ncol(B.mu)
   if (j>0) {
-    logMu <- logMu + B.mu %*% alpha[(i+1):(i+j)]
-    dim.alpha[2] <- j
-    start.alpha[2] <- i+1
+    logMu <- logMu + B.mu %*% par[(i+1):(i+j)]
+    dim.par[2] <- j
+    start.par[2] <- i+1
   }
 
-  return(list(logMu=logMu, dim.alpha=dim.alpha,
-              start.alpha=start.alpha))
+  return(list(logMu=logMu, dim.par=dim.par,
+              start.par=start.par))
 }
 
 
-nb.loglik.regression <- function(alpha, Y,
+
+nb.loglik.regression <- function(par, Y,
                                  A.mu = matrix(nrow=length(Y), ncol=0),
                                  B.mu = matrix(nrow=length(Y), ncol=0),
                                  C.mu = matrix(0, nrow=length(Y), ncol=1),
@@ -118,7 +101,7 @@ nb.loglik.regression <- function(alpha, Y,
                                  epsilon=0) {
 
   # Parse the model
-  r <- nb.regression.parseModel(alpha=alpha,
+  r <- nb.regression.parseModel(par=par,
                                 A.mu = A.mu,
                                 B.mu = B.mu,
                                 C.mu = C.mu)
@@ -127,11 +110,11 @@ nb.loglik.regression <- function(alpha, Y,
   z <- nb.loglik(Y, exp(r$logMu), exp(C.theta))
 
   # Penalty
-  z <- z - sum(epsilon*alpha^2)/2
+  z <- z - sum(epsilon*par^2)/2
   z
 }
 
-nb.loglik.regression.gradient <- function(alpha, Y,
+nb.loglik.regression.gradient <- function(par, Y,
                                           A.mu = matrix(nrow=length(Y), ncol=0),
                                           B.mu = matrix(nrow=length(Y), ncol=0),
                                           C.mu = matrix(0, nrow=length(Y),
@@ -141,18 +124,20 @@ nb.loglik.regression.gradient <- function(alpha, Y,
                                           epsilon=0) {
 
   # Parse the model
-  r <- nb.regression.parseModel(alpha=alpha,
+  r <- nb.regression.parseModel(par=par,
                                 A.mu = A.mu,
                                 B.mu = B.mu,
                                 C.mu = C.mu)
-  Y=as.vector(Y)
+ 
+  
+   Y=as.vector(Y)
   theta <- exp(C.theta)
   mu <- exp(r$logMu)
   n <- length(Y)
 
   # Check what we need to compute,
   # depending on the variables over which we optimize
-  need.wres.mu <- r$dim.alpha[1] >0 || r$dim.alpha[2] >0
+  need.wres.mu <- r$dim.par[1] >0 || r$dim.par[2] >0
 
   # Compute the partial derivatives we need
   ## w.r.t. mu
@@ -168,27 +153,46 @@ nb.loglik.regression.gradient <- function(alpha, Y,
   grad <- numeric(0)
 
   ## w.r.t. a_mu
-  if (r$dim.alpha[1] >0) {
-    istart <- r$start.alpha[1]
-    iend <- r$start.alpha[1]+r$dim.alpha[1]-1
+  if (r$dim.par[1] >0) {
+    istart <- r$start.par[1]
+    iend <- r$start.par[1]+r$dim.par[1]-1
     grad <- c(grad , colSums(wres_mu * A.mu) -
-                epsilon[istart:iend]*alpha[istart:iend])
+                epsilon[istart:iend]*par[istart:iend])
   }
 
 
   ## w.r.t. b
-  if (r$dim.alpha[2] >0) {
-    istart <- r$start.alpha[2]
-    iend <- r$start.alpha[2]+r$dim.alpha[2]-1
+  if (r$dim.par[2] >0) {
+    istart <- r$start.par[2]
+    iend <- r$start.par[2]+r$dim.par[2]-1
     grad <- c(grad , colSums(wres_mu * B.mu) -
-                epsilon[istart:iend]*alpha[istart:iend])
+                epsilon[istart:iend]*par[istart:iend])
   }
 
   grad
 }
 
 
-optim_genwise_dispersion <- function(k, num_gene) {
+nb.loglik.dispersion <- function(zeta, Y, mu){
+  
+  # theta <- matrix(exp(zeta),nrow = nrow(Y),ncol=ncol(Y), byrow = T)
+  # nb.loglik(Y, mu, theta)
+  nb.loglik(Y, mu, exp(zeta))
+}
+
+nb.loglik.dispersion.gradient <- function(zeta, Y, mu) {
+  
+  # theta <- matrix(exp(zeta),nrow = nrow(Y),ncol=ncol(Y), byrow = T)
+  theta <- exp(zeta)
+  grad <- theta * (digamma(Y + theta) - digamma(theta) +
+                         zeta - log(mu + theta) + 1 -
+                         (Y + theta)/(mu + theta) ) 
+  grad <- sum(grad)
+}
+
+
+
+optim_genwise_dispersion <- function(k, num_gene, iter) {
   
   locfun <- function(zeta, Y, mu){
     nb.loglik.dispersion(zeta, Y, mu)
@@ -211,13 +215,30 @@ optim_genwise_dispersion <- function(k, num_gene) {
     intervall <- sample(x = seq.int(from = j1, to = j2), size = num_gene/children)
 
   }
-
+  
+  # pre_like <- colSums(dnbinom(Y_sh, size = exp(zeta_sh), mu = mu, log = TRUE))
+  # filepath <- paste0("~/Scrivania/prove_zinb_par/like_genewise_dispersion/pre_likelihood_",iter,".RDS")
+  # saveRDS(pre_like, file = filepath )
+  
+  out <- list()
+  
   for (j in intervall) {
 
-    zeta_sh[j] <- optim(fn=locfun , gr=locgrad,
-                        par=zeta_sh[j], Y = Y_sh[,j], mu = mu[,j],
-                        control=list(fnscale=-1,trace=0), method="BFGS")$par
+    out[[j]] <- optim(fn=locfun,
+                      gr=locgrad,
+                      par=zeta_sh[j],
+                      Y = Y_sh[,j],
+                      mu = mu[,j],
+                      control=list(fnscale=-1,trace=0),
+                      method="BFGS")$par
+    zeta_sh[j] <- out[[j]]$par
   }
+  
+# likelihood <- t(matrix(unlist(out), nrow = length(out[[length(out)]])))
+# filepath <- paste0("~/Scrivania/prove_zinb_par/like_genewise_dispersion/likelihood_",iter,".RDS")
+# saveRDS(likelihood[,2], file = filepath )
+  
+  
 }
 
 optimr <- function(k, num_gene) {
