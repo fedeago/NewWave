@@ -334,13 +334,13 @@ optimright_fun_nb <- function(beta, alpha, Y, X, W,
          Y=Y,
          A.mu=cbind(X, W),
          C.mu=t(V %*% gamma),
-         C.theta=matrix(zeta, nrow = n, ncol=1),
+         C.theta=matrix(zeta, nrow =n, ncol=1),
          epsilon=epsilonright,
          control=list(fnscale = -1,trace=0),
          method="BFGS")$par
 }
 
-optiml <- function(k, num_cell){
+optiml <- function(k, num_cell,cross_batch=F){
 
     step <- ceiling( nrow(Y_sh) / children)
     j1 <- (k-1) * step + 1
@@ -356,14 +356,20 @@ optiml <- function(k, num_cell){
 
     }
 
+    if(cross_batch){
+      genes <- sample(x = ncol(Y_sh), size = 512)
+    } else {
+      genes <- seq.int(ncol(Y_sh))
+    }
+    
     for (i in intervall){
       out <- optimleft_fun_nb(gamma_sh[,i],
                               W_sh[i,], Y_sh[i,] , V_sh, alpha_sh,
                               X_sh[i,], beta_sh, zeta_sh, epsilonleft)
 
-      params <- split_params(out, eq = "left")
-      gamma_sh[,i] <- params$gamma
-      W_sh[i,] <- params$W
+      par <- split_params(out, eq = "left")
+      gamma_sh[,i] <- par$gamma
+      W_sh[i,] <- par$W
     }
 }
 
@@ -423,7 +429,7 @@ optimleft_fun_nb <- function(gamma, W, Y, V, alpha,
          C.mu=t(X%*%beta),
          C.theta=zeta,
          epsilon=epsilonleft,
-         control=list(fnscale=-1,trace=0),
+         control=list(fnscale = -1,trace=0),
          method="BFGS")$par
 }
 
