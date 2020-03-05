@@ -74,7 +74,10 @@ computeDevianceResiduals <- function(model, x, ignoreW = TRUE) {
 }
 
 
-
+CleanEnvir <- function() {
+  objs <- ls(pos = ".GlobalEnv")
+  rm(list =c(Y_sh,X_sh,V_sh,mu,beta_sh, alpha_sh, gamma_sh, W_sh, zeta_sh), pos = ".GlobalEnv")
+}
 
 #' @describeIn nbwave Y is a
 #'   \code{\link[SummarizedExperiment]{SummarizedExperiment}}.
@@ -153,15 +156,19 @@ setMethod("nbwave", "SummarizedExperiment",
                    n_gene_disp = NULL,
                    n_cell_par = NULL, n_gene_par = NULL,
                    normalizedValues = FALSE, residuals = FALSE,
-                   observationalWeights = FALSE, ...) {
+                   observationalWeights = FALSE, cross_batch = FALSE,...) {
               
+            
+            
               fitted_model <- nbFit(Y, X, V, K,
                                       which_assay, commondispersion,
                                       verbose, nb_repeat,
                                       maxiter_optimize, stop_epsilon,
                                       children, random_init, 
                                       random_start, n_gene_disp,
-                                      n_cell_par, n_gene_par, ...)
+                                      n_cell_par, n_gene_par, cross_batch, ...)
+              
+              
               
               out <- as(Y, "SingleCellExperiment")
               
@@ -193,11 +200,11 @@ setMethod("nbwave", "SummarizedExperiment",
               if(refit) {
                 fitted_model <- nbFit(Y, X, V, K, which_assay,
                                       commondispersion, verbose,
-                                      nb_repeat_initialize, maxiter_optimize,
+                                      nb_repeat, maxiter_optimize,
                                       stop_epsilon, children,
                                       random_init, random_start,
                                       n_gene_disp,
-                                      n_cell_par, n_gene_par)
+                                      n_cell_par, n_gene_par, cross_batch,...)
               }
               
               if (normalizedValues){
@@ -218,6 +225,8 @@ setMethod("nbwave", "SummarizedExperiment",
                 dimnames(weights) <- dimnames(out)
                 assay(out, "weights") <- weights
               }
+              
+              #CleanEnvir()
               
               return(out)
           }
