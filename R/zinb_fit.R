@@ -509,7 +509,7 @@ optimd <- function(J, mu, cluster, children, num_gene = NULL, commondispersion, 
 
   } else {
 
-    clusterApply(cluster, seq.int(children), "optim_genwise_dispersion",num_gene = num_gene)
+    clusterApply(cluster, seq.int(children), "optim_genwise_dispersion",num_gene = num_gene, iter = iter)
   }
 
 }
