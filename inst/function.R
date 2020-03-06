@@ -368,8 +368,8 @@ optiml <- function(k, num_cell, cross_batch, multi_obs){
     }
     for (i in intervall){
       out <- optimleft_fun_nb(gamma_sh[,i,drop=F],
-                              W_sh[i,,drop=F], Y_sh[i,genes,drop=F] , V_sh[genes,,drop=F], alpha_sh[,genes,drop=F],
-                              X_sh[i,,drop=F], beta_sh[,genes,drop=F], zeta_sh[genes,drop=F], epsilonleft)
+                              W_sh[i,,drop=F], Y_sh[i,,drop=F] , V_sh, alpha_sh,
+                              X_sh[i,,drop=F], beta_sh, zeta_sh, epsilonleft)
       
       
       gamma_sh[,i] <- out[1:nrow(gamma_sh)]
