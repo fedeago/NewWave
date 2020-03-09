@@ -525,7 +525,7 @@ ll_calc <- function(mu, model, Y_sh, z, alpha , beta, gamma, W){
 
   theta <- exp(z)
 
-  loglik <- nb.loglik(Y_sh, mu, theta)
+  loglik <- nb.loglik(Y_sh, mu, rep(theta, rep(nrow(Y_sh),ncol(Y_sh))))
 
   penalty <- sum(getEpsilon_alpha(model) * (alpha)^2)/2 +
     sum(getEpsilon_beta(model) * (beta)^2)/2 +
