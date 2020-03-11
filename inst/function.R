@@ -80,7 +80,7 @@ nb.regression.parseModel <- function(par, A.mu, B.mu, C.mu) {
   k <- ncol(C.mu)
   
   if (j>0) {
-    logMu <- logMu + A.mu %*% matrix(par[(i+1):(i+k*j)], nrow = j)
+    logMu <- logMu + A.mu %*% matrix(par[(i+1):(i+k*j)],ncol=k)
     dim.par[1] <- k*j
     start.par[1] <- i+1
     i <- i+k*j
