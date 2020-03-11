@@ -910,7 +910,7 @@ nParams <- function(model) {
               X <- getX(model)
 
               V <- getV(model)
-              disp <- get
+              
 
               n <- nSamples(model)
               J <- nFeatures(model)

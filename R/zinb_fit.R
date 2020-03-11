@@ -485,7 +485,7 @@ optimization <- function(cluster, children = 1, model ,
 
 optimd <- function(J, mu, cluster, children, num_gene = NULL, commondispersion, iter){
 
-  if (commondispersion || iter == 1){
+  if (commondispersion || iter > 1){
 
     genes = seq.int(J)
 
