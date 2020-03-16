@@ -161,7 +161,7 @@ nb.loglik.regression.gradient <- function(par, Y,
   if (r$dim.par[1] >0) {
     istart <- r$start.par[1]
     iend <- r$start.par[1]+r$dim.par[1]-1
-    grad <- c(grad , colSums(t(A.mu)%*%wres_mu) -
+    grad <- c(grad , t(A.mu)%*%wres_mu -
                 epsilon[istart:(iend/ncol(wres_mu))] * par[istart:iend])
   }
 
@@ -170,7 +170,7 @@ nb.loglik.regression.gradient <- function(par, Y,
   if (r$dim.par[2] >0) {
     istart <- r$start.par[2]
     iend <- r$start.par[2]+r$dim.par[2]-1
-    grad <- c(grad , colSums(t(B.mu)%*%wres_mu) -
+    grad <- c(grad , t(B.mu)%*%wres_mu -
                 epsilon[istart:(iend/ncol(wres_mu))]*par[istart:iend])
   }
 

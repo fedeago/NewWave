@@ -154,7 +154,7 @@ setMethod("nbFit", "matrix",
     }
 
     orthog <- (nFactors(m)>0)
-
+    
     # Optimize value
 
     info <- optimization(cluster = cl, children = children, model = m, max_iter = maxiter_optimize,
