@@ -79,21 +79,34 @@ nb.regression.parseModel <- function(par, A.mu, B.mu, C.mu) {
   j <- ncol(A.mu)
   k <- ncol(C.mu)
   
-  if (j>0) {
-    logMu <- logMu + A.mu %*% matrix(par[(i+1):(i+k*j)],ncol=k)
-    dim.par[1] <- k*j
-    start.par[1] <- i+1
-    i <- i+k*j
+  if(nrow(C.mu) == nrow(Y_sh)){
+    if (j>0) {
+      logMu <- logMu + A.mu %*% matrix(par[(i+1):(i+k*j)],ncol=k)
+      dim.par[1] <- k*j
+      start.par[1] <- i+1
+      i <- i+k*j
+    }
+  }  else {
+    
+    param <- matrix(par,ncol=k)
+    
+    if (j>0) {
+      alpha_mu <- param[c((i+1):(i+j)),,drop=F]
+      logMu <- logMu + A.mu %*% alpha_mu
+      dim.par[1] <- k*j
+      start.par[1] <- i+1
+      i <- i+j
+    }
+    
+    
+    j <- ncol(B.mu)
+    if (j>0) {
+      W_mu <- param[c((i+1):(i+j)),,drop=F]
+      logMu <- logMu + B.mu %*% W_mu
+      dim.par[2] <- k*j
+      start.par[2] <- i+1
+    }
   }
-
-
-  j <- ncol(B.mu)
-  if (j>0) {
-    logMu <- logMu + B.mu %*% matrix(par[(i+1):(i+k*j)], nrow = j)
-    dim.par[2] <- k*j
-    start.par[2] <- i+1
-  }
-
   return(list(logMu=logMu, dim.par=dim.par,
               start.par=start.par))
 }
@@ -261,7 +274,7 @@ optimr <- function(k, num_gene, cross_batch, multi_obs) {
     }
     
     if(multi_obs > 1){
-      intervall <- split(x = intervall, f = ceiling(seq_along(intervall)/multi_obs))[[1]]
+      intervall <- split(x = intervall, f = ceiling(seq_along(intervall)/multi_obs))
     }
     
     for (j in intervall){
@@ -271,8 +284,8 @@ optimr <- function(k, num_gene, cross_batch, multi_obs) {
         W_sh[cells,,drop=F], V_sh[j,,drop=F], gamma_sh[,cells, drop=F], zeta_sh[j],
         length(cells), epsilonright)
 
-      beta_sh[,j] <- out[1:nrow(beta_sh)]
-      alpha_sh[,j] <-  out[(nrow(beta_sh)+1):(nrow(beta_sh)+nrow(alpha_sh))]
+      beta_sh[,j] <- multi_observation_split_params(out, eq = "right", length(j))$beta
+      alpha_sh[,j] <-  multi_observation_split_params(out, eq = "right", length(j))$alpha
 
 
   }
@@ -330,11 +343,11 @@ optimright_fun_nb <- function(beta, alpha, Y, X, W,
                               V, gamma, zeta, n, epsilonright) {
   optim( fn=nb.loglik.regression,
          gr=nb.loglik.regression.gradient,
-         par=c(beta, alpha),
+         par=c(rbind(beta, alpha)),
          Y=Y,
          A.mu=cbind(X, W),
          C.mu=t(V %*% gamma),
-         C.theta=matrix(zeta, nrow = n, ncol = ncol(t(V %*% gamma))),
+         C.theta=matrix(zeta, nrow = n, ncol = ncol(t(V %*% gamma)), byrow =  T),
          epsilon=epsilonright,
          control=list(fnscale = -1,trace=0),
          method="BFGS")$par
@@ -363,7 +376,7 @@ optiml <- function(k, num_cell, cross_batch, multi_obs){
     }
     
     if(multi_obs > 1){
-        intervall <- split(x = intervall, f = ceiling(seq_along(intervall)/multiobs))[[1]]
+        intervall <- split(x = intervall, f = ceiling(seq_along(intervall)/multi_obs))
       
     }
     for (i in intervall){
@@ -372,8 +385,8 @@ optiml <- function(k, num_cell, cross_batch, multi_obs){
                               X_sh[i,,drop=F], beta_sh, zeta_sh, epsilonleft)
       
       
-      gamma_sh[,i] <- out[1:nrow(gamma_sh)]
-      W_sh[i,] <- matrix(out[(nrow(gamma_sh)+1):(nrow(gamma_sh)+ncol(W_sh))], ncol = nrow(alpha_sh), byrow = T)
+      gamma_sh[,i] <-  multi_observation_split_params(out, eq = "left", length(i))$gamma
+      W_sh[i,] <- t(multi_observation_split_params(out, eq = "left", length(i))$W)
       
       
     }
@@ -429,12 +442,12 @@ optimleft_fun_nb <- function(gamma, W, Y, V, alpha,
                              X, beta, zeta, epsilonleft) {
   optim( fn=nb.loglik.regression,
          gr=nb.loglik.regression.gradient,
-         par=c(gamma, t(W)),
+         par=c(rbind(gamma, t(W))),
          Y=t(Y),
          A.mu=V,
          B.mu=t(alpha),
          C.mu=t(X%*%beta),
-         C.theta=zeta,
+         C.theta=matrix(zeta, nrow = ncol(Y_sh),ncol = ncol(t(X%*%beta))),
          epsilon=epsilonleft,
          control=list(fnscale = -1,trace=0),
          method="BFGS")$par
@@ -462,23 +475,27 @@ split_params <- function(merged, eq = NA) {
   }
 }
 
-multi_observation_split_params <- function(merged, eq = NA, observation_number) {
+multi_observation_split_params <- function(merged, eq = NA, num_obs) {
+  
   
   if(eq == "right"){
+    param <- matrix(merged, ncol = num_obs)
     beta_num <- nrow(beta_sh)
     alpha_num <- nrow(alpha_sh)
     
     list(
-      beta = merged[seq.int(from = 1, length.out = beta_num)],
-      alpha = merged[seq.int(from = beta_num+1, length.out = alpha_num)]
+      beta = param[c(1:beta_num),],
+      alpha = param[c((beta_num+1):(beta_num+alpha_num)),]
     )
   } else {
+    param <- matrix(merged, ncol = num_obs)
     gamma_num <- nrow(gamma_sh)
     W_num <- ncol(W_sh)
     
     list(
-      gamma = merged[seq.int(from = 1, length.out = gamma_num)],
-      W = merged[seq.int(from = gamma_num+1, length.out = W_num)]
+      
+      gamma = param[c(1:gamma_num),],
+      W = param[c((1+gamma_num):(gamma_num+W_num)),]
     )
   }
 }

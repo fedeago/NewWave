@@ -440,7 +440,7 @@ optimization <- function(cluster, children = 1, model ,
     message("after orthogonalization = ",  l_pen)
     }
 
-
+    
     ptm <- proc.time()
     
     if(mode == "matrix"){
