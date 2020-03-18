@@ -79,34 +79,20 @@ nb.regression.parseModel <- function(par, A.mu, B.mu, C.mu) {
   j <- ncol(A.mu)
   k <- ncol(C.mu)
   
-  if(nrow(C.mu) == nrow(Y_sh)){
-    if (j>0) {
+  if (j>0) {
       logMu <- logMu + A.mu %*% matrix(par[(i+1):(i+k*j)],ncol=k)
       dim.par[1] <- k*j
       start.par[1] <- i+1
       i <- i+k*j
     }
-  }  else {
     
-    param <- matrix(par,ncol=k)
-    
-    if (j>0) {
-      alpha_mu <- param[c((i+1):(i+j)),,drop=F]
-      logMu <- logMu + A.mu %*% alpha_mu
-      dim.par[1] <- k*j
-      start.par[1] <- i+1
-      i <- i+j
-    }
-    
-    
-    j <- ncol(B.mu)
-    if (j>0) {
-      W_mu <- param[c((i+1):(i+j)),,drop=F]
-      logMu <- logMu + B.mu %*% W_mu
+  j <- ncol(B.mu)
+  if (j>0) {
+      logMu <- logMu + B.mu %*% matrix(par[(i+1):(i+k*j)],ncol=k, byrow = T)
       dim.par[2] <- k*j
       start.par[2] <- i+1
-    }
   }
+  
   return(list(logMu=logMu, dim.par=dim.par,
               start.par=start.par))
 }
@@ -151,7 +137,6 @@ nb.loglik.regression.gradient <- function(par, Y,
   
   theta <- exp(C.theta)
   mu_temp <- exp(r$logMu)
-  n <- length(Y)
 
   # Check what we need to compute,
   # depending on the variables over which we optimize
@@ -386,7 +371,7 @@ optiml <- function(k, num_cell, cross_batch, multi_obs){
       
       
       gamma_sh[,i] <-  multi_observation_split_params(out, eq = "left", length(i))$gamma
-      W_sh[i,] <- t(multi_observation_split_params(out, eq = "left", length(i))$W)
+      W_sh[i,] <- multi_observation_split_params(out, eq = "left", length(i))$W
       
       
     }
@@ -442,7 +427,7 @@ optimleft_fun_nb <- function(gamma, W, Y, V, alpha,
                              X, beta, zeta, epsilonleft) {
   optim( fn=nb.loglik.regression,
          gr=nb.loglik.regression.gradient,
-         par=c(rbind(gamma, t(W))),
+         par=c(gamma, t(W)),
          Y=t(Y),
          A.mu=V,
          B.mu=t(alpha),
@@ -488,14 +473,14 @@ multi_observation_split_params <- function(merged, eq = NA, num_obs) {
       alpha = param[c((beta_num+1):(beta_num+alpha_num)),]
     )
   } else {
-    param <- matrix(merged, ncol = num_obs)
+    
     gamma_num <- nrow(gamma_sh)
     W_num <- ncol(W_sh)
     
     list(
       
-      gamma = param[c(1:gamma_num),],
-      W = param[c((1+gamma_num):(gamma_num+W_num)),]
+      gamma = matrix(merged[seq.int(from = 1, length.out = num_obs*gamma_num)],ncol = num_obs),
+      W = matrix(merged[seq.int(from=1+num_obs*gamma_num, length.out = W_num*num_obs)], nrow = num_obs,byrow=T)
     )
   }
 }
