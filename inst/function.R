@@ -88,7 +88,7 @@ nb.regression.parseModel <- function(par, A.mu, B.mu, C.mu) {
     
   j <- ncol(B.mu)
   if (j>0) {
-      logMu <- logMu + B.mu %*% matrix(par[(i+1):(i+k*j)],ncol=k, byrow = T)
+      logMu <- logMu + B.mu %*% matrix(par[(i+1):(i+k*j)],ncol=k)
       dim.par[2] <- k*j
       start.par[2] <- i+1
   }
@@ -169,7 +169,7 @@ nb.loglik.regression.gradient <- function(par, Y,
     istart <- r$start.par[2]
     iend <- r$start.par[2]+r$dim.par[2]-1
     grad <- c(grad , t(B.mu)%*%wres_mu -
-                epsilon[istart:(iend/ncol(wres_mu))]*par[istart:iend])
+                epsilon[((istart-1)/ncol(wres_mu) +1):(iend/ncol(wres_mu))]*par[istart:iend])
   }
 
   grad

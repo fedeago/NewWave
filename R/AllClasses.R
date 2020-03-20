@@ -1,4 +1,4 @@
-#' Class ZinbModel
+#' Class nbModel
 #'
 #' Objects of this class store all the values needed to work with a
 #' negative binomial model, as described in the vignette.
@@ -31,10 +31,10 @@
 #'   appropriate dimensions: in particular, \code{X}, \code{O}
 #'   and \code{W} need to have \code{n} rows, \code{V} needs to have \code{J}
 #'   rows, \code{zeta} must be of length \code{J}.
-#' @name ZinbModel-class
+#' @name nbModel-class
 #' @import methods
-#' @exportClass ZinbModel
-#' @aliases ZinbModel
+#' @exportClass nbModel
+#' @aliases nbModel
 #'
 #' @return \code{nSamples} returns the number of samples; \code{nFeatures}
 #' returns the number of features; \code{nFactors} returns the number of latent
