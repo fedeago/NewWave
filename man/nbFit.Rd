@@ -68,21 +68,43 @@ per row. If missing, V will contain only an intercept. If Y is a
 SummarizedExperiment object, V can be a formula using the variables in the
 rowData slot of Y.}
 
-\item{K}{integer. Number of latent factors..}
+\item{K}{integer. Number of latent factors, by default equal to two.}
 
 \item{which_assay}{numeric or character. Which assay of Y to use (only if Y
 is a SummarizedExperiment).}
 
+\item{commondispersion}{logical. If FALSE genewise dispersion parameter is 
+estimated.}
+
 \item{verbose}{Print helpful messages.}
 
-\item{nb.repeat.initialize}{Number of iterations for the initialization of
-beta and gamma.}
+\item{maxiter_optimize}{maximum number of iterations for the optimization
+step (default 100).}
 
-\item{maxiter.optimize}{maximum number of iterations for the optimization
-step (default 25).}
-
-\item{stop.epsilon.optimize}{stopping criterion in the optimization step,
+\item{stop_epsilon}{stopping criterion in the optimization step,
 when the relative gain in likelihood is below epsilon (default 0.0001).}
+
+\item{children}{Number of threads to use for computation.}
+
+\item{random_init}{logical, if TRUE no initialization component is performed.}
+
+\item{random_start}{logical, if TRUE starting values for parameter are sampled
+by a normal distribuitions.}
+
+\item{n_gene_disp}{gene batch dimension in dispersion parameter optimization,
+by default all genes are used.}
+
+\item{n_cell_par}{cell batch dimension in the left part optimization, 
+by default all cell are used.}
+
+\item{n_gene_par}{gene batch dimension in the right part optimization, 
+by default all genes are used.}
+
+\item{cross_batch}{logical, if TRUE during the right part optimization 
+only a subset of cell are used for optimization and in the left optimization
+only a subset of genes.}
+
+\item{multi_obs}{numeric, number of parameters estimated simoultaneously.}
 }
 \value{
 An object of class \code{nbModel} that has been fitted by penalized

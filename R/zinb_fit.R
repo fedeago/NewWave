@@ -87,14 +87,28 @@ setMethod("nbFit", "SummarizedExperiment",
 #'   per row. If missing, V will contain only an intercept. If Y is a
 #'   SummarizedExperiment object, V can be a formula using the variables in the
 #'   rowData slot of Y.
-#' @param K integer. Number of latent factors..
+#' @param K integer. Number of latent factors, by default equal to two.
+#' @param commondispersion logical. If FALSE genewise dispersion parameter is 
+#' estimated.
 #' @param verbose Print helpful messages.
-#' @param nb.repeat.initialize Number of iterations for the initialization of
-#'   beta and gamma.
-#' @param maxiter.optimize maximum number of iterations for the optimization
-#'   step (default 25).
-#' @param stop.epsilon.optimize stopping criterion in the optimization step,
+#' @param maxiter_optimize maximum number of iterations for the optimization
+#'   step (default 100).
+#' @param stop_epsilon stopping criterion in the optimization step,
 #'   when the relative gain in likelihood is below epsilon (default 0.0001).
+#' @param children Number of threads to use for computation.
+#' @param random_start logical, if TRUE starting values for parameter are sampled
+#'  by a normal distribuitions.
+#' @param random_init logical, if TRUE no initialization component is performed.
+#' @param n_gene_disp gene batch dimension in dispersion parameter optimization,
+#' by default all genes are used.
+#' @param n_cell_par cell batch dimension in the left part optimization, 
+#' by default all cell are used.
+#' @param n_gene_par gene batch dimension in the right part optimization, 
+#' by default all genes are used.
+#' @param cross_batch logical, if TRUE during the right part optimization 
+#' only a subset of cell are used for optimization and in the left optimization
+#' only a subset of genes.
+#' @param multi_obs numeric, number of parameters estimated simoultaneously.
 #'
 #' @details By default, i.e., if no arguments other than \code{Y} are passed,
 #'   the model is fitted with an intercept for the regression across-samples and
