@@ -299,7 +299,7 @@ setMethod("getTheta", "nbModel",
 #'   \code{beta}.
 setMethod("getEpsilon_beta", "nbModel",
           function(object) {
-              e <- rep(object@epsilon_beta, ncol(X))
+              e <- rep(object@epsilon_beta, ncol(object@X))
               if (object@X_intercept) {
                   e[1] <- 0
               }

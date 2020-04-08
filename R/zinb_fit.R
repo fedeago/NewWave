@@ -70,7 +70,10 @@ setMethod("nbFit", "SummarizedExperiment",
                            random_init = random_init, random_start = random_start,
                            n_gene_disp = n_gene_disp , n_cell_par = n_cell_par,
                            n_gene_par = n_gene_par,cross_batch=cross_batch)
-
+              
+              objs <- ls(pos = ".GlobalEnv")
+              rm(list = objs[grep("_sh", objs)], pos = ".GlobalEnv")
+               
               return(res)
 })
 
@@ -359,11 +362,11 @@ optimization <- function(cluster, children = 1, model ,
   total.lik=rep(NA,max_iter)
   iter <- 0
   
-  mu <<- share(exp(getX(model) %*% beta_sh + t(getV(model) %*% gamma_sh) +
+  mu_sh <<- share(exp(getX(model) %*% beta_sh + t(getV(model) %*% gamma_sh) +
                      W_sh %*% alpha_sh))
-  clusterExport(cl = cluster, "mu",
+  clusterExport(cl = cluster, "mu_sh",
                 envir = environment())
-  total.lik[1] <- ll_calc(mu = mu, model  = model, Y_sh = as.matrix(Y_sh), z = zeta_sh,
+  total.lik[1] <- ll_calc(mu = mu_sh, model  = model, Y_sh = as.matrix(Y_sh), z = zeta_sh,
                           alpha_sh, beta_sh, gamma_sh, W_sh)
   
   for (iter in seq.int(max_iter)){
@@ -372,9 +375,9 @@ optimization <- function(cluster, children = 1, model ,
 
     
     if(iter > 1){
-      mu[] <- share(exp(getX(model) %*% beta_sh + t(getV(model) %*% gamma_sh) +
-                          W_sh %*% alpha_sh))
-      total.lik[iter] <- ll_calc(mu = mu, model  = model, Y_sh = as.matrix(Y_sh), z = zeta_sh,
+      mu_sh[] <- exp(getX(model) %*% beta_sh + t(getV(model) %*% gamma_sh) +
+                          W_sh %*% alpha_sh)
+      total.lik[iter] <- ll_calc(mu = mu_sh, model  = model, Y_sh = as.matrix(Y_sh), z = zeta_sh,
                                  alpha_sh, beta_sh, gamma_sh, W_sh)
       if(abs((total.lik[iter]-total.lik[iter-1]) /
              total.lik[iter-1])<stop_epsilon)
@@ -386,7 +389,7 @@ optimization <- function(cluster, children = 1, model ,
     message("penalized log-likelihood = ",  total.lik[iter])
     }
 
-    optimd(ncol(Y_sh), mu = mu, cluster = cluster,
+    optimd(ncol(Y_sh), mu = mu_sh, cluster = cluster,
            children = children,commondispersion = commondispersion,
            num_gene = n_gene_disp, iter = iter)
 
@@ -394,7 +397,7 @@ optimization <- function(cluster, children = 1, model ,
     cat("Time of dispersion optimization\n")
     print(proc.time()-ptm)
 
-    l_pen <- ll_calc(mu = mu, model  = model, Y_sh = Y_sh, z = zeta_sh,
+    l_pen <- ll_calc(mu = mu_sh, model  = model, Y_sh = Y_sh, z = zeta_sh,
                      alpha_sh, beta_sh, gamma_sh, W_sh)
     message("after optimize dispersion = ",  l_pen)
     }
