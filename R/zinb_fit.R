@@ -285,15 +285,10 @@ setup <- function(cluster, model, random_start = F, children,
     gamma_sh <<- share(model@gamma, copyOnWrite=FALSE)
     zeta_sh <<- share(model@zeta, copyOnWrite=FALSE)
   } else {
-    set.seed(1)
     beta_sh <<- share(matrix(rnorm(ncol(X_sh)*ncol(Y_sh)), nrow = ncol(X_sh)), copyOnWrite=FALSE)
-    set.seed(2)
     alpha_sh <<- share(matrix(rnorm(nFactors(model)*ncol(Y_sh)), nrow = nFactors(model)), copyOnWrite=FALSE)
-    set.seed(3)
     W_sh <<- share(matrix(rnorm(nrow(Y_sh)*nFactors(model)), nrow = nrow(Y_sh)), copyOnWrite=FALSE)
-    set.seed(4)
     gamma_sh <<- share(matrix(rnorm(nrow(Y_sh)*ncol(V_sh)), nrow = ncol(V_sh)), copyOnWrite=FALSE)
-    set.seed(5)
     zeta_sh <<- share(rep(rnorm(1), length = ncol(Y_sh)), copyOnWrite=FALSE)
   }
   epsilon_gamma <- getEpsilon_gamma(model)
