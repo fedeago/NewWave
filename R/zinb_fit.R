@@ -253,7 +253,7 @@ setup <- function(cluster, model, random_start = F, children,
                   random_init = F, verbose, Y, mode) {
 
   ptm <- proc.time()
-  
+  print("init")
   
   if (mode == "matrix"){
     Y_sh <<- share(Y)
@@ -262,9 +262,10 @@ setup <- function(cluster, model, random_start = F, children,
     Y_sh <<- Y
     L_sh <<- log1p(Y_sh)
   }
-  
+  print("y and L")
   X_sh <<- share(model@X)
   V_sh <<- share(model@V)
+  print("X and V")
   if (!random_start){
     beta_sh <<- share(model@beta, copyOnWrite=FALSE)
     alpha_sh <<- share(model@alpha, copyOnWrite=FALSE)
@@ -278,6 +279,7 @@ setup <- function(cluster, model, random_start = F, children,
     gamma_sh <<- share(matrix(rnorm(nrow(Y_sh)*ncol(V_sh)), nrow = ncol(V_sh)), copyOnWrite=FALSE)
     zeta_sh <<- share(rep(rnorm(1), length = ncol(Y_sh)), copyOnWrite=FALSE)
   }
+  print("other")
   epsilon_gamma <- getEpsilon_gamma(model)
   epsilon_beta <- getEpsilon_beta(model)
   epsilonright <- c(getEpsilon_beta(model), getEpsilon_alpha(model))
