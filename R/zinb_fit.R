@@ -60,7 +60,9 @@ setMethod("nbFit", "SummarizedExperiment",
                       })
                   }
               }
-
+              
+              on.exit(remove_shared,  add = TRUE)
+              
               # Apply nbFit on the assay of SummarizedExperiment
               res <- nbFit(Y = dataY, X = X, V = V, K = K,
                            commondispersion = commondispersion, 
@@ -72,6 +74,8 @@ setMethod("nbFit", "SummarizedExperiment",
                            n_gene_par = n_gene_par, cross_batch = cross_batch,
                            multi_obs = multi_obs)
 
+              
+              
               return(res)
 })
 
@@ -277,11 +281,15 @@ setup <- function(cluster, model, random_start = F, children,
   
   X_sh <<- share(model@X)
   V_sh <<- share(model@V)
+  tX_sh <<- share(t(model@X))
+  tV_sh <<- share(t(model@V))
   
   if (!random_start){
     beta_sh <<- share(model@beta, copyOnWrite=FALSE)
     alpha_sh <<- share(model@alpha, copyOnWrite=FALSE)
+    talpha_sh <<- share(t(model@alpha), copyOnWrite=FALSE)
     W_sh <<- share(model@W, copyOnWrite=FALSE)
+    tW_sh <<- share(t(model@W), copyOnWrite=FALSE)
     gamma_sh <<- share(model@gamma, copyOnWrite=FALSE)
     zeta_sh <<- share(model@zeta, copyOnWrite=FALSE)
   } else {
@@ -303,7 +311,7 @@ setup <- function(cluster, model, random_start = F, children,
   #Cluster
   fun_path <- system.file("function.R", package = "NewWave")
   clusterExport(cluster, c("beta_sh" ,"alpha_sh","Y_sh","X_sh","W_sh","V_sh",
-                           "L_sh", "gamma_sh","zeta_sh", "epsilonright",
+                           "L_sh", "tX_sh", "tV_sh", "tW_sh", "talpha_sh", "gamma_sh","zeta_sh", "epsilonright",
                            "epsilonleft","children", "epsilon_gamma",
                            "epsilon_beta", "fun_path"),
                 envir = environment())
@@ -421,6 +429,7 @@ optimization <- function(cluster, children = 1, model ,
     ptm <- proc.time()
     
     if(mode == "matrix"){
+
     clusterApply(cluster, seq.int(children), "optimr",  num_gene = n_gene_par, cross_batch = cross_batch,
                  multi_obs = multi_obs)
     } else clusterApply(cluster, seq.int(children), "optimr_delayed",  num_gene = n_gene_par)
@@ -453,6 +462,7 @@ optimization <- function(cluster, children = 1, model ,
     ptm <- proc.time()
     
     if(mode == "matrix"){
+      
     clusterApply(cluster, seq.int(children), "optiml" , num_cell = n_cell_par, cross_batch = cross_batch,
                  multi_obs = multi_obs)
     } else clusterApply(cluster, seq.int(children), "optiml_delayed" , num_cell = n_cell_par)
@@ -589,4 +599,10 @@ nb.loglik.dispersion <- function(zeta, Y, mu){
 
 .is_wholenumber <- function(x, tol = .Machine$double.eps^0.5) {
   abs(x - round(x)) < tol
+}
+
+
+remove_shared <- function(){
+  objs <- ls(pos = ".GlobalEnv")
+  rm(list = objs[grep("_sh", objs)], pos = ".GlobalEnv")
 }

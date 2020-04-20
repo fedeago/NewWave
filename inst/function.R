@@ -69,7 +69,7 @@ nb.loglik <- function(Y, mu, theta) {
 
 
 
-nb.regression.parseModel <- function(par, A.mu, B.mu, C.mu) {
+nb.regression.parseModel <- function(par, A.mu, B.mu, C.mu, tA.mu,tB.mu) {
   
   logMu <- C.mu
   dim.par <- rep(0,2)
@@ -103,13 +103,17 @@ nb.loglik.regression <- function(par, Y,
                                  B.mu = matrix(nrow=length(Y), ncol=0),
                                  C.mu = matrix(0, nrow=length(Y), ncol=1),
                                  C.theta = matrix(0, nrow=length(Y), ncol=1),
-                                 epsilon=0) {
+                                 epsilon=0,
+                                 tA.mu = matrix(0, ncol=length(Y), nrow=0),
+                                 tB.mu = matrix(0, ncol=length(Y), nrow=0)) {
   
   # Parse the model
   r <- nb.regression.parseModel(par=par,
                                 A.mu = A.mu,
                                 B.mu = B.mu,
-                                C.mu = C.mu)
+                                C.mu = C.mu,
+                                tA.mu = tA.mu,
+                                tB.mu = tB.mu)
   
   # Call the log likelihood function
   z <- nb.loglik(Y, exp(r$logMu), exp(C.theta))
@@ -126,13 +130,17 @@ nb.loglik.regression.gradient <- function(par, Y,
                                                         ncol=1),
                                           C.theta = matrix(0, nrow=length(Y),
                                                            ncol=1),
-                                          epsilon=0) {
+                                          epsilon=0,
+                                          tA.mu = matrix(0, ncol=length(Y), nrow=0),
+                                          tB.mu = matrix(0, ncol=length(Y), nrow=0)) {
   
   # Parse the model
   r <- nb.regression.parseModel(par=par,
                                 A.mu = A.mu,
                                 B.mu = B.mu,
-                                C.mu = C.mu)
+                                C.mu = C.mu,
+                                tA.mu = tA.mu,
+                                tB.mu = tB.mu)
   
   
   theta <- exp(C.theta)
@@ -159,7 +167,7 @@ nb.loglik.regression.gradient <- function(par, Y,
   if (r$dim.par[1] >0) {
     istart <- r$start.par[1]
     iend <- r$start.par[1]+r$dim.par[1]-1
-    grad <- c(grad , t(A.mu)%*%wres_mu -
+    grad <- c(grad , tA.mu%*%wres_mu -
                 epsilon[istart:(iend/ncol(wres_mu))] * par[istart:iend])
   }
   
@@ -168,7 +176,7 @@ nb.loglik.regression.gradient <- function(par, Y,
   if (r$dim.par[2] >0) {
     istart <- r$start.par[2]
     iend <- r$start.par[2]+r$dim.par[2]-1
-    grad <- c(grad , t(B.mu)%*%wres_mu -
+    grad <- c(grad , tB.mu%*%wres_mu -
                 epsilon[((istart-1)/ncol(wres_mu) +1):(iend/ncol(wres_mu))]*par[istart:iend])
   }
   
@@ -267,11 +275,11 @@ optimr <- function(k, num_gene, cross_batch, multi_obs) {
     out <- optimright_fun_nb(
       beta_sh[,j,drop=F], alpha_sh[,j,drop=F], Y_sh[cells,j,drop=F], X_sh[cells,,drop=F],
       W_sh[cells,,drop=F], V_sh[j,,drop=F], gamma_sh[,cells, drop=F], zeta_sh[j],
-      length(cells), epsilonright)
+      length(cells), epsilonright,tX_sh[,cells,drop=F],tW_sh[,cells,drop=F])
     
     beta_sh[,j] <- multi_observation_split_params(out, eq = "right", length(j))$beta
     alpha_sh[,j] <-  multi_observation_split_params(out, eq = "right", length(j))$alpha
-    
+    talpha_sh[j,] <-  multi_observation_split_params(out, eq = "right", length(j))$alpha
     
   }
   
@@ -325,7 +333,7 @@ over_optr <- function(x, beta, alpha, X , W,
 
 
 optimright_fun_nb <- function(beta, alpha, Y, X, W,
-                              V, gamma, zeta, n, epsilonright) {
+                              V, gamma, zeta, n, epsilonright,tX,tW) {
   optim( fn=nb.loglik.regression,
          gr=nb.loglik.regression.gradient,
          par=c(rbind(beta, alpha)),
@@ -334,6 +342,7 @@ optimright_fun_nb <- function(beta, alpha, Y, X, W,
          C.mu=t(V %*% gamma),
          C.theta=matrix(zeta, nrow = n, ncol = ncol(t(V %*% gamma)), byrow =  T),
          epsilon=epsilonright,
+         tA.mu = rbind(tX,tW),
          control=list(fnscale = -1,trace=0),
          method="BFGS")$par
 }
@@ -367,12 +376,13 @@ optiml <- function(k, num_cell, cross_batch, multi_obs){
   for (i in intervall){
     out <- optimleft_fun_nb(gamma_sh[,i,drop=F],
                             W_sh[i,,drop=F], Y_sh[i,,drop=F] , V_sh, alpha_sh,
-                            X_sh[i,,drop=F], beta_sh, zeta_sh, epsilonleft)
+                            X_sh[i,,drop=F], beta_sh, zeta_sh, epsilonleft,tV_sh,
+                            talpha_sh)
     
     
     gamma_sh[,i] <-  multi_observation_split_params(out, eq = "left", length(i))$gamma
     W_sh[i,] <- multi_observation_split_params(out, eq = "left", length(i))$W
-    
+    tW_sh[,i] <- multi_observation_split_params(out, eq = "left", length(i))$W
     
   }
   
@@ -424,16 +434,18 @@ over_optl <- function(x, gamma,  W, V , alpha,
 
 
 optimleft_fun_nb <- function(gamma, W, Y, V, alpha,
-                             X, beta, zeta, epsilonleft) {
+                             X, beta, zeta, epsilonleft,tV,talpha) {
   optim( fn=nb.loglik.regression,
          gr=nb.loglik.regression.gradient,
          par=c(gamma, t(W)),
          Y=t(Y),
          A.mu=V,
-         B.mu=t(alpha),
+         B.mu=talpha,
          C.mu=t(X%*%beta),
          C.theta=matrix(zeta, nrow = ncol(Y_sh),ncol = ncol(t(X%*%beta))),
          epsilon=epsilonleft,
+         tA.mu = tV,
+         tB.mu = alpha,
          control=list(fnscale = -1,trace=0),
          method="BFGS")$par
 }
