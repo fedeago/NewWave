@@ -287,9 +287,7 @@ setup <- function(cluster, model, random_start = F, children,
   if (!random_start){
     beta_sh <<- share(model@beta, copyOnWrite=FALSE)
     alpha_sh <<- share(model@alpha, copyOnWrite=FALSE)
-    talpha_sh <<- share(t(model@alpha), copyOnWrite=FALSE)
     W_sh <<- share(model@W, copyOnWrite=FALSE)
-    tW_sh <<- share(t(model@W), copyOnWrite=FALSE)
     gamma_sh <<- share(model@gamma, copyOnWrite=FALSE)
     zeta_sh <<- share(model@zeta, copyOnWrite=FALSE)
   } else {
@@ -311,7 +309,7 @@ setup <- function(cluster, model, random_start = F, children,
   #Cluster
   fun_path <- system.file("function.R", package = "NewWave")
   clusterExport(cluster, c("beta_sh" ,"alpha_sh","Y_sh","X_sh","W_sh","V_sh",
-                           "L_sh", "tX_sh", "tV_sh", "tW_sh", "talpha_sh", "gamma_sh","zeta_sh", "epsilonright",
+                           "L_sh", "tX_sh", "tV_sh", "gamma_sh","zeta_sh", "epsilonright",
                            "epsilonleft","children", "epsilon_gamma",
                            "epsilon_beta", "fun_path"),
                 envir = environment())
@@ -386,8 +384,13 @@ optimization <- function(cluster, children = 1, model ,
   
   mu_sh <<- share(exp(getX(model) %*% beta_sh + t(getV(model) %*% gamma_sh) +
                     W_sh %*% alpha_sh))
-  clusterExport(cl = cluster, "mu_sh",
+  
+  tW_sh <<- share(t(W_sh), copyOnWrite=FALSE)
+  talpha_sh <<- share(t(alpha_sh), copyOnWrite=FALSE)
+  clusterExport(cl = cluster, c("mu_sh","tW_sh","talpha_sh"),
                 envir = environment())
+  
+  
   total.lik[1] <- ll_calc(mu = mu_sh, model  = model, Y_sh = as.matrix(Y_sh), z = zeta_sh,
                              alpha_sh, beta_sh, gamma_sh, W_sh)
   
@@ -448,6 +451,8 @@ optimization <- function(cluster, children = 1, model ,
       o <- orthogonalizeTraceNorm(W_sh, alpha_sh, model@epsilon_W, model@epsilon_alpha)
       W_sh[] <- o$U
       alpha_sh[] <- o$V
+      tW_sh[] <- t(o$U)
+      talpha_sh[] <- t(o$V)
     }
 
     if(verbose){
@@ -482,6 +487,8 @@ optimization <- function(cluster, children = 1, model ,
       o <- orthogonalizeTraceNorm(W_sh, alpha_sh, model@epsilon_W, model@epsilon_alpha)
       W_sh[] <- o$U
       alpha_sh[] <- o$V
+      tW_sh[] <- t(o$U)
+      talpha_sh[] <- t(o$V)
     }
 
     if(verbose){
