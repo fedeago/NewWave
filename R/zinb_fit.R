@@ -257,7 +257,10 @@ setup <- function(cluster, model, random_start = F, children,
   
   if (mode == "matrix"){
     Y_sh <<- share(Y)
+    if(!random_init){
     L_sh <<- share(log1p(Y_sh))
+    clusterExport(cluster,"L_sh",envir = environment())
+    }
   } else {
     Y_sh <<- Y
     L_sh <<- log1p(Y_sh)
@@ -291,8 +294,7 @@ setup <- function(cluster, model, random_start = F, children,
   
   #Cluster
   fun_path <- system.file("function.R", package = "NewWave")
-  clusterExport(cluster, c("beta_sh" ,"alpha_sh","Y_sh","X_sh","W_sh","V_sh",
-                           "L_sh","gamma_sh","zeta_sh", "epsilonright",
+  clusterExport(cluster, c("beta_sh" ,"alpha_sh","Y_sh","X_sh","W_sh","V_sh","gamma_sh","zeta_sh", "epsilonright",
                            "epsilonleft","children", "epsilon_gamma",
                            "epsilon_beta", "fun_path"),
                 envir = environment())
