@@ -277,9 +277,10 @@ optimr <- function(k, num_gene, cross_batch, multi_obs) {
       W_sh[cells,,drop=F], V_sh[j,,drop=F], gamma_sh[,cells, drop=F], zeta_sh[j],
       length(cells), epsilonright,tX_sh[,cells,drop=F],tW_sh[,cells,drop=F])
     
-    beta_sh[,j] <- multi_observation_split_params(out, eq = "right", length(j))$beta
-    alpha_sh[,j] <-  multi_observation_split_params(out, eq = "right", length(j))$alpha
-    talpha_sh[j,] <-  multi_observation_split_params(out, eq = "right", length(j))$alpha
+    split <- multi_observation_split_params(out, eq = "right", length(j))
+    beta_sh[,j] <- split$beta
+    alpha_sh[,j] <-  split$alpha
+    talpha_sh[j,] <-  split$alpha
     
   }
   
@@ -380,9 +381,10 @@ optiml <- function(k, num_cell, cross_batch, multi_obs){
                             talpha_sh)
     
     
-    gamma_sh[,i] <-  multi_observation_split_params(out, eq = "left", length(i))$gamma
-    W_sh[i,] <- multi_observation_split_params(out, eq = "left", length(i))$W
-    tW_sh[,i] <- multi_observation_split_params(out, eq = "left", length(i))$W
+    split <- multi_observation_split_params(out, eq = "left", length(i))
+    gamma_sh[,i] <-  split$gamma
+    W_sh[i,] <- split$W
+    tW_sh[,i] <- split$W
     
   }
   
