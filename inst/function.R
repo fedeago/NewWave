@@ -234,7 +234,7 @@ optim_genwise_dispersion <- function(k, num_gene, iter) {
                       gr=locgrad,
                       par=zeta_sh[j],
                       Y = Y_sh[,j],
-                      mu = mu[,j],
+                      mu = mu_sh[,j],
                       control=list(fnscale=-1,trace=0),
                       method="BFGS")
     zeta_sh[j] <- out[[j]]$par
