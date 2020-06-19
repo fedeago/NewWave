@@ -212,7 +212,7 @@ optim_genwise_dispersion <- function(k, num_gene, iter) {
   j1 <- (k-1) * step + 1
   j2 <- min(k * step, ncol(Y_sh))
 
-  if(is.null(num_gene)){
+  if(is.null(num_gene) || iter == 1){
 
     intervall <- seq.int(from = j1, to = j2)
 
@@ -247,13 +247,13 @@ optim_genwise_dispersion <- function(k, num_gene, iter) {
   
 }
 
-optimr <- function(k, num_gene,cross_batch=F) {
+optimr <- function(k, num_gene,cross_batch=F, iter) {
 
     step <- ceiling(ncol(Y_sh) / children)
     j1 <- (k-1) * step + 1
     j2 <- min(k * step, ncol(Y_sh))
 
-    if(is.null(num_gene)){
+    if(is.null(num_gene) || iter == 1){
 
       intervall <- seq.int(from = j1, to = j2)
 
@@ -346,13 +346,13 @@ optimright_fun_nb <- function(beta, alpha, Y, X, W,
          method="BFGS")$par
 }
 
-optiml <- function(k, num_cell,cross_batch=F){
+optiml <- function(k, num_cell,cross_batch=F, iter){
 
     step <- ceiling( nrow(Y_sh) / children)
     j1 <- (k-1) * step + 1
     j2 <- min(k * step, nrow(Y_sh))
 
-    if(is.null(num_cell)){
+    if(is.null(num_cell) || iter == 1 ){
 
       intervall <- seq.int(from = j1, to = j2)
 

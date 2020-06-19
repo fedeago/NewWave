@@ -405,7 +405,7 @@ optimization <- function(cluster, children = 1, model ,
     ptm <- proc.time()
 
     if(mode == "matrix"){
-      clusterApply(cluster, seq.int(children), "optimr",  num_gene = n_gene_par, cross_batch = cross_batch)
+      clusterApply(cluster, seq.int(children), "optimr",  num_gene = n_gene_par, cross_batch = cross_batch, iter = iter)
     } else clusterApply(cluster, seq.int(children), "optimr_delayed",  num_gene = n_gene_par)
 
 
@@ -437,7 +437,7 @@ optimization <- function(cluster, children = 1, model ,
     ptm <- proc.time()
 
     if(mode == "matrix"){
-    clusterApply(cluster, seq.int(children), "optiml" , num_cell = n_cell_par, cross_batch = cross_batch)
+    clusterApply(cluster, seq.int(children), "optiml" , num_cell = n_cell_par, cross_batch = cross_batch, iter = iter)
     } else clusterApply(cluster, seq.int(children), "optiml_delayed" , num_cell = n_cell_par)
 
     if(verbose){
@@ -483,11 +483,11 @@ optimization <- function(cluster, children = 1, model ,
 
 optimd <- function(J, mu, cluster, children, num_gene = NULL, commondispersion, iter){
 
-  if (commondispersion || iter > 1){
+  if (commondispersion || iter == 1){
 
     genes = seq.int(J)
 
-    if(!is.null(num_gene)){
+    if(!is.null(num_gene) && iter != 1){
 
       genes <- sample(x = J, size = num_gene)
       mu <- mu[,genes]
