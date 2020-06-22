@@ -1,0 +1,108 @@
+---
+title: "NewWave example"
+author: "Federico Agostinis"
+date: "22/6/2020"
+output: html_document
+---
+
+```{r}
+library(splatter)
+library(NewWave)
+library(scran)
+library(irlba)
+library(Rtsne)
+library(ggplot2)
+library(mclust)
+```
+
+I am going to show how to use NewWave with example data. To do this I am going to generate some data using splatter.
+
+```{r}
+params <- newSplatParams()
+N=1000
+set.seed(1234)
+data <- splatSimulateGroups(params,batchCells=c(N/2,N/2),
+                           group.prob = rep(0.1,10),
+                           de.prob = 0.2,
+                           verbose = FALSE) 
+```
+
+Now we have a dataset with 1000 cells and 10000 genes, I will use only 1000.
+NewWave takes as input raw data, not normalized.
+
+```{r}
+data <- data[sample(1:nrow(data),1000)]
+```
+
+As you can see there is a variable called batch in the colData section.
+
+```{r}
+colData(data)
+```
+
+**IMPORTANT:** For batch effecr removal the batch variable must be a factor
+
+```{r}
+data$Batch <- as.factor(data$Batch)
+```
+
+We also have a variable called Group that represent the cell type labels.
+
+We can see the how the cells are distributed between group and batch
+```{r}
+pca <- prcomp_irlba(t(counts(data)),n=10)
+plot_data <-data.frame(Rtsne(pca$x)$Y)
+```
+
+```{r}
+plot_data$batch <- data$Batch
+plot_data$group <- data$Group
+```
+
+```{r}
+ggplot(plot_data, aes(x=X1,y=X2,col=group, shape=batch))+ geom_point()
+```
+
+There is a clear batch effect between the cells.
+
+Let's try to correct it.
+
+# NewWave
+
+The default options use 1 core and no mini-batch approaches, it don't use the verbose option but I set it TRUE for example purpose(not suggested with big dataset).
+The default number of latent variables is 2, I will set it equal to 10.
+```{r}
+res <- nbwave(data,X = "~Batch", K=10, verbose = T)
+```
+In order to make it faster you can increase the number of cores:
+```{r}
+res <- nbwave(data,X = "~Batch", K=10, verbose = T, children=14)
+```
+
+Or use some mini-batch approaches:
+
+```{r}
+res <- nbwave(data,X = "~Batch", verbose = T,K=10, children=14, n_gene_disp = 100, n_gene_par = 100, n_cell_par = 100)
+```
+
+Now I can use the latent dimension rapresentation for  visualization purpose:
+
+```{r}
+latent <- reducedDim(res)
+
+tsne_latent <- data.frame(Rtsne(latent)$Y)
+tsne_latent$batch <- data$Batch
+tsne_latent$group <- data$Group
+```
+
+```{r}
+ggplot(tsne_latent, aes(x=X1,y=X2,col=group, shape=batch))+ geom_point()
+```
+
+or for clustering:
+
+```{r}
+cluster <- kmeans(latent, 10)
+
+adjustedRandIndex(cluster$cluster, data$Group)
+```

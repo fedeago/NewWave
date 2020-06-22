@@ -48,10 +48,10 @@ computeObservationalWeights <- function(model, x){
 
 
 
-#' Deviance residuals of the zero-inflated negative binomial model
+#' Deviance residuals of negative binomial model
 #'
 #' Given a matrix of counts, this function computes the
-#' deviance residuals under a zero-inflated negative binomial
+#' deviance residuals under a negative binomial
 #' (NB) model.
 #'
 #' @param model the nb model
