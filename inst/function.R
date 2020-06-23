@@ -56,6 +56,10 @@ beta_init <- function(k) {
   }
 }
 
+
+
+
+
 nb.loglik <- function(Y, mu, theta) {
 
   # log-probabilities of counts under the NB model
@@ -63,6 +67,8 @@ nb.loglik <- function(Y, mu, theta) {
   sum(logPnb)
 
 }
+
+
 
 
 

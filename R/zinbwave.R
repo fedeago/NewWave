@@ -15,8 +15,7 @@ nb.loglik.matrix <- function(model, x) {
   mu <- getMu(model)
   theta <- getTheta(model)
   theta_mat <- matrix(rep(theta, each = nrow(x)), ncol = ncol(x))
-  pi <- getPi(model)
-  lik <- pi * (x == 0) + (1 - pi) * dnbinom(x, size = theta_mat, mu = mu)
+  lik <- dnbinom(x, size = theta_mat, mu = mu)
   lik[lik == 0] <- min(lik[lik != 0]) #to avoid log lik to be infinite
   log(lik)
 }
@@ -79,7 +78,7 @@ CleanEnvir <- function() {
   rm(list =c(Y_sh,X_sh,V_sh,mu,beta_sh, alpha_sh, gamma_sh, W_sh, zeta_sh), pos = ".GlobalEnv")
 }
 
-#' @describeIn nbwave Y is a
+#' @describeIn newWave Y is a
 #'   \code{\link[SummarizedExperiment]{SummarizedExperiment}}.
 #' @export
 #'
@@ -93,7 +92,7 @@ CleanEnvir <- function() {
 #'   rowData slot of Y.
 #' @param K integer. Number of latent factors. Specify \code{K = 0} if only
 #'   computing observational weights.
-#' @param fitted_model a \code{\link{nbModel}} object.
+#' @param fitted_model a \code{\link{newmodel}} object.
 #' @param which_assay numeric or character. Which assay of Y to use. If missing,
 #'   if `assayNames(Y)` contains "counts" then that is used. Otherwise, the
 #'   first assay is used.
@@ -122,13 +121,13 @@ CleanEnvir <- function() {
 #' any downstream analysis (such as clustering, or differential expression), but
 #' only for visualization.
 #'
-#' @details If one has already fitted a model using \code{\link{nbModel}},
-#' the object containing such model can be used as input of \code{nbwave} to
+#' @details If one has already fitted a model using \code{\link{newmodel}},
+#' the object containing such model can be used as input of \code{newWave} to
 #' save the resulting W into a \code{SummarizedExperiment} and optionally
 #' compute residuals and normalized values, without the need for re-fitting the
 #' model.
 #'
-#' @details By default \code{nbwave} uses all genes to estimate \code{W}.
+#' @details By default \code{newWave} uses all genes to estimate \code{W}.
 #'   However, we recommend to use the top 1,000 most variable genes for this
 #'   step. In general, a user can specify any custom set of genes to be used to
 #'   estimate \code{W}, by specifying either a vector of gene names, or a single
@@ -146,8 +145,8 @@ CleanEnvir <- function() {
 #' se <- SummarizedExperiment(matrix(rpois(60, lambda=5), nrow=10, ncol=6),
 #'                            colData = data.frame(bio = gl(2, 3)))
 #'
-#' m <- nbwave(se, X="~bio")
-setMethod("nbwave", "SummarizedExperiment",
+#' m <- newWave(se, X="~bio")
+setMethod("newWave", "SummarizedExperiment",
           function(Y, X, V, K=2, which_assay,
                    commondispersion = TRUE, verbose=FALSE,
                    maxiter_optimize=100,
@@ -160,7 +159,7 @@ setMethod("nbwave", "SummarizedExperiment",
               
             
             
-              fitted_model <- nbFit(Y, X, V, K,
+              fitted_model <- newFit(Y, X, V, K,
                                       which_assay, commondispersion,
                                       verbose,
                                       maxiter_optimize, stop_epsilon,
@@ -175,7 +174,7 @@ setMethod("nbwave", "SummarizedExperiment",
               if (nFactors(fitted_model) > 0){
                 W <- getW(fitted_model)
                 colnames(W) <- paste0('W', seq_len(nFactors(fitted_model)))
-                reducedDim(out, "nbwave") <- W
+                reducedDim(out, "newWave") <- W
               }
               
               if(missing(which_assay)) {
@@ -198,7 +197,7 @@ setMethod("nbwave", "SummarizedExperiment",
                 (nrow(Y) != nFeatures(fitted_model)) & K > 0
               
               if(refit) {
-                fitted_model <- nbFit(Y, X, V, K, which_assay,
+                fitted_model <- newFit(Y, X, V, K, which_assay,
                                       commondispersion, verbose,
                                       maxiter_optimize,
                                       stop_epsilon, children,

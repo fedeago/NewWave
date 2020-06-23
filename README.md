@@ -15,7 +15,7 @@ install.packages("path/to/NewWave", repos = NULL, type="source")
 If you have your data stored in a SummarizedExperiment object with a batch effect variable called "batch" stored in colData then:
 
 ```
-nbwave(data,X = "~batch")
+newWave(data,X = "~batch")
 ```
 
 A more deteiled case of use is shown in the vignette.

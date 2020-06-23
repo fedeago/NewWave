@@ -1,4 +1,4 @@
-#' Class nbModel
+#' Class newmodel
 #'
 #' Objects of this class store all the values needed to work with a
 #' negative binomial model, as described in the vignette.
@@ -31,17 +31,17 @@
 #'   appropriate dimensions: in particular, \code{X}, \code{O}
 #'   and \code{W} need to have \code{n} rows, \code{V} needs to have \code{J}
 #'   rows, \code{zeta} must be of length \code{J}.
-#' @name nbModel-class
+#' @name newmodel-class
 #' @import methods
-#' @exportClass nbModel
-#' @aliases nbModel
+#' @exportClass newmodel
+#' @aliases newmodel
 #'
 #' @return \code{nSamples} returns the number of samples; \code{nFeatures}
 #' returns the number of features; \code{nFactors} returns the number of latent
 #' factors.
 #'
 setClass(
-    Class = "nbModel",
+    Class = "newmodel",
     slots = list(X = "matrix",
                  V = "matrix",
                  X_intercept = "logical",
@@ -58,7 +58,7 @@ setClass(
                  epsilon_zeta = "numeric")
 )
 
-setValidity("nbModel", function(object){
+setValidity("newmodel", function(object){
     n <- NROW(getX(object)) # number of samples
     J <- NROW(getV(object)) # number of genes
     K <- NCOL(getW(object)) # number of latent factors

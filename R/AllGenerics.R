@@ -15,12 +15,12 @@ setGeneric("nFactors", function(x) standardGeneric("nFactors"))
 #' @param object an object that describes a matrix of zero-inflated
 #'   distributions.
 #' @return the matrix of mean parameters
-#' @details Note that although the user interface of \code{\link{nbFit}}
+#' @details Note that although the user interface of \code{\link{newFit}}
 #' requires a J x n matrix, internally this is stored as a n x J matrix (i.e.,
 #' samples in row and genes in column). Hence the parameter matrix returned by
 #' this function is of n x J dimensions.
 #' @examples
-#' a <- nbModel(n=5, J=10)
+#' a <- newmodel(n=5, J=10)
 #' getMu(a)
 #' @export
 setGeneric("getMu", function(object) standardGeneric("getMu"))
@@ -32,12 +32,12 @@ setGeneric("getMu", function(object) standardGeneric("getMu"))
 #' @param object an object that describes a matrix of zero-inflated
 #'   distributions.
 #' @return the matrix of logarithms of mean parameters
-#' @details Note that although the user interface of \code{\link{nbFit}}
+#' @details Note that although the user interface of \code{\link{newFit}}
 #' requires a J x n matrix, internally this is stored as a n x J matrix (i.e.,
 #' samples in row and genes in column). Hence the parameter matrix returned by
 #' this function is of n x J dimensions.
 #' @examples
-#' a <- nbModel(n=5, J=10)
+#' a <- newmodel(n=5, J=10)
 #' getLogMu(a)
 #' @export
 setGeneric("getLogMu", function(object) standardGeneric("getLogMu"))
@@ -50,7 +50,7 @@ setGeneric("getLogMu", function(object) standardGeneric("getLogMu"))
 #'   distributions.
 #' @return the vector of dispersion parameters
 #' @examples
-#' a <- nbModel(n=5, J=10)
+#' a <- newmodel(n=5, J=10)
 #' getPhi(a)
 #' @export
 setGeneric("getPhi", function(object) standardGeneric("getPhi"))
@@ -64,7 +64,7 @@ setGeneric("getPhi", function(object) standardGeneric("getPhi"))
 #'   distributions.
 #' @return the vector of inverse dispersion parameters theta
 #' @examples
-#' a <- nbModel(n=5, J=10)
+#' a <- newmodel(n=5, J=10)
 #' getTheta(a)
 #' @export
 setGeneric("getTheta", function(object) standardGeneric("getTheta"))
@@ -78,7 +78,7 @@ setGeneric("getTheta", function(object) standardGeneric("getTheta"))
 #'   distributions.
 #' @return the vector \code{zeta} of log of inverse dispersion parameters
 #' @examples
-#' a <- nbModel(n=5, J=10)
+#' a <- newmodel(n=5, J=10)
 #' getZeta(a)
 #' @export
 setGeneric("getZeta", function(object) standardGeneric("getZeta"))
@@ -89,11 +89,11 @@ setGeneric("getZeta", function(object) standardGeneric("getZeta"))
 #' matrix \code{W} of low-dimensional matrix of inferred sample-level
 #' covariates.
 #'
-#' @param object a \code{\linkS4class{nbModel}} object, typically the result
-#'   of \code{\link{nbFit}}.
+#' @param object a \code{\linkS4class{newmodel}} object, typically the result
+#'   of \code{\link{newFit}}.
 #' @return the matrix \code{W} of inferred sample-level covariates.
 #' @examples
-#' a <- nbModel(n=5, J=10)
+#' a <- newmodel(n=5, J=10)
 #' getW(a)
 #' @export
 setGeneric("getW", function(object) standardGeneric("getW"))
@@ -116,10 +116,10 @@ setGeneric("getW", function(object) standardGeneric("getW"))
 #'   \item{zeroFraction}{the fraction of zeros.}
 #'   }
 #' @examples
-#' a <- nbModel(n=5, J=10)
-#' nbSim(a)
+#' a <- newmodel(n=5, J=10)
+#' newSim(a)
 #' @export
-setGeneric("nbSim",function(object, seed, ...) standardGeneric("nbSim"))
+setGeneric("newSim",function(object, seed, ...) standardGeneric("newSim"))
 
 #' Compute the log-likelihood of a model given some data
 #'
@@ -131,8 +131,8 @@ setGeneric("nbSim",function(object, seed, ...) standardGeneric("nbSim"))
 #' @param ... additional arguments.
 #' @return The log-likelihood of the model given the data.
 #' @examples
-#' m <- nbModel(n=5, J=10)
-#' x <- nbSim(m)
+#' m <- newmodel(n=5, J=10)
+#' x <- newSim(m)
 #' loglik(m, x$counts)
 #' @export
 setGeneric("loglik", function(model, x, ...) standardGeneric("loglik"))
@@ -145,7 +145,7 @@ setGeneric("loglik", function(model, x, ...) standardGeneric("loglik"))
 #'   parameters.
 #' @return The penalty of the model.
 #' @examples
-#' m <- nbModel(K=2)
+#' m <- newmodel(K=2)
 #' penalty(m)
 #' @export
 setGeneric("penalty", function(model) standardGeneric("penalty"))
@@ -156,11 +156,11 @@ setGeneric("penalty", function(model) standardGeneric("penalty"))
 #'
 #' @param Y The data (genes in rows, samples in columns).
 #' @param ... Additional parameters to describe the model, see
-#'   \code{\link{nbModel}}.
-#' @return An object of class \code{nbModel} that has been fitted by penalized
+#'   \code{\link{newmodel}}.
+#' @return An object of class \code{newmodel} that has been fitted by penalized
 #'   maximum likelihood on the data.
 #' @export
-setGeneric("nbFit", function(Y, ...) standardGeneric("nbFit"))
+setGeneric("newFit", function(Y, ...) standardGeneric("newFit"))
 
 #' Returns the sample-level design matrix for mu
 #'
@@ -172,7 +172,7 @@ setGeneric("nbFit", function(Y, ...) standardGeneric("nbFit"))
 #' @return the sample-level design matrix for mu
 #' @export
 #' @examples
-#' a <- nbModel(n=5, J=10)
+#' a <- newmodel(n=5, J=10)
 #' getX(a)
 setGeneric("getX", function(object, ...) standardGeneric("getX"))
 
@@ -187,7 +187,7 @@ setGeneric("getX", function(object, ...) standardGeneric("getX"))
 #' @return the gene-level design matrix for mu
 #' @export
 #' @examples
-#' a <- nbModel(n=5, J=10)
+#' a <- newmodel(n=5, J=10)
 #' getV(a)
 setGeneric("getV", function(object, ...) standardGeneric("getV"))
 
@@ -202,7 +202,7 @@ setGeneric("getV", function(object, ...) standardGeneric("getV"))
 #' @return the matrix of beta parameters
 #' @export
 #' @examples
-#' a <- nbModel(n=5, J=10)
+#' a <- newmodel(n=5, J=10)
 #' getBeta(a)
 setGeneric("getBeta", function(object, ...) standardGeneric("getBeta"))
 
@@ -217,7 +217,7 @@ setGeneric("getBeta", function(object, ...) standardGeneric("getBeta"))
 #' @return the matrix of gamma parameters
 #' @export
 #' @examples
-#' a <- nbModel(n=5, J=10)
+#' a <- newmodel(n=5, J=10)
 #' getGamma(a)
 setGeneric("getGamma", function(object, ...) standardGeneric("getGamma"))
 
@@ -232,7 +232,7 @@ setGeneric("getGamma", function(object, ...) standardGeneric("getGamma"))
 #' @return the matrix of alpha parameters
 #' @export
 #' @examples
-#' a <- nbModel(n=5, J=10)
+#' a <- newmodel(n=5, J=10)
 #' getAlpha(a)
 setGeneric("getAlpha", function(object, ...) standardGeneric("getAlpha"))
 
@@ -247,7 +247,7 @@ setGeneric("getAlpha", function(object, ...) standardGeneric("getAlpha"))
 #' @return the regularization parameters for \code{beta}.
 #' @export
 #' @examples
-#' a <- nbModel(n=5, J=10)
+#' a <- newmodel(n=5, J=10)
 #' getEpsilon_beta(a)
 setGeneric("getEpsilon_beta",
            function(object) standardGeneric("getEpsilon_beta"))
@@ -262,7 +262,7 @@ setGeneric("getEpsilon_beta",
 #' @return the regularization parameters for \code{gamma}.
 #' @export
 #' @examples
-#' a <- nbModel(n=5, J=10)
+#' a <- newmodel(n=5, J=10)
 #' getEpsilon_gamma(a)
 setGeneric("getEpsilon_gamma",
            function(object) standardGeneric("getEpsilon_gamma"))
@@ -279,7 +279,7 @@ setGeneric("getEpsilon_gamma",
 #' @return the regularization parameters for \code{W}.
 #' @export
 #' @examples
-#' a <- nbModel(n=5, J=10)
+#' a <- newmodel(n=5, J=10)
 #' getEpsilon_W(a)
 setGeneric("getEpsilon_W", function(object) standardGeneric("getEpsilon_W"))
 
@@ -293,7 +293,7 @@ setGeneric("getEpsilon_W", function(object) standardGeneric("getEpsilon_W"))
 #' @return the regularization parameters for \code{alpha}.
 #' @export
 #' @examples
-#' a <- nbModel(n=5, J=10)
+#' a <- newmodel(n=5, J=10)
 #' getEpsilon_alpha(a)
 setGeneric("getEpsilon_alpha",
            function(object) standardGeneric("getEpsilon_alpha"))
@@ -307,7 +307,7 @@ setGeneric("getEpsilon_alpha",
 #' @return the regularization parameters for \code{zeta}.
 #' @export
 #' @examples
-#' a <- nbModel(n=5, J=10)
+#' a <- newmodel(n=5, J=10)
 #' getEpsilon_zeta(a)
 setGeneric("getEpsilon_zeta",
            function(object) standardGeneric("getEpsilon_zeta"))
@@ -363,12 +363,12 @@ setGeneric(
 #' @param Y The data (genes in rows, samples in columns). Currently implemented
 #'   only for \code{SummarizedExperiment}.
 #' @param ... Additional parameters to describe the model, see
-#'   \code{\link{nbModel}}.
+#'   \code{\link{newmodel}}.
 #' @return An object of class \code{SingleCellExperiment}; the dimensionality
 #'   reduced matrix is stored in the \code{reducedDims} slot and optionally
 #'   normalized values and residuals are added in the list of assays.
 #' @export
-setGeneric("nbwave", function(Y, ...) standardGeneric("nbwave"))
+setGeneric("newWave", function(Y, ...) standardGeneric("newWave"))
 
 #' Compute the AIC of a model given some data
 #'
@@ -379,9 +379,9 @@ setGeneric("nbwave", function(Y, ...) standardGeneric("nbwave"))
 #' @return the AIC of the model.
 #' @export
 setGeneric(
-    name = "nbAIC",
+    name = "newAIC",
     def = function(model, x) {
-        standardGeneric("nbAIC")
+        standardGeneric("newAIC")
     }
 )
 
@@ -394,9 +394,9 @@ setGeneric(
 #' @return the BIC of the model.
 #' @export
 setGeneric(
-    name = "nbBIC",
+    name = "newBIC",
     def = function(model, x) {
-        standardGeneric("nbBIC")
+        standardGeneric("newBIC")
     }
 )
 

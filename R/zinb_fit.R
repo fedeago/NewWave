@@ -1,4 +1,4 @@
-#' @describeIn nbFit Y is a
+#' @describeIn newFit Y is a
 #'   \code{\link[SummarizedExperiment]{SummarizedExperiment}}.
 #' @export
 #'
@@ -12,8 +12,8 @@
 #' se <- SummarizedExperiment(matrix(rpois(60, lambda=5), nrow=10, ncol=6),
 #'                            colData = data.frame(bio = gl(2, 3)))
 #'
-#' m <- nbFit(se, X=model.matrix(~bio, data=colData(se)))
-setMethod("nbFit", "SummarizedExperiment",
+#' m <- newFit(se, X=model.matrix(~bio, data=colData(se)))
+setMethod("newFit", "SummarizedExperiment",
           function(Y, X, V, K = 2, which_assay,
                    commondispersion = T, verbose=FALSE,
                    maxiter_optimize = 100,
@@ -61,8 +61,8 @@ setMethod("nbFit", "SummarizedExperiment",
                   }
               }
 
-              # Apply nbFit on the assay of SummarizedExperiment
-              res <- nbFit(Y = dataY, X = X, V = V, K = K,
+              # Apply newFit on the assay of SummarizedExperiment
+              res <- newFit(Y = dataY, X = X, V = V, K = K,
                            commondispersion = commondispersion, 
                            verbose = verbose,
                            maxiter_optimize = maxiter_optimize,
@@ -78,7 +78,7 @@ setMethod("nbFit", "SummarizedExperiment",
 })
 
 
-#' @describeIn nbFit Y is a matrix of counts (genes in rows).
+#' @describeIn newFit Y is a matrix of counts (genes in rows).
 #' @export
 #'
 #' @param X The design matrix containing sample-level covariates, one sample per
@@ -110,11 +110,11 @@ setMethod("nbFit", "SummarizedExperiment",
 #' @import BiocParallel
 #' @examples
 #' bio <- gl(2, 3)
-#' m <- nbFit(matrix(rpois(60, lambda=5), nrow=10, ncol=6),
+#' m <- newFit(matrix(rpois(60, lambda=5), nrow=10, ncol=6),
 #'              X=model.matrix(~bio))
 
 
-setMethod("nbFit", "matrix",
+setMethod("newFit", "matrix",
           function(Y, X, V, K,
                    commondispersion, verbose,
                    maxiter_optimize,
@@ -133,8 +133,8 @@ setMethod("nbFit", "matrix",
     # Transpose Y: UI wants genes in rows, internals genes in columns!
     Y <- t(Y)
 
-    # Create a nbModel object
-    m <- nbModel(n=NROW(Y), J=NCOL(Y), K=K, X=X)
+    # Create a newmodel object
+    m <- newmodel(n=NROW(Y), J=NCOL(Y), K=K, X=X)
 
     cl <- makePSOCKcluster(children)
     on.exit(stopCluster(cl), add = TRUE)
@@ -169,7 +169,8 @@ setMethod("nbFit", "matrix",
 })
 
 
-setMethod("nbFit", "DelayedMatrix",
+
+setMethod("newFit", "DelayedMatrix",
           function(Y, X, V, K,
                    commondispersion, verbose,
                    nb_repeat, maxiter_optimize,
@@ -185,8 +186,8 @@ setMethod("nbFit", "DelayedMatrix",
             # Transpose Y: UI wants genes in rows, internals genes in columns!
             Y <- t(Y)
             
-            # Create a nbModel object
-            m <- nbModel(n=NROW(Y), J=NCOL(Y), K=K, X=X)
+            # Create a newmodel object
+            m <- newmodel(n=NROW(Y), J=NCOL(Y), K=K, X=X)
             
             cl <- makePSOCKcluster(children)
             on.exit(stopCluster(cl), add = TRUE)
@@ -214,16 +215,16 @@ setMethod("nbFit", "DelayedMatrix",
             return(info)
           })
             
-#' @describeIn nbFit Y is a sparse matrix of counts (genes in rows).
+#' @describeIn newFit Y is a sparse matrix of counts (genes in rows).
 #' @export
 #'
-#' @details Currently, if Y is a sparseMatrix, this calls the nbFit method on
+#' @details Currently, if Y is a sparseMatrix, this calls the newFit method on
 #'   as.matrix(Y)
 #'
 #' @importClassesFrom Matrix dgCMatrix
-setMethod("nbFit", "dgCMatrix",
+setMethod("newFit", "dgCMatrix",
           function(Y, ...) {
-            nbFit(as.matrix(Y), ...)
+            newFit(as.matrix(Y), ...)
           })
 
 
@@ -236,7 +237,7 @@ setMethod("nbFit", "dgCMatrix",
 #'
 #' It creates different shared object and exort them to the father
 #' and the child process.
-#' @param m The model of class nbModel
+#' @param m The model of class newmodel
 #' @param Y The matrix of counts.
 #' @param random_start The type of start.
 #' @param children Number of child process.
@@ -245,7 +246,7 @@ setMethod("nbFit", "dgCMatrix",
 #' bio <- gl(2, 3)
 #' time <- rnorm(6)
 #' gc <- rnorm(10)
-#' m <- nbModel(Y, X=model.matrix(~bio + time), V=model.matrix(~gc), K=1)
+#' m <- newmodel(Y, X=model.matrix(~bio + time), V=model.matrix(~gc), K=1)
 #' m <- nbInitialize(m, Y)
 #'
 
@@ -337,17 +338,17 @@ initialization <- function(cluster, children, model, verbose){
 #'
 #' The parameters of the model given as argument are optimized by penalized
 #' maximum likelihood on the count matrix given as argument.
-#' @param m The model of class nbModel
+#' @param m The model of class newmodel
 #' @param Y The matrix of counts.
 #' @param maxiter maximum number of iterations (default 25)
 #' @param stop.epsilon stopping criterion, when the relative gain in
 #'   likelihood is below epsilon (default 0.0001)
 #' @param verbose print information (default FALSE)
-#' @return An object of class nbModel similar to the one given as argument
+#' @return An object of class newmodel similar to the one given as argument
 #'   with modified parameters alpha, beta, gamma, W.
 #' @examples
 #' Y = matrix(10, 3, 5)
-#' m = nbModel(n=NROW(Y), J=NCOL(Y))
+#' m = newmodel(n=NROW(Y), J=NCOL(Y))
 #' m = nbInitialize(m, Y)
 #' m = nbOptimize(m, Y)
 #' @export
@@ -464,11 +465,7 @@ optimization <- function(cluster, children = 1, model ,
     message("after orthogonalization = ",  l_pen)
     }
 
-    # cat("Time one cycle of optimization\n")
-    # init.t <- proc.time()
-    # print(init.t-ptm)
-
-    m <- nbModel(X = model@X, V = model@V,
+    m <- newmodel(X = model@X, V = model@V,
                    W = W_sh, beta = beta_sh,
                    gamma = gamma_sh,
                    alpha = alpha_sh, zeta = zeta_sh,
@@ -482,57 +479,31 @@ optimization <- function(cluster, children = 1, model ,
 }
 
 optimd <- function(J, mu, cluster, children, num_gene = NULL, commondispersion, iter){
-
+  
   if (commondispersion || iter == 1){
-
+    
     genes = seq.int(J)
-
+    
     if(!is.null(num_gene) && iter != 1){
-
+      
       genes <- sample(x = J, size = num_gene)
       mu <- mu[,genes]
-
+      
     }
-
+    
     g=optimize(f=nb.loglik.dispersion, Y=as.matrix(Y_sh[,genes]), mu=mu,
                maximum=TRUE,
                interval=c(-50,50))
     
     zeta_sh[] <- rep(g$maximum,J)
-
+    
   } else {
-
+    
     clusterApply(cluster, seq.int(children), "optim_genwise_dispersion",num_gene = num_gene, iter = iter)
   }
-
+  
 }
 
-
-
-nb.loglik <- function(Y, mu, theta) {
-
-  # log-probabilities of counts under the NB model
-  logPnb <- suppressWarnings(dnbinom(Y, size = theta, mu = mu, log = TRUE))
-
-  sum(logPnb)
-
-}
-
-
-ll_calc <- function(mu, model, Y_sh, z, alpha , beta, gamma, W){
-
-  theta <- exp(z)
-
-  loglik <- nb.loglik(Y_sh, mu, rep(theta, rep(nrow(Y_sh),ncol(Y_sh))))
-
-  penalty <- sum(getEpsilon_alpha(model) * (alpha)^2)/2 +
-    sum(getEpsilon_beta(model) * (beta)^2)/2 +
-    sum(getEpsilon_gamma(model)*(gamma)^2)/2 +
-    sum(getEpsilon_W(model)*t(W)^2)/2 +
-    getEpsilon_zeta(model)*var(z)/2
-
-  loglik - penalty
-}
 
 orthogonalizeTraceNorm <- function(U, V, a=1, b=1) {
 
@@ -561,10 +532,35 @@ orthogonalizeTraceNorm <- function(U, V, a=1, b=1) {
   list(U=U2, V=V2)
 }
 
+
+nb.loglik <- function(Y, mu, theta) {
+  
+  # log-probabilities of counts under the NB model
+  logPnb <- suppressWarnings(dnbinom(Y, size = theta, mu = mu, log = TRUE))
+  sum(logPnb)
+  
+}
+
 nb.loglik.dispersion <- function(zeta, Y, mu){
 
   nb.loglik(Y, mu, exp(zeta))
 
+}
+
+
+ll_calc <- function(mu, model, Y_sh, z, alpha , beta, gamma, W){
+  
+  theta <- exp(z)
+  
+  loglik <- nb.loglik(Y_sh, mu, rep(theta, rep(nrow(Y_sh),ncol(Y_sh))))
+  
+  penalty <- sum(getEpsilon_alpha(model) * (alpha)^2)/2 +
+    sum(getEpsilon_beta(model) * (beta)^2)/2 +
+    sum(getEpsilon_gamma(model)*(gamma)^2)/2 +
+    sum(getEpsilon_W(model)*t(W)^2)/2 +
+    getEpsilon_zeta(model)*var(z)/2
+  
+  loglik - penalty
 }
 
 .is_wholenumber <- function(x, tol = .Machine$double.eps^0.5) {

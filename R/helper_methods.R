@@ -1,14 +1,4 @@
-#' Toy dataset to check the model
-#'
-#' @name toydata
-#' @aliases toydata
-#'
-#' @format A matrix of integers (counts) with 96 samples (rows) and 500 genes
-#'   (columns).
-NULL
-
-
-#' Initialize an object of class nbModel
+#' Initialize an object of class newmodel
 #' 
 #' @param X matrix. The design matrix containing sample-level covariates, one
 #'   sample per row.
@@ -37,9 +27,9 @@ NULL
 #' 
 #' 
 #' @details This is a wrapper around the new() function to create an
-#'   instance of class \code{nbModel}. Rarely, the user will need to create a
-#'   \code{nbModel} object from scratch, as tipically this is the result of
-#'   \code{\link{nbFit}}.
+#'   instance of class \code{newmodel}. Rarely, the user will need to create a
+#'   \code{newmodel} object from scratch, as tipically this is the result of
+#'   \code{\link{newFit}}.
 #' 
 #' @details If any of \code{X}, \code{V}, \code{W} matrices are passed,
 #'   \code{n}, \code{J}, and \code{K} are inferred. Alternatively, the user can
@@ -65,18 +55,18 @@ NULL
 #' 
 #' @details Although it is possible to create new instances of the class by
 #'   calling this function, this is not the most common way of creating
-#'   \code{nbModel} objects. The main use of the class is within the
-#'   \code{\link{nbFit}} function.
+#'   \code{newmodel} objects. The main use of the class is within the
+#'   \code{\link{newFit}} function.
 #' 
-#' @return an object of class \code{\linkS4class{nbModel}}.
+#' @return an object of class \code{\linkS4class{newmodel}}.
 #' 
 #' @examples
-#' a <- nbModel()
+#' a <- newmodel()
 #' nSamples(a)
 #' nFeatures(a)
 #' nFactors(a)
 
-nbModel <- function(X, V, W, beta,
+newmodel <- function(X, V, W, beta,
                       gamma,alpha, zeta, epsilon,
                       epsilon_beta, epsilon_gamma, epsilon_W, epsilon_alpha,
                       epsilon_zeta, n, J, K) {
@@ -173,7 +163,7 @@ nbModel <- function(X, V, W, beta,
         epsilon_zeta <- epsilon
     }
 
-    obj <- new(Class="nbModel",
+    obj <- new(Class="newmodel",
                X = X, V = V, X_intercept = X_intercept,
                V_intercept = V_intercept, W = W, beta = beta,
                gamma = gamma, alpha = alpha, zeta = zeta,
@@ -187,12 +177,12 @@ nbModel <- function(X, V, W, beta,
 }
 
 #' @export
-#' @describeIn nbModel show useful info on the object.
+#' @describeIn newmodel show useful info on the object.
 #'
-#' @param object an object of class \code{nbModel}.
-setMethod("show", "nbModel",
+#' @param object an object of class \code{newmodel}.
+setMethod("show", "newmodel",
           function(object) {
-              cat(paste0("Object of class nbModel.\n",
+              cat(paste0("Object of class newmodel.\n",
                          nSamples(object), " samples; ", nFeatures(object),
                          " genes.\n",
                          NCOL(getX(object)),
@@ -205,29 +195,29 @@ setMethod("show", "nbModel",
 
 
 ################################################################
-# Extract various informations and variables from a nb model #
+# Extract various informations and variables from a newmodel #
 ################################################################
 
 #' @export
-#' @describeIn nbModel returns the number of samples.
-#' @param x an object of class \code{nbModel}.
-setMethod("nSamples", "nbModel",
+#' @describeIn newmodel returns the number of samples.
+#' @param x an object of class \code{newmodel}.
+setMethod("nSamples", "newmodel",
           function(x) {
               return(NROW(x@X))
           }
 )
 
 #' @export
-#' @describeIn nbModel returns the number of features.
-setMethod("nFeatures", "nbModel",
+#' @describeIn newmodel returns the number of features.
+setMethod("nFeatures", "newmodel",
           function(x) {
               return(NROW(x@V))
           }
 )
 
 #' @export
-#' @describeIn nbModel returns the number of latent factors.
-setMethod("nFactors", "nbModel",
+#' @describeIn newmodel returns the number of latent factors.
+setMethod("nFactors", "newmodel",
           function(x) {
               return(NCOL(x@W))
           }
@@ -235,25 +225,25 @@ setMethod("nFactors", "nbModel",
 
 
 #' @export
-#' @describeIn nbModel returns the sample-level design matrix for mu.
-setMethod("getX", "nbModel",
+#' @describeIn newmodel returns the sample-level design matrix for mu.
+setMethod("getX", "newmodel",
           function(object) {
               return(object@X)
           }
 )
 
 #' @export
-#' @describeIn nbModel returns the gene-level design matrix for mu.
-setMethod("getV", "nbModel",
+#' @describeIn newmodel returns the gene-level design matrix for mu.
+setMethod("getV", "newmodel",
           function(object) {
               return(object@V)
           }
 )
 
 #' @export
-#' @describeIn nbModel returns the logarithm of the mean of the non-zero
+#' @describeIn newmodel returns the logarithm of the mean of the non-zero
 #'   component.
-setMethod("getLogMu", "nbModel",
+setMethod("getLogMu", "newmodel",
           function(object) {
               return(getX(object) %*% object@beta +
                          t(getV(object) %*% object@gamma) +
@@ -262,42 +252,42 @@ setMethod("getLogMu", "nbModel",
 )
 
 #' @export
-#' @describeIn nbModel returns the mean of the non-zero component.
-setMethod("getMu", "nbModel",
+#' @describeIn newmodel returns the mean of the non-zero component.
+setMethod("getMu", "newmodel",
     function(object) {
         return(exp(getLogMu(object)))
     }
 )
 
 #' @export
-#' @describeIn nbModel returns the log of the inverse of the dispersion
+#' @describeIn newmodel returns the log of the inverse of the dispersion
 #'   parameter.
-setMethod("getZeta", "nbModel",
+setMethod("getZeta", "newmodel",
           function(object) {
               return(object@zeta)
           }
 )
 
 #' @export
-#' @describeIn nbModel returns the dispersion parameter.
-setMethod("getPhi", "nbModel",
+#' @describeIn newmodel returns the dispersion parameter.
+setMethod("getPhi", "newmodel",
           function(object) {
               return(exp(-object@zeta))
           }
 )
 
 #' @export
-#' @describeIn nbModel returns the inverse of the dispersion parameter.
-setMethod("getTheta", "nbModel",
+#' @describeIn newmodel returns the inverse of the dispersion parameter.
+setMethod("getTheta", "newmodel",
           function(object) {
               return(exp(object@zeta))
           }
 )
 
 #' @export
-#' @describeIn nbModel returns the regularization parameters for
+#' @describeIn newmodel returns the regularization parameters for
 #'   \code{beta}.
-setMethod("getEpsilon_beta", "nbModel",
+setMethod("getEpsilon_beta", "newmodel",
           function(object) {
               e <- rep(object@epsilon_beta, ncol(object@X))
               if (object@X_intercept) {
@@ -308,9 +298,9 @@ setMethod("getEpsilon_beta", "nbModel",
 )
 
 #' @export
-#' @describeIn nbModel returns the regularization parameters for
+#' @describeIn newmodel returns the regularization parameters for
 #'   \code{gamma}.
-setMethod("getEpsilon_gamma", "nbModel",
+setMethod("getEpsilon_gamma", "newmodel",
           function(object) {
               e <- rep(object@epsilon_gamma, ncol(object@V))
               if (object@V_intercept) {
@@ -323,52 +313,52 @@ setMethod("getEpsilon_gamma", "nbModel",
 
 
 #' @export
-#' @describeIn nbModel returns the regularization parameters for
+#' @describeIn newmodel returns the regularization parameters for
 #'   \code{W}.
-setMethod("getEpsilon_W", "nbModel",
+setMethod("getEpsilon_W", "newmodel",
           function(object) {
               rep(object@epsilon_W, nFactors(object))
           }
 )
 
 #' @export
-#' @describeIn nbModel returns the regularization parameters for
+#' @describeIn newmodel returns the regularization parameters for
 #'   \code{alpha}.
-setMethod("getEpsilon_alpha", "nbModel",
+setMethod("getEpsilon_alpha", "newmodel",
           function(object) {
               rep(object@epsilon_alpha, nFactors(object))
           }
 )
 
 #' @export
-#' @describeIn nbModel returns the regularization parameters for
+#' @describeIn newmodel returns the regularization parameters for
 #'   \code{zeta}.
-setMethod("getEpsilon_zeta", "nbModel",
+setMethod("getEpsilon_zeta", "newmodel",
           function(object) {
               object@epsilon_zeta
           }
 )
 
 #' @export
-#' @describeIn nbModel returns the matrix W of inferred sample-level
+#' @describeIn newmodel returns the matrix W of inferred sample-level
 #'   covariates.
-setMethod("getW", "nbModel",
+setMethod("getW", "newmodel",
           function(object) {
               object@W
           }
 )
 
 #' @export
-#' @describeIn nbModel returns the matrix beta of inferred parameters.
-setMethod("getBeta", "nbModel",
+#' @describeIn newmodel returns the matrix beta of inferred parameters.
+setMethod("getBeta", "newmodel",
           function(object) {
               object@beta
           }
 )
 
 #' @export
-#' @describeIn nbModel returns the matrix gamma of inferred parameters.
-setMethod("getGamma", "nbModel",
+#' @describeIn newmodel returns the matrix gamma of inferred parameters.
+setMethod("getGamma", "newmodel",
           function(object) {
               object@gamma
           }
@@ -376,8 +366,8 @@ setMethod("getGamma", "nbModel",
 
 
 #' @export
-#' @describeIn nbModel returns the matrix alpha of inferred parameters.
-setMethod("getAlpha", "nbModel",
+#' @describeIn newmodel returns the matrix alpha of inferred parameters.
+setMethod("getAlpha", "newmodel",
           function(object) {
               object@alpha
           }
@@ -386,13 +376,12 @@ setMethod("getAlpha", "nbModel",
 
 #' @export
 #' @describeIn nParams returns the total number of parameters in the model.
-setMethod("nParams", "nbModel",
+setMethod("nParams", "newmodel",
           function(model) {
 
               X <- getX(model)
 
               V <- getV(model)
-              disp <- get
 
               n <- nSamples(model)
               J <- nFeatures(model)
@@ -412,11 +401,11 @@ setMethod("nParams", "nbModel",
 ########################
 
 #' @export
-#' @describeIn nbSim simulate from a nb distribution.
+#' @describeIn newSim simulate from a nb distribution.
 #'
 setMethod(
-    f="nbSim",
-    signature="nbModel",
+    f="newSim",
+    signature="newmodel",
     definition=function(object, seed) {
 
         if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
@@ -461,7 +450,7 @@ setMethod(
 #' @describeIn loglik return the log-likelihood of the nb model.
 setMethod(
     f="loglik",
-    signature=c("nbModel","matrix"),
+    signature=c("newmodel","matrix"),
     definition=function(model, x) {
         nb.loglik(x, getMu(model),
                     rep(getTheta(model)))
@@ -469,10 +458,10 @@ setMethod(
 )
 
 #' @export
-#' @describeIn nbAIC returns the AIC of the NB model.
+#' @describeIn newAIC returns the AIC of the NB model.
 setMethod(
-    f="nbAIC",
-    signature=c("nbModel","matrix"),
+    f="newAIC",
+    signature=c("newmodel","matrix"),
     definition=function(model, x) {
         if ((nSamples(model) != nrow(x))|(nFeatures(model) != ncol(x))) {
             stop("x and model should have the same dimensions!")
@@ -484,10 +473,10 @@ setMethod(
 )
 
 #' @export
-#' @describeIn nbBIC returns the BIC of the NB model.
+#' @describeIn newBIC returns the BIC of the NB model.
 setMethod(
-    f="nbBIC",
-    signature=c("nbModel","matrix"),
+    f="newBIC",
+    signature=c("newmodel","matrix"),
     definition=function(model, x) {
         n <- nSamples(model)
         if ((n != nrow(x))|(nFeatures(model) != ncol(x))) {
@@ -503,7 +492,7 @@ setMethod(
 #' @describeIn penalty return the penalization.
 setMethod(
     f="penalty",
-    signature="nbModel",
+    signature="newmodel",
     definition=function(model) {
         sum(getEpsilon_alpha(model)*(model@alpha)^2)/2 +
         sum(getEpsilon_beta(model)*(model@beta)^2)/2 +

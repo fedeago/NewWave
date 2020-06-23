@@ -31,6 +31,7 @@ Now we have a dataset with 1000 cells and 10000 genes, I will use only 1000.
 NewWave takes as input raw data, not normalized.
 
 ```{r}
+set.seed(12359)
 data <- data[sample(1:nrow(data),1000)]
 ```
 
@@ -72,7 +73,7 @@ Let's try to correct it.
 The default options use 1 core and no mini-batch approaches, it don't use the verbose option but I set it TRUE for example purpose(not suggested with big dataset).
 The default number of latent variables is 2, I will set it equal to 10.
 ```{r}
-res <- nbwave(data,X = "~Batch", K=10, verbose = T)
+res <- newWave(data,X = "~Batch", K=10, verbose = T)
 ```
 In order to make it faster you can increase the number of cores:
 ```{r}
