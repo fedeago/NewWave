@@ -77,13 +77,13 @@ res <- newWave(data,X = "~Batch", K=10, verbose = T)
 ```
 In order to make it faster you can increase the number of cores:
 ```{r}
-res <- nbwave(data,X = "~Batch", K=10, verbose = T, children=14)
+res <- newWave(data,X = "~Batch", K=10, verbose = T, children=14)
 ```
 
 Or use some mini-batch approaches:
 
 ```{r}
-res <- nbwave(data,X = "~Batch", verbose = T,K=10, children=14, n_gene_disp = 100, n_gene_par = 100, n_cell_par = 100)
+res <- newWave(data,X = "~Batch", verbose = T,K=10, children=14, n_gene_disp = 100, n_gene_par = 100, n_cell_par = 100)
 ```
 
 Now I can use the latent dimension rapresentation for  visualization purpose:
