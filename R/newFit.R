@@ -114,15 +114,14 @@ setMethod("newFit", "SummarizedExperiment",
 
 
 setMethod("newFit", "matrix",
-          function(Y, X, V, K,
-                   commondispersion, verbose,
-                   maxiter_optimize,
-                   stop_epsilon, children,
-                   random_init, random_start,
-                   n_gene_disp,
-                   n_cell_par, n_gene_par,
-                   cross_batch,
-                   ... ) {
+          function(Y, X, V, K = 2,
+                   commondispersion = T, verbose=FALSE,
+                   maxiter_optimize = 100,
+                   stop_epsilon=.0001, children = 1,
+                   random_init = FALSE, random_start = FALSE,
+                   n_gene_disp = NULL,
+                   n_cell_par = NULL, n_gene_par = NULL,
+                   cross_batch = F, ... ) {
 
     # Check that Y contains whole numbers
     if(!all(.is_wholenumber(Y))) {
@@ -131,7 +130,15 @@ setMethod("newFit", "matrix",
 
     # Transpose Y: UI wants genes in rows, internals genes in columns!
     Y <- t(Y)
-
+    
+    if(any(rowSums(Y) == 0)) {
+      stop("Sample ", which(rowSums(Y) == 0)[1], " has only 0 counts!")
+    }
+    
+    if(any(colSums(Y) == 0)) {
+      stop("Gene ", which(colSums(Y) == 0)[1], " has only 0 counts!")
+    }
+    
     # Create a newmodel object
     m <- newmodel(n=NROW(Y), J=NCOL(Y), K=K, X=X)
 

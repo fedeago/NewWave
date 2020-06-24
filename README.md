@@ -19,3 +19,11 @@ newWave(data,X = "~batch")
 ```
 
 A more deteiled case of use is shown in the vignette.
+
+## Useful links
+
+[ZINB-WaVE article](https://www.nature.com/articles/s41467-017-02554-5)
+
+[ZINB-WaVE package](https://bioconductor.org/packages/release/bioc/html/zinbwave.html)
+
+[SharedObject package](https://bioconductor.org/packages/release/bioc/html/SharedObject.html)
