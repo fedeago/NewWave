@@ -71,8 +71,7 @@ setMethod("newFit", "SummarizedExperiment",
                            n_gene_disp = n_gene_disp , n_cell_par = n_cell_par,
                            n_gene_par = n_gene_par,cross_batch=cross_batch)
               
-              objs <- ls(pos = ".GlobalEnv")
-              rm(list = objs[grep("_sh", objs)], pos = ".GlobalEnv")
+              
                
               return(res)
 })
@@ -138,6 +137,7 @@ setMethod("newFit", "matrix",
 
     cl <- makePSOCKcluster(children)
     on.exit(stopCluster(cl), add = TRUE)
+    on.exit(CleanEnvir(), add=TRUE)
     # Exporting values to the main and the child process
 
     # If the set the value of parameters is zero we must do the initialization
@@ -368,7 +368,7 @@ optimization <- function(cluster, children = 1, model ,
   clusterExport(cl = cluster, "mu_sh",
                 envir = environment())
   total.lik[1] <- ll_calc(mu = mu_sh, model  = model, Y_sh = as.matrix(Y_sh), z = zeta_sh,
-                          alpha_sh, beta_sh, gamma_sh, W_sh)
+                          alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
   
   for (iter in seq.int(max_iter)){
 
@@ -379,7 +379,7 @@ optimization <- function(cluster, children = 1, model ,
       mu_sh[] <- exp(getX(model) %*% beta_sh + t(getV(model) %*% gamma_sh) +
                           W_sh %*% alpha_sh)
       total.lik[iter] <- ll_calc(mu = mu_sh, model  = model, Y_sh = as.matrix(Y_sh), z = zeta_sh,
-                                 alpha_sh, beta_sh, gamma_sh, W_sh)
+                                 alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
       if(abs((total.lik[iter]-total.lik[iter-1]) /
              total.lik[iter-1])<stop_epsilon)
         break
@@ -399,7 +399,7 @@ optimization <- function(cluster, children = 1, model ,
     print(proc.time()-ptm)
 
     l_pen <- ll_calc(mu = mu_sh, model  = model, Y_sh = Y_sh, z = zeta_sh,
-                     alpha_sh, beta_sh, gamma_sh, W_sh)
+                     alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
     message("after optimize dispersion = ",  l_pen)
     }
 
@@ -416,7 +416,7 @@ optimization <- function(cluster, children = 1, model ,
     itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
                     W_sh %*% alpha_sh)
     l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = Y_sh, z = zeta_sh,
-                     alpha_sh, beta_sh, gamma_sh, W_sh)
+                     alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
     message("after right optimization= ",  l_pen)
     }
 
@@ -430,7 +430,7 @@ optimization <- function(cluster, children = 1, model ,
     itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
                       W_sh %*% alpha_sh)
     l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = Y_sh, z = zeta_sh,
-                     alpha_sh, beta_sh, gamma_sh, W_sh)
+                     alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
     message("after orthogonalization = ",  l_pen)
     }
 
@@ -447,7 +447,7 @@ optimization <- function(cluster, children = 1, model ,
     itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
                     W_sh %*% alpha_sh)
     l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = Y_sh, z = zeta_sh,
-                     alpha_sh, beta_sh, gamma_sh, W_sh)
+                     alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
     message("after left optimization= ",  l_pen)
     }
 
@@ -461,7 +461,7 @@ optimization <- function(cluster, children = 1, model ,
     itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
                       W_sh %*% alpha_sh)
     l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = Y_sh, z = zeta_sh,
-                     alpha_sh, beta_sh, gamma_sh, W_sh)
+                     alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
     message("after orthogonalization = ",  l_pen)
     }
 
@@ -548,20 +548,29 @@ nb.loglik.dispersion <- function(zeta, Y, mu){
 }
 
 
-ll_calc <- function(mu, model, Y_sh, z, alpha , beta, gamma, W){
+ll_calc <- function(mu, model, Y_sh, z, alpha , beta, gamma, W, commondispersion){
   
   theta <- exp(z)
   
   loglik <- nb.loglik(Y_sh, mu, rep(theta, rep(nrow(Y_sh),ncol(Y_sh))))
   
+  zeta_pen <- ifelse(commondispersion == T,  getEpsilon_zeta(model)*var(z)/2, 0)
+  
   penalty <- sum(getEpsilon_alpha(model) * (alpha)^2)/2 +
     sum(getEpsilon_beta(model) * (beta)^2)/2 +
     sum(getEpsilon_gamma(model)*(gamma)^2)/2 +
     sum(getEpsilon_W(model)*t(W)^2)/2 +
-    getEpsilon_zeta(model)*var(z)/2
+    zeta_pen
   
   loglik - penalty
 }
+
+
+CleanEnvir <- function() {
+  objs <- ls(pos = ".GlobalEnv")
+  rm(list = objs[grep("_sh$", objs)], pos = ".GlobalEnv")
+}
+
 
 .is_wholenumber <- function(x, tol = .Machine$double.eps^0.5) {
   abs(x - round(x)) < tol

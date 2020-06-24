@@ -73,11 +73,6 @@ computeDevianceResiduals <- function(model, x, ignoreW = TRUE) {
 }
 
 
-CleanEnvir <- function() {
-  objs <- ls(pos = ".GlobalEnv")
-  rm(list =c(Y_sh,X_sh,V_sh,mu,beta_sh, alpha_sh, gamma_sh, W_sh, zeta_sh), pos = ".GlobalEnv")
-}
-
 #' @describeIn newWave Y is a
 #'   \code{\link[SummarizedExperiment]{SummarizedExperiment}}.
 #' @export
@@ -225,8 +220,7 @@ setMethod("newWave", "SummarizedExperiment",
                 assay(out, "weights") <- weights
               }
               
-              #CleanEnvir()
-              
+            
               return(out)
           }
 )

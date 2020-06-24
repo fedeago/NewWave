@@ -69,12 +69,6 @@ nb.loglik <- function(Y, mu, theta) {
 }
 
 
-
-
-
-
-
-
 nb.regression.parseModel <- function(par, A.mu, B.mu, C.mu) {
 
   n <- nrow(A.mu)
@@ -187,14 +181,11 @@ nb.loglik.regression.gradient <- function(par, Y,
 
 nb.loglik.dispersion <- function(zeta, Y, mu){
   
-  # theta <- matrix(exp(zeta),nrow = nrow(Y),ncol=ncol(Y), byrow = T)
-  # nb.loglik(Y, mu, theta)
   nb.loglik(Y, mu, exp(zeta))
 }
 
 nb.loglik.dispersion.gradient <- function(zeta, Y, mu) {
   
-  # theta <- matrix(exp(zeta),nrow = nrow(Y),ncol=ncol(Y), byrow = T)
   theta <- exp(zeta)
   grad <- theta * (digamma(Y + theta) - digamma(theta) +
                          zeta - log(mu + theta) + 1 -
@@ -206,12 +197,12 @@ nb.loglik.dispersion.gradient <- function(zeta, Y, mu) {
 
 optim_genwise_dispersion <- function(k, num_gene, iter) {
   
-  locfun <- function(zeta, Y, mu){
-    nb.loglik.dispersion(zeta, Y, mu)
+  locfun <- function(par, Y, mu){
+    nb.loglik.dispersion(zeta = par, Y, mu)
   }
   
-  locgrad <- function(zeta, Y, mu){
-    nb.loglik.dispersion.gradient(zeta, Y, mu)
+  locgrad <- function(par, Y, mu){
+    nb.loglik.dispersion.gradient(zeta = par, Y, mu)
   }
   
   step <- ceiling(ncol(Y_sh) / children)
@@ -228,27 +219,19 @@ optim_genwise_dispersion <- function(k, num_gene, iter) {
 
   }
   
-  # pre_like <- colSums(dnbinom(Y_sh, size = exp(zeta_sh), mu = mu, log = TRUE))
-  # filepath <- paste0("~/Scrivania/prove_zinb_par/like_genewise_dispersion/pre_likelihood_",iter,".RDS")
-  # saveRDS(pre_like, file = filepath )
-  
   out <- list()
   
   for (j in intervall){
 
-    out[[j]] <- optim(fn=locfun,
+    out <- optim(fn=locfun,
                       gr=locgrad,
                       par=zeta_sh[j],
                       Y = Y_sh[,j],
                       mu = mu_sh[,j],
                       control=list(fnscale=-1,trace=0),
-                      method="BFGS")
-    zeta_sh[j] <- out[[j]]$par
+                      method="BFGS")$par
+    zeta_sh[j] <- out
   }
-  
-# likelihood <- t(matrix(unlist(out), nrow = length(out[[length(out)]])))
-# filepath <- paste0("~/Scrivania/prove_zinb_par/like_genewise_dispersion/likelihood_",iter,".RDS")
-# saveRDS(likelihood[,2], file = filepath )
   
   
 }
