@@ -32,6 +32,7 @@ NewWave takes as input raw data, not normalized.
 
 ```{r}
 set.seed(12359)
+data <- data[-which(rowSums(counts(data))==0),]
 data <- data[sample(1:nrow(data),1000),]
 ```
 
@@ -77,13 +78,13 @@ res <- newWave(data,X = "~Batch", K=10, verbose = T)
 ```
 In order to make it faster you can increase the number of cores:
 ```{r}
-res2 <- newWave(data,X = "~Batch", K=10, verbose = T, children=14)
+res2 <- newWave(data,X = "~Batch", K=10, verbose = T, children=10)
 ```
 
 Or use some mini-batch approaches:
 
 ```{r}
-res3 <- newWave(data,X = "~Batch", verbose = T,K=10, children=14, n_gene_disp=100,  n_gene_par = 100, n_cell_par = 100, commondispersion = F)
+res3 <- newWave(data,X = "~Batch", verbose = T,K=10, children=10, n_gene_disp=100,  n_gene_par = 100, n_cell_par = 100, commondispersion = F)
 ```
 
 Now I can use the latent dimension rapresentation for  visualization purpose:
