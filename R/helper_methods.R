@@ -433,13 +433,13 @@ setMethod(
         data.nb <- matrix(datanb, nrow = n)
 
 
-        # Matrix of zero-inflated counts
+        # Matrix of counts
         counts <- data.nb
 
         # Fraction of zeros in the matrix
         zero.fraction <- sum(counts == 0) / (n*J)
 
-        ret <- list(counts = t(counts), dataNB = t(data.nb),
+        ret <- list(counts = t(counts),
                     zeroFraction = zero.fraction)
         attr(ret, "seed") <- RNGstate
         ret

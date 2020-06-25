@@ -257,8 +257,8 @@ setMethod("newFit", "dgCMatrix",
 #' m <- nbInitialize(m, Y)
 #'
 
-setup <- function(cluster, model, random_start = F, children,
-                  random_init = F, verbose, Y, mode) {
+setup <- function(cluster, model, random_start, children,
+                  random_init, verbose, Y, mode) {
 
   ptm <- proc.time()
   
@@ -360,11 +360,11 @@ initialization <- function(cluster, children, model, verbose){
 #' m = nbOptimize(m, Y)
 #' @export
 
-optimization <- function(cluster, children = 1, model ,
-                         max_iter = 50, stop_epsilon = .0001,
-                         n_gene_disp = NULL,
-                         n_cell_par = NULL, n_gene_par = NULL, orthog = T,
-                         commondispersion = T, verbose, mode, cross_batch){
+optimization <- function(cluster, children, model ,
+                         max_iter, stop_epsilon,
+                         n_gene_disp,
+                         n_cell_par, n_gene_par, orthog,
+                         commondispersion, verbose, mode, cross_batch){
 
   orthog <- nFactors(model) > 0
   total.lik=rep(NA,max_iter)
@@ -398,7 +398,7 @@ optimization <- function(cluster, children = 1, model ,
     }
 
     optimd(ncol(Y_sh), mu = mu_sh, cluster = cluster,
-           children = children,commondispersion = commondispersion,
+           children = children, commondispersion = commondispersion,
            num_gene = n_gene_disp, iter = iter)
 
     if(verbose){

@@ -68,22 +68,21 @@ test_that("newFit gives the same results with matrix and formula", {
   
 })
 
-test_that("zinbFit works with K=0", {
-  counts <- matrix(rpois(60, lambda=5), nrow=10, ncol=6)
-  m <- newFit(counts, K = 0)
-  expect_equal(dim(getW(m)), c(nSamples(m), nFactors(m)))
-})
+# test_that("zinbFit works with K=0", {
+#   counts <- matrix(rpois(60, lambda=5), nrow=10, ncol=6)
+#   m <- newFit(counts, K = 0)
+#   expect_equal(dim(getW(m)), c(nSamples(m), nFactors(m)))
+# })
 
 test_that("zinbSim works", {
   a <- newmodel(n=5, J=10)
   sim <- newSim(a)
   
-  expect_true(all(.is_wholenumber(sim$counts)))
-  expect_true(all(.is_wholenumber(sim$dataNB)))
-  expect_true(all(.is_wholenumber(sim$dataDropouts)))
+  expect_true(all(NewWave:::.is_wholenumber(sim$counts)))
+  
 })
 
-test_that("getMu and getPi have the right dimensions", {
+test_that("getMu and have the right dimensions", {
   bio <- gl(2, 3)
   counts <- matrix(rpois(60, lambda=5), nrow=10, ncol=6)
   m <- newFit(counts, X=model.matrix(~bio), commondispersion = TRUE)
