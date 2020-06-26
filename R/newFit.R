@@ -140,19 +140,19 @@ setMethod("newFit", "matrix",
     }
     
     # Create a newmodel object
-    m <- newmodel(n=NROW(Y), J=NCOL(Y), K=K, X=X)
+    m <- newmodel(n=NROW(Y), J=NCOL(Y), K=K, X=X, V=V)
 
     cl <- makePSOCKcluster(children)
     on.exit(stopCluster(cl), add = TRUE)
     on.exit(CleanEnvir(), add=TRUE)
     # Exporting values to the main and the child process
-
+    
     # If the set the value of parameters is zero we must do the initialization
     if(random_init){ random_start = T}
     
     setup(cluster = cl, model = m, random_start = random_start, children = children,
           random_init = random_init, verbose = verbose, Y = Y,mode = "matrix")
-
+    
     # Initializize value
 
     if (!random_init){
@@ -161,7 +161,7 @@ setMethod("newFit", "matrix",
                      verbose = verbose)
 
     }
-
+    
     orthog <- (nFactors(m)>0)
 
     # Optimize value
@@ -323,7 +323,9 @@ initialization <- function(cluster, children, model, verbose){
 
     
   D <- L_sh - (X_sh %*% beta_sh) - t(V_sh %*% gamma_sh)
-
+  
+  
+  set.seed(1234)
   R <- irlba::irlba(D, nu=nFactors(model), nv=nFactors(model))
 
 
@@ -366,9 +368,10 @@ optimization <- function(cluster, children, model ,
                          n_cell_par, n_gene_par, orthog,
                          commondispersion, verbose, mode, cross_batch){
 
-  orthog <- nFactors(model) > 0
+  iter = 0
+  
   total.lik=rep(NA,max_iter)
-  iter <- 0
+  
   
   mu_sh <<- share(exp(getX(model) %*% beta_sh + t(getV(model) %*% gamma_sh) +
                      W_sh %*% alpha_sh))
@@ -383,13 +386,10 @@ optimization <- function(cluster, children, model ,
 
     
     if(iter > 1){
-      mu_sh[] <- exp(getX(model) %*% beta_sh + t(getV(model) %*% gamma_sh) +
-                          W_sh %*% alpha_sh)
-      total.lik[iter] <- ll_calc(mu = mu_sh, model  = model, Y_sh = as.matrix(Y_sh), z = zeta_sh,
-                                 alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
-      if(abs((total.lik[iter]-total.lik[iter-1]) /
-             total.lik[iter-1])<stop_epsilon)
-        break
+      
+      if(abs((total.lik[iter]-total.lik[iter-1]) / total.lik[iter-1])<stop_epsilon) break
+      
+      mu_sh[] <- exp(getX(model) %*% beta_sh + t(getV(model) %*% gamma_sh) + W_sh %*% alpha_sh)
     }
     
     if(verbose){
@@ -441,13 +441,15 @@ optimization <- function(cluster, children, model ,
     message("after orthogonalization = ",  l_pen)
     }
 
-
+    
     ptm <- proc.time()
 
     if(mode == "matrix"){
-    clusterApply(cluster, seq.int(children), "optiml" , num_cell = n_cell_par, cross_batch = cross_batch, iter = iter)
+    llikelihood <- clusterApply(cluster, seq.int(children), "optiml" , num_cell = n_cell_par, cross_batch = cross_batch, iter = iter)
     } else clusterApply(cluster, seq.int(children), "optiml_delayed" , num_cell = n_cell_par)
-
+    
+    total.lik[iter+1] <-sum(unlist(llikelihood))
+    
     if(verbose){
     cat("Time of left optimization\n")
     print(proc.time()-ptm)

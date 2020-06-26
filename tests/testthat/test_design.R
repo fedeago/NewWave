@@ -37,7 +37,7 @@ test_that("newFit works without X and V", {
 })
 
 test_that("newFit gives the same results with matrix and SE", {
-  counts <- matrix(rpois(60, lambda=5), nrow=10, ncol=6)
+  counts <- matrix(rnbinom(60, mu=5,size=2), nrow=10, ncol=6)
   se <- SummarizedExperiment(counts)
   
   m1 <- newFit(counts)
@@ -74,7 +74,7 @@ test_that("newFit gives the same results with matrix and formula", {
 #   expect_equal(dim(getW(m)), c(nSamples(m), nFactors(m)))
 # })
 
-test_that("zinbSim works", {
+test_that("newSim works", {
   a <- newmodel(n=5, J=10)
   sim <- newSim(a)
   

@@ -357,20 +357,20 @@ optiml <- function(k, num_cell,cross_batch=F, iter){
       genes <- seq.int(ncol(Y_sh))
     }
     
+    likelihood <- rep(1,length(intervall))
     for (i in intervall){
-      
-      # out <- optimleft_fun_nb(gamma_sh[,i,drop=F],
-      #                         W_sh[i,,drop=F], Y_sh[i,genes,drop=F] , V_sh[genes,,drop=F], alpha_sh[,genes,drop=F],
-      #                         X_sh[i,,drop=F], beta_sh[,genes,drop=F], zeta_sh[genes,drop=F], epsilonleft)
       
       out <- optimleft_fun_nb(gamma_sh[,i],
                               W_sh[i,], Y_sh[i,] , V_sh, alpha_sh,
                               X_sh[i,], beta_sh, zeta_sh, epsilonleft)
 
-      par <- split_params(out, eq = "left")
+      par <- split_params(out$par, eq = "left")
       gamma_sh[,i] <- par$gamma
       W_sh[i,] <- par$W
+      likelihood[i]<-out$value
     }
+   
+    likelihood
 }
 
 
@@ -430,7 +430,7 @@ optimleft_fun_nb <- function(gamma, W, Y, V, alpha,
          C.theta=zeta,
          epsilon=epsilonleft,
          control=list(fnscale = -1,trace=0),
-         method="BFGS")$par
+         method="BFGS")
 }
 
 

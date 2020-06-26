@@ -14,11 +14,11 @@ test_that("Estimates are reasonable when data is Poisson", {
   expect_true(abs(mean(getMu(m2)) - 50) < 1)
 })
 
-# test_that("Estimates are reasonable when data is Negative Binomial", {
-#   counts <- matrix(rnbinom(10000, mu=50, size = 10), nrow=100, ncol=100)
-#   
-#   m1 <- newFit(counts, commondispersion = TRUE)
-#   
-#   expect_true(abs(mean(getMu(m1)) - 50) < 1)
-#   expect_true(abs(mean(getTheta(m1)) - 10) < 1)
-# })
+test_that("Estimates are reasonable when data is Negative Binomial", {
+  counts <- matrix(rnbinom(10000, mu=50, size = 10), nrow=100, ncol=100)
+
+  m1 <- newFit(counts, commondispersion = TRUE)
+
+  expect_true(abs(mean(getMu(m1)) - 50) < 1)
+  expect_true(abs(mean(getTheta(m1)) - 10) < 2)
+})
