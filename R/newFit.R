@@ -387,9 +387,14 @@ optimization <- function(cluster, children, model ,
     
     if(iter > 1){
       
+      mu_sh[] <- exp(getX(model) %*% beta_sh + t(getV(model) %*% gamma_sh) + W_sh %*% alpha_sh)
+      
+      total.lik[iter] <- ll_calc(mu = mu_sh, model  = model, Y_sh = as.matrix(Y_sh), z = zeta_sh,
+                              alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
+      
       if(abs((total.lik[iter]-total.lik[iter-1]) / total.lik[iter-1])<stop_epsilon) break
       
-      mu_sh[] <- exp(getX(model) %*% beta_sh + t(getV(model) %*% gamma_sh) + W_sh %*% alpha_sh)
+      
     }
     
     if(verbose){
@@ -445,10 +450,9 @@ optimization <- function(cluster, children, model ,
     ptm <- proc.time()
 
     if(mode == "matrix"){
-    llikelihood <- clusterApply(cluster, seq.int(children), "optiml" , num_cell = n_cell_par, cross_batch = cross_batch, iter = iter)
+    clusterApply(cluster, seq.int(children), "optiml" , num_cell = n_cell_par, cross_batch = cross_batch, iter = iter)
     } else clusterApply(cluster, seq.int(children), "optiml_delayed" , num_cell = n_cell_par)
     
-    total.lik[iter+1] <-sum(unlist(llikelihood))
     
     if(verbose){
     cat("Time of left optimization\n")
