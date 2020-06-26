@@ -76,12 +76,15 @@ The default number of latent variables is 2, I will set it equal to 10.
 ```{r}
 res <- newWave(data,X = "~Batch", K=10, verbose = T)
 ```
-In order to make it faster you can increase the number of cores:
+In order to make it faster you can increase the number of cores using "children" parameter:
 ```{r}
 res2 <- newWave(data,X = "~Batch", K=10, verbose = T, children=10)
 ```
 
 Or use some mini-batch approaches:
+ - n_gene_disp : Number of genes to use in the dispersion optimization
+ - n_cell_par : Number of cells to use in the cells related parameters optimization
+ - n_gene_par : Number of genes to use in the genes related parameters optimization
 
 ```{r}
 res3 <- newWave(data,X = "~Batch", verbose = T,K=10, children=10, n_gene_disp=100,  n_gene_par = 100, n_cell_par = 100, commondispersion = F)

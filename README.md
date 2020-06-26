@@ -18,7 +18,7 @@ If you have your data stored in a SummarizedExperiment object with a batch effec
 newWave(data,X = "~batch")
 ```
 
-A more deteiled case of use is shown in the vignette.
+A more deteiled case of use is showned in the vignette.
 
 ## Useful links
 
