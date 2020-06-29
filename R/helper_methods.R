@@ -453,7 +453,7 @@ setMethod(
     signature=c("newmodel","matrix"),
     definition=function(model, x) {
         nb.loglik(x, getMu(model),
-                    rep(getTheta(model)))
+                  rep(getTheta(model), rep(nrow(x),ncol(x))))
     }
 )
 
