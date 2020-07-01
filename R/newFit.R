@@ -263,29 +263,29 @@ setup <- function(cluster, model, random_start, children,
   ptm <- proc.time()
   
   if (mode == "matrix"){
-    Y_sh <<- share(Y)
+    Y_sh <<- SharedObject::share(Y)
     if(!random_init){
-    L_sh <<- share(log1p(Y_sh))
+    L_sh <<- SharedObject::share(log1p(Y_sh))
     clusterExport(cluster,"L_sh",envir = environment())
     }
   } else {
     Y_sh <<- Y
     L_sh <<- log1p(Y_sh)
   }
-  X_sh <<- share(model@X)
-  V_sh <<- share(model@V)
+  X_sh <<- SharedObject::share(model@X)
+  V_sh <<- SharedObject::share(model@V)
   if (!random_start){
-    beta_sh <<- share(model@beta, copyOnWrite=FALSE)
-    alpha_sh <<- share(model@alpha, copyOnWrite=FALSE)
-    W_sh <<- share(model@W, copyOnWrite=FALSE)
-    gamma_sh <<- share(model@gamma, copyOnWrite=FALSE)
-    zeta_sh <<- share(model@zeta, copyOnWrite=FALSE)
+    beta_sh <<- SharedObject::share(model@beta, copyOnWrite=FALSE)
+    alpha_sh <<- SharedObject::share(model@alpha, copyOnWrite=FALSE)
+    W_sh <<- SharedObject::share(model@W, copyOnWrite=FALSE)
+    gamma_sh <<- SharedObject::share(model@gamma, copyOnWrite=FALSE)
+    zeta_sh <<- SharedObject::share(model@zeta, copyOnWrite=FALSE)
   } else {
-    beta_sh <<- share(matrix(rnorm(ncol(X_sh)*ncol(Y_sh)), nrow = ncol(X_sh)), copyOnWrite=FALSE)
-    alpha_sh <<- share(matrix(rnorm(nFactors(model)*ncol(Y_sh)), nrow = nFactors(model)), copyOnWrite=FALSE)
-    W_sh <<- share(matrix(rnorm(nrow(Y_sh)*nFactors(model)), nrow = nrow(Y_sh)), copyOnWrite=FALSE)
-    gamma_sh <<- share(matrix(rnorm(nrow(Y_sh)*ncol(V_sh)), nrow = ncol(V_sh)), copyOnWrite=FALSE)
-    zeta_sh <<- share(rep(rnorm(1), length = ncol(Y_sh)), copyOnWrite=FALSE)
+    beta_sh <<- SharedObject::share(matrix(rnorm(ncol(X_sh)*ncol(Y_sh)), nrow = ncol(X_sh)), copyOnWrite=FALSE)
+    alpha_sh <<- SharedObject::share(matrix(rnorm(nFactors(model)*ncol(Y_sh)), nrow = nFactors(model)), copyOnWrite=FALSE)
+    W_sh <<- SharedObject::share(matrix(rnorm(nrow(Y_sh)*nFactors(model)), nrow = nrow(Y_sh)), copyOnWrite=FALSE)
+    gamma_sh <<- SharedObject::share(matrix(rnorm(nrow(Y_sh)*ncol(V_sh)), nrow = ncol(V_sh)), copyOnWrite=FALSE)
+    zeta_sh <<- SharedObject::share(rep(rnorm(1), length = ncol(Y_sh)), copyOnWrite=FALSE)
   }
   epsilon_gamma <- getEpsilon_gamma(model)
   epsilon_beta <- getEpsilon_beta(model)
@@ -373,7 +373,7 @@ optimization <- function(cluster, children, model ,
   total.lik=rep(NA,max_iter)
   
   
-  mu_sh <<- share(exp(getX(model) %*% beta_sh + t(getV(model) %*% gamma_sh) +
+  mu_sh <<- SharedObject::share(exp(getX(model) %*% beta_sh + t(getV(model) %*% gamma_sh) +
                      W_sh %*% alpha_sh))
   clusterExport(cl = cluster, "mu_sh",
                 envir = environment())

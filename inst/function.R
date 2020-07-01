@@ -136,7 +136,7 @@ nb.loglik.regression.gradient <- function(par, Y,
                                 C.mu = C.mu)
  
   
-   Y=as.vector(Y)
+  Y=as.vector(Y)
   theta <- exp(C.theta)
   mu <- exp(r$logMu)
   n <- length(Y)
@@ -290,13 +290,13 @@ optimr_delayed <- function(k, num_gene) {
       intervall <- sample(x = seq.int(from = j1, to = j2), size = num_gene/children)
     }
     
-    blockApply(
+    DelayedArray::blockApply(
       x = Y_sh[,intervall],
       FUN = over_optr,
-      grid = RegularArrayGrid(
+      grid = DelayedArray::RegularArrayGrid(
         refdim = dim(Y_sh[,intervall]),
         spacings = c(nrow(Y_sh[,intervall]), 1L)),
-      BPPARAM = SerialParam(),
+      BPPARAM = BiocParallel::SerialParam(),
       beta = beta_sh[,intervall, drop = F], alpha = alpha_sh[,intervall, drop = F], X = X_sh,
       W = W_sh, V = V_sh[intervall,,drop = F], gamma = gamma_sh, 
       zeta = zeta_sh[intervall], n = nrow(Y_sh),epsilonright = epsilonright,
@@ -388,13 +388,13 @@ optiml_delayed <- function(k, num_cell){
       
     }
     
-    blockApply(
+    DelayedArray::blockApply(
       x = Y_sh[intervall,],
       FUN = over_optl,
-      grid = RegularArrayGrid(
+      grid = DelayedArray::RegularArrayGrid(
         refdim = dim(Y_sh[intervall,]),
         spacings = c( 1L, ncol(Y_sh[intervall,]))),
-      BPPARAM = SerialParam(),
+      BPPARAM = BiocParallel::SerialParam(),
       gamma = gamma_sh[,intervall, drop = F],  W = W_sh[intervall,, drop = F], V = V_sh,
       alpha = alpha_sh, X = X_sh[intervall,, drop = F], beta = beta_sh,  
       zeta = zeta_sh, epsilonleft = epsilonleft,

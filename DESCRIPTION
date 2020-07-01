@@ -7,14 +7,14 @@ Maintainer: Federico Agostinis <federico.agostinis@outlook.com>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 Depends: 
-   R (>= 3.4),
+   R (>= 4.0),
    methods,
    SummarizedExperiment,
-   SharedObject,
+   SharedObject(>= 1.2.2),
    SingleCellExperiment
 Imports: 
-   stats
-License: What license is it under?
+    irlba
+License: GNU GPLv3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.0
