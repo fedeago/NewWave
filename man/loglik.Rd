@@ -2,12 +2,12 @@
 % Please edit documentation in R/AllGenerics.R, R/helper_methods.R
 \name{loglik}
 \alias{loglik}
-\alias{loglik,nbModel,matrix-method}
+\alias{loglik,newmodel,matrix-method}
 \title{Compute the log-likelihood of a model given some data}
 \usage{
 loglik(model, x, ...)
 
-\S4method{loglik}{nbModel,matrix}(model, x)
+\S4method{loglik}{newmodel,matrix}(model, x)
 }
 \arguments{
 \item{model}{an object that describes a statistical model.}
@@ -26,11 +26,11 @@ data under the model.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{model = nbModel,x = matrix}: return the log-likelihood of the nb model.
+\item \code{model = newmodel,x = matrix}: return the log-likelihood of the nb model.
 }}
 
 \examples{
-m <- nbModel(n=5, J=10)
-x <- nbSim(m)
+m <- newmodel(n=5, J=10)
+x <- newSim(m)
 loglik(m, x$counts)
 }

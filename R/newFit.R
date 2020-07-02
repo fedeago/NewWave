@@ -161,7 +161,7 @@ setMethod("newFit", "matrix",
 
     }
     
-    orthog <- (nFactors(m)>0)
+    orthog <- (numberFactors(m)>0)
 
     # Optimize value
 
@@ -212,7 +212,7 @@ setMethod("newFit", "DelayedMatrix",
                   random_init = random_init, verbose = verbose, Y = Y, mode = "Deleyed")
             
             
-            orthog <- (nFactors(m)>0)
+            orthog <- (numberFactors(m)>0)
             
             # Optimize value
             
@@ -278,18 +278,18 @@ setup <- function(cluster, model, random_start, children,
     zeta_sh <<- SharedObject::share(model@zeta, copyOnWrite=FALSE)
   } else {
     beta_sh <<- SharedObject::share(matrix(rnorm(ncol(X_sh)*ncol(Y_sh)), nrow = ncol(X_sh)), copyOnWrite=FALSE)
-    alpha_sh <<- SharedObject::share(matrix(rnorm(nFactors(model)*ncol(Y_sh)), nrow = nFactors(model)), copyOnWrite=FALSE)
-    W_sh <<- SharedObject::share(matrix(rnorm(nrow(Y_sh)*nFactors(model)), nrow = nrow(Y_sh)), copyOnWrite=FALSE)
+    alpha_sh <<- SharedObject::share(matrix(rnorm(numberFactors(model)*ncol(Y_sh)), nrow = numberFactors(model)), copyOnWrite=FALSE)
+    W_sh <<- SharedObject::share(matrix(rnorm(nrow(Y_sh)*numberFactors(model)), nrow = nrow(Y_sh)), copyOnWrite=FALSE)
     gamma_sh <<- SharedObject::share(matrix(rnorm(nrow(Y_sh)*ncol(V_sh)), nrow = ncol(V_sh)), copyOnWrite=FALSE)
     zeta_sh <<- SharedObject::share(rep(rnorm(1), length = ncol(Y_sh)), copyOnWrite=FALSE)
   }
-  epsilon_gamma <- getEpsilon_gamma(model)
-  epsilon_beta <- getEpsilon_beta(model)
-  epsilonright <- c(getEpsilon_beta(model), getEpsilon_alpha(model))
-  epsilonleft <- c(getEpsilon_gamma(model), getEpsilon_W(model))
+  epsilon_gamma <- newEpsilon_gamma(model)
+  epsilon_beta <- newEpsilon_beta(model)
+  epsilonright <- c(newEpsilon_beta(model), newEpsilon_alpha(model))
+  epsilonleft <- c(newEpsilon_gamma(model), newEpsilon_W(model))
 
-  n = nSamples(model)
-  J = nFeatures(model)
+  n = numberSamples(model)
+  J = numberFeatures(model)
   
   
   #Cluster
@@ -332,14 +332,14 @@ initialization <- function(cluster, children, model, verbose){
   
   
   set.seed(1234)
-  R <- irlba::irlba(D, nu=nFactors(model), nv=nFactors(model))
+  R <- irlba::irlba(D, nu=numberFactors(model), nv=numberFactors(model))
 
 
   # Orthogonalize to get W and alpha
-  W_sh[] <- (getEpsilon_alpha(model) / getEpsilon_W(model))[1]^(1/4) *
-    R$u %*% diag(sqrt(R$d[1:nFactors(model)]), nrow = length(R$d[1:nFactors(model)]))
-  alpha_sh[] <- (getEpsilon_W(model)/getEpsilon_alpha(model))[1]^(1/4) *
-    diag(sqrt(R$d[1:nFactors(model)]),nrow = length(R$d[1:nFactors(model)])) %*% t(R$v)
+  W_sh[] <- (newEpsilon_alpha(model) / newEpsilon_W(model))[1]^(1/4) *
+    R$u %*% diag(sqrt(R$d[1:numberFactors(model)]), nrow = length(R$d[1:numberFactors(model)]))
+  alpha_sh[] <- (newEpsilon_W(model)/newEpsilon_alpha(model))[1]^(1/4) *
+    diag(sqrt(R$d[1:numberFactors(model)]),nrow = length(R$d[1:numberFactors(model)])) %*% t(R$v)
 
   if(verbose){
   cat("Time of initialization\n")
@@ -374,7 +374,7 @@ optimization <- function(cluster, children, model ,
   total.lik=rep(NA,max_iter)
   
   
-  mu_sh <<- SharedObject::share(exp(getX(model) %*% beta_sh + t(getV(model) %*% gamma_sh) +
+  mu_sh <<- SharedObject::share(exp(newX(model) %*% beta_sh + t(newV(model) %*% gamma_sh) +
                      W_sh %*% alpha_sh))
   clusterExport(cl = cluster, "mu_sh",
                 envir = environment())
@@ -388,7 +388,7 @@ optimization <- function(cluster, children, model ,
     
     if(iter > 1){
       
-      mu_sh[] <- exp(getX(model) %*% beta_sh + t(getV(model) %*% gamma_sh) + W_sh %*% alpha_sh)
+      mu_sh[] <- exp(newX(model) %*% beta_sh + t(newV(model) %*% gamma_sh) + W_sh %*% alpha_sh)
       
       total.lik[iter] <- ll_calc(mu = mu_sh, model  = model, Y_sh = as.matrix(Y_sh), z = zeta_sh,
                               alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
@@ -568,12 +568,12 @@ ll_calc <- function(mu, model, Y_sh, z, alpha , beta, gamma, W, commondispersion
   
   loglik <- nb.loglik(Y_sh, mu, rep(theta, rep(nrow(Y_sh),ncol(Y_sh))))
   
-  zeta_pen <- ifelse(commondispersion == T,  getEpsilon_zeta(model)*var(z)/2, 0)
+  zeta_pen <- ifelse(commondispersion == T,  newEpsilon_zeta(model)*var(z)/2, 0)
   
-  penalty <- sum(getEpsilon_alpha(model) * (alpha)^2)/2 +
-    sum(getEpsilon_beta(model) * (beta)^2)/2 +
-    sum(getEpsilon_gamma(model)*(gamma)^2)/2 +
-    sum(getEpsilon_W(model)*t(W)^2)/2 +
+  penalty <- sum(newEpsilon_alpha(model) * (alpha)^2)/2 +
+    sum(newEpsilon_beta(model) * (beta)^2)/2 +
+    sum(newEpsilon_gamma(model)*(gamma)^2)/2 +
+    sum(newEpsilon_W(model)*t(W)^2)/2 +
     zeta_pen
   
   loglik - penalty

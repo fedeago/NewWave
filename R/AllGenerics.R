@@ -6,7 +6,7 @@
 #'   factors
 #' @return the number of latent factors
 #' @export
-setGeneric("nFactors", function(x) standardGeneric("nFactors"))
+setGeneric("numberFactors", function(x) standardGeneric("numberFactors"))
 
 #' Returns the matrix of mean parameters
 #'
@@ -21,9 +21,9 @@ setGeneric("nFactors", function(x) standardGeneric("nFactors"))
 #' this function is of n x J dimensions.
 #' @examples
 #' a <- newmodel(n=5, J=10)
-#' getMu(a)
+#' newMu(a)
 #' @export
-setGeneric("getMu", function(object) standardGeneric("getMu"))
+setGeneric("newMu", function(object) standardGeneric("newMu"))
 
 #' Returns the matrix of logarithm of mean parameters
 #'
@@ -38,9 +38,9 @@ setGeneric("getMu", function(object) standardGeneric("getMu"))
 #' this function is of n x J dimensions.
 #' @examples
 #' a <- newmodel(n=5, J=10)
-#' getLogMu(a)
+#' newLogMu(a)
 #' @export
-setGeneric("getLogMu", function(object) standardGeneric("getLogMu"))
+setGeneric("newLogMu", function(object) standardGeneric("newLogMu"))
 
 #' Returns the vector of dispersion parameters
 #'
@@ -51,9 +51,9 @@ setGeneric("getLogMu", function(object) standardGeneric("getLogMu"))
 #' @return the vector of dispersion parameters
 #' @examples
 #' a <- newmodel(n=5, J=10)
-#' getPhi(a)
+#' newPhi(a)
 #' @export
-setGeneric("getPhi", function(object) standardGeneric("getPhi"))
+setGeneric("newPhi", function(object) standardGeneric("newPhi"))
 
 #' Returns the vector of inverse dispersion parameters
 #'
@@ -65,9 +65,9 @@ setGeneric("getPhi", function(object) standardGeneric("getPhi"))
 #' @return the vector of inverse dispersion parameters theta
 #' @examples
 #' a <- newmodel(n=5, J=10)
-#' getTheta(a)
+#' newTheta(a)
 #' @export
-setGeneric("getTheta", function(object) standardGeneric("getTheta"))
+setGeneric("newTheta", function(object) standardGeneric("newTheta"))
 
 #' Returns the vector of log of inverse dispersion parameters
 #'
@@ -79,9 +79,9 @@ setGeneric("getTheta", function(object) standardGeneric("getTheta"))
 #' @return the vector \code{zeta} of log of inverse dispersion parameters
 #' @examples
 #' a <- newmodel(n=5, J=10)
-#' getZeta(a)
+#' newZeta(a)
 #' @export
-setGeneric("getZeta", function(object) standardGeneric("getZeta"))
+setGeneric("newZeta", function(object) standardGeneric("newZeta"))
 
 #' Returns the low-dimensional matrix of inferred sample-level covariates W
 #'
@@ -94,9 +94,9 @@ setGeneric("getZeta", function(object) standardGeneric("getZeta"))
 #' @return the matrix \code{W} of inferred sample-level covariates.
 #' @examples
 #' a <- newmodel(n=5, J=10)
-#' getW(a)
+#' newW(a)
 #' @export
-setGeneric("getW", function(object) standardGeneric("getW"))
+setGeneric("newW", function(object) standardGeneric("newW"))
 
 #' Simulate counts from a zero-inflated negative binomial model
 #'
@@ -173,8 +173,8 @@ setGeneric("newFit", function(Y, ...) standardGeneric("newFit"))
 #' @export
 #' @examples
 #' a <- newmodel(n=5, J=10)
-#' getX(a)
-setGeneric("getX", function(object, ...) standardGeneric("getX"))
+#' newX(a)
+setGeneric("newX", function(object, ...) standardGeneric("newX"))
 
 
 #' Returns the gene-level design matrix for mu
@@ -188,8 +188,8 @@ setGeneric("getX", function(object, ...) standardGeneric("getX"))
 #' @export
 #' @examples
 #' a <- newmodel(n=5, J=10)
-#' getV(a)
-setGeneric("getV", function(object, ...) standardGeneric("getV"))
+#' newV(a)
+setGeneric("newV", function(object, ...) standardGeneric("newV"))
 
 
 #' Returns the matrix of paramters beta
@@ -203,8 +203,8 @@ setGeneric("getV", function(object, ...) standardGeneric("getV"))
 #' @export
 #' @examples
 #' a <- newmodel(n=5, J=10)
-#' getBeta(a)
-setGeneric("getBeta", function(object, ...) standardGeneric("getBeta"))
+#' newBeta(a)
+setGeneric("newBeta", function(object, ...) standardGeneric("newBeta"))
 
 
 #' Returns the matrix of paramters gamma
@@ -218,8 +218,8 @@ setGeneric("getBeta", function(object, ...) standardGeneric("getBeta"))
 #' @export
 #' @examples
 #' a <- newmodel(n=5, J=10)
-#' getGamma(a)
-setGeneric("getGamma", function(object, ...) standardGeneric("getGamma"))
+#' newGamma(a)
+setGeneric("newGamma", function(object, ...) standardGeneric("newGamma"))
 
 
 #' Returns the matrix of paramters alpha
@@ -233,8 +233,8 @@ setGeneric("getGamma", function(object, ...) standardGeneric("getGamma"))
 #' @export
 #' @examples
 #' a <- newmodel(n=5, J=10)
-#' getAlpha(a)
-setGeneric("getAlpha", function(object, ...) standardGeneric("getAlpha"))
+#' newAlpha(a)
+setGeneric("newAlpha", function(object, ...) standardGeneric("newAlpha"))
 
 
 #' Returns the vector of regularization parameter for beta
@@ -248,9 +248,9 @@ setGeneric("getAlpha", function(object, ...) standardGeneric("getAlpha"))
 #' @export
 #' @examples
 #' a <- newmodel(n=5, J=10)
-#' getEpsilon_beta(a)
-setGeneric("getEpsilon_beta",
-           function(object) standardGeneric("getEpsilon_beta"))
+#' newEpsilon_beta(a)
+setGeneric("newEpsilon_beta",
+           function(object) standardGeneric("newEpsilon_beta"))
 
 #' Returns the vector of regularization parameter for gamma
 #'
@@ -263,9 +263,9 @@ setGeneric("getEpsilon_beta",
 #' @export
 #' @examples
 #' a <- newmodel(n=5, J=10)
-#' getEpsilon_gamma(a)
-setGeneric("getEpsilon_gamma",
-           function(object) standardGeneric("getEpsilon_gamma"))
+#' newEpsilon_gamma(a)
+setGeneric("newEpsilon_gamma",
+           function(object) standardGeneric("newEpsilon_gamma"))
 
 
 
@@ -280,8 +280,8 @@ setGeneric("getEpsilon_gamma",
 #' @export
 #' @examples
 #' a <- newmodel(n=5, J=10)
-#' getEpsilon_W(a)
-setGeneric("getEpsilon_W", function(object) standardGeneric("getEpsilon_W"))
+#' newEpsilon_W(a)
+setGeneric("newEpsilon_W", function(object) standardGeneric("newEpsilon_W"))
 
 #' Returns the vector of regularization parameter for alpha
 #'
@@ -294,9 +294,9 @@ setGeneric("getEpsilon_W", function(object) standardGeneric("getEpsilon_W"))
 #' @export
 #' @examples
 #' a <- newmodel(n=5, J=10)
-#' getEpsilon_alpha(a)
-setGeneric("getEpsilon_alpha",
-           function(object) standardGeneric("getEpsilon_alpha"))
+#' newEpsilon_alpha(a)
+setGeneric("newEpsilon_alpha",
+           function(object) standardGeneric("newEpsilon_alpha"))
 
 #' Returns the regularization parameter for the dispersion parameter
 #'
@@ -308,9 +308,9 @@ setGeneric("getEpsilon_alpha",
 #' @export
 #' @examples
 #' a <- newmodel(n=5, J=10)
-#' getEpsilon_zeta(a)
-setGeneric("getEpsilon_zeta",
-           function(object) standardGeneric("getEpsilon_zeta"))
+#' newEpsilon_zeta(a)
+setGeneric("newEpsilon_zeta",
+           function(object) standardGeneric("newEpsilon_zeta"))
 
 #' Generic function that returns the number of features
 #'
@@ -320,9 +320,9 @@ setGeneric("getEpsilon_zeta",
 #' @return the number of features.
 #' @export
 setGeneric(
-    name = "nFeatures",
+    name = "numberFeatures",
     def = function(x) {
-        standardGeneric("nFeatures")
+        standardGeneric("numberFeatures")
     }
 )
 
@@ -334,9 +334,9 @@ setGeneric(
 #' @return the number of samples.
 #' @export
 setGeneric(
-    name = "nSamples",
+    name = "numberSamples",
     def = function(x) {
-        standardGeneric("nSamples")
+        standardGeneric("numberSamples")
     }
 )
 
@@ -348,9 +348,9 @@ setGeneric(
 #' @return the total number of parameters of the model.
 #' @export
 setGeneric(
-    name = "nParams",
+    name = "numberParams",
     def = function(model) {
-        standardGeneric("nParams")
+        standardGeneric("numberParams")
     }
 )
 

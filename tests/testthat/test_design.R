@@ -71,7 +71,7 @@ test_that("newFit gives the same results with matrix and formula", {
 # test_that("zinbFit works with K=0", {
 #   counts <- matrix(rpois(60, lambda=5), nrow=10, ncol=6)
 #   m <- newFit(counts, K = 0)
-#   expect_equal(dim(getW(m)), c(nSamples(m), nFactors(m)))
+#   expect_equal(dim(newW(m)), c(numberSamples(m), numberFactors(m)))
 # })
 
 test_that("newSim works", {
@@ -82,16 +82,16 @@ test_that("newSim works", {
   
 })
 
-test_that("getMu and have the right dimensions", {
+test_that("newMu and have the right dimensions", {
   bio <- gl(2, 3)
   counts <- matrix(rpois(60, lambda=5), nrow=10, ncol=6)
   m <- newFit(counts, X=model.matrix(~bio), commondispersion = TRUE)
   
-  expect_equal(dim(getMu(m)), c(nSamples(m), nFeatures(m)))
-  expect_equal(dim(getLogMu(m)), c(nSamples(m), nFeatures(m)))
-  expect_equal(dim(getW(m)), c(nSamples(m), nFactors(m)))
-  expect_equal(length(getTheta(m)), nFeatures(m))
-  expect_equal(length(getZeta(m)), nFeatures(m))
+  expect_equal(dim(newMu(m)), c(numberSamples(m), numberFeatures(m)))
+  expect_equal(dim(newLogMu(m)), c(numberSamples(m), numberFeatures(m)))
+  expect_equal(dim(newW(m)), c(numberSamples(m), numberFactors(m)))
+  expect_equal(length(newTheta(m)), numberFeatures(m))
+  expect_equal(length(newZeta(m)), numberFeatures(m))
 })
 
 test_that("Initialization works", {
@@ -102,29 +102,29 @@ test_that("Initialization works", {
   ## specify W
   mat <- matrix(rnorm(10), ncol=2)
   m <- newmodel(W = mat)
-  expect_equal(nSamples(m), nrow(mat))
+  expect_equal(numberSamples(m), nrow(mat))
   
   ## specify X
   m <- newmodel(X = mat)
-  expect_equal(nSamples(m), nrow(mat))
+  expect_equal(numberSamples(m), nrow(mat))
   
   ## specify V
   m <- newmodel(V = mat)
-  expect_equal(nFeatures(m), nrow(mat))
+  expect_equal(numberFeatures(m), nrow(mat))
   
   
   ## specify empty X
   m <- newmodel(X = matrix(0, ncol=0, nrow=10))
-  expect_equal(nSamples(m), 10)
+  expect_equal(numberSamples(m), 10)
   
   ## specify empty V
   m <- newmodel(V = matrix(0, ncol=0, nrow=10))
-  expect_equal(nFeatures(m), 10)
+  expect_equal(numberFeatures(m), 10)
   
   ## specify empty X and V
   m <- newmodel(X = matrix(0, ncol=0, nrow=10),
                  V = matrix(0, ncol=0, nrow=10))
-  expect_equal(nSamples(m), 10)
-  expect_equal(nFeatures(m), 10)
+  expect_equal(numberSamples(m), 10)
+  expect_equal(numberFeatures(m), 10)
   
 })

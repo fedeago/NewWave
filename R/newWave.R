@@ -12,8 +12,8 @@
 #' @return the matrix of log-likelihood of the model.
 #' @importFrom stats dnbinom
 nb.loglik.matrix <- function(model, x) {
-  mu <- getMu(model)
-  theta <- getTheta(model)
+  mu <- newMu(model)
+  theta <- newTheta(model)
   theta_mat <- matrix(rep(theta, each = nrow(x)), ncol = ncol(x))
   lik <- dnbinom(x, size = theta_mat, mu = mu)
   lik[lik == 0] <- min(lik[lik != 0]) #to avoid log lik to be infinite
@@ -115,9 +115,9 @@ setMethod("newWave", "SummarizedExperiment",
               
               out <- as(Y, "SingleCellExperiment")
               
-              if (nFactors(fitted_model) > 0){
-                W <- getW(fitted_model)
-                colnames(W) <- paste0('W', seq_len(nFactors(fitted_model)))
+              if (numberFactors(fitted_model) > 0){
+                W <- newW(fitted_model)
+                colnames(W) <- paste0('W', seq_len(numberFactors(fitted_model)))
                 reducedDim(out, "newWave") <- W
               }
               

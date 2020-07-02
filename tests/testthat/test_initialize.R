@@ -18,9 +18,9 @@ test_that("W can be estimated from random matrix (no signal)", {
   
   my_data <- newSim(mm)
   
-  expect_equal(W, getW(mm))
-  expect_equal(X, getX(mm))
-  expect_equal(V, getV(mm))
+  expect_equal(W, newW(mm))
+  expect_equal(X, newX(mm))
+  expect_equal(V, newV(mm))
   
   SE <- SummarizedExperiment(assays = list(counts=my_data$counts),
                              rowDat = data.frame(V),
@@ -49,9 +49,9 @@ test_that("W can be estimated from two-dimensional signal (no signal)", {
   
   my_data <- newSim(mm)
   
-  expect_equal(W, getW(mm))
-  expect_equal(X, getX(mm))
-  expect_equal(V, getV(mm))
+  expect_equal(W, newW(mm))
+  expect_equal(X, newX(mm))
+  expect_equal(V, newV(mm))
   
   SE <- SummarizedExperiment(assays = list(counts=my_data$counts),
                              rowDat = data.frame(V),

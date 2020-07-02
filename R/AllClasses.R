@@ -35,8 +35,8 @@
 #' @exportClass newmodel
 #' @aliases newmodel
 #'
-#' @return \code{nSamples} returns the number of samples; \code{nFeatures}
-#' returns the number of features; \code{nFactors} returns the number of latent
+#' @return \code{numberSamples} returns the number of samples; \code{numberFeatures}
+#' returns the number of features; \code{numberFactors} returns the number of latent
 #' factors.
 #'
 setClass(
@@ -58,9 +58,9 @@ setClass(
 )
 
 setValidity("newmodel", function(object){
-    n <- NROW(getX(object)) # number of samples
-    J <- NROW(getV(object)) # number of genes
-    K <- NCOL(getW(object)) # number of latent factors
+    n <- NROW(newX(object)) # number of samples
+    J <- NROW(newV(object)) # number of genes
+    K <- NCOL(newW(object)) # number of latent factors
 
     if(K > n) {
         return("Cannot have more latent factors than samples.")
@@ -68,28 +68,28 @@ setValidity("newmodel", function(object){
     if(K > J) {
         return("Cannot have more latent factors than genes.")
     }
-    if(NROW(getW(object)) != n) {
+    if(NROW(newW(object)) != n) {
         return("W must have n rows!")
     }
-    if(NCOL(getX(object)) != NROW(getBeta(object))){
+    if(NCOL(newX(object)) != NROW(newBeta(object))){
         return("beta must have the same number of rows as there are columns in X!")
     }
-    if(NCOL(getV(object)) != NROW(getGamma(object))){
+    if(NCOL(newV(object)) != NROW(newGamma(object))){
         return("gamma must have the same number of rows as there are columns in V!")
     }
-    if(NCOL(getBeta(object)) != J) {
+    if(NCOL(newBeta(object)) != J) {
         return("beta must have J columns!")
     }
-    if(NCOL(getGamma(object)) != n) {
+    if(NCOL(newGamma(object)) != n) {
         return("gamma must have n columns!")
     }
-    if(NCOL(getAlpha(object)) != J) {
+    if(NCOL(newAlpha(object)) != J) {
         return("alpha must have J columns!")
     }
-    if(NROW(getAlpha(object)) != K) {
+    if(NROW(newAlpha(object)) != K) {
         return("alpha must have K rows!")
     }
-    if(length(getZeta(object)) != J) {
+    if(length(newZeta(object)) != J) {
         return("zeta must have length J!")
     }
     if((length(object@epsilon_beta) != 1) || (object@epsilon_beta < 0)) {

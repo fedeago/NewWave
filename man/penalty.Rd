@@ -2,12 +2,12 @@
 % Please edit documentation in R/AllGenerics.R, R/helper_methods.R
 \name{penalty}
 \alias{penalty}
-\alias{penalty,nbModel-method}
+\alias{penalty,newmodel-method}
 \title{Compute the penalty of a model}
 \usage{
 penalty(model)
 
-\S4method{penalty}{nbModel}(model)
+\S4method{penalty}{newmodel}(model)
 }
 \arguments{
 \item{model}{an object that describes a statistical model with regularization
@@ -22,10 +22,10 @@ penalty.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{nbModel}: return the penalization.
+\item \code{newmodel}: return the penalization.
 }}
 
 \examples{
-m <- nbModel(K=2)
+m <- newmodel(K=2)
 penalty(m)
 }

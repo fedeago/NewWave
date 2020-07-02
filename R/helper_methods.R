@@ -62,9 +62,9 @@
 #' 
 #' @examples
 #' a <- newmodel()
-#' nSamples(a)
-#' nFeatures(a)
-#' nFactors(a)
+#' numberSamples(a)
+#' numberFeatures(a)
+#' numberFactors(a)
 
 newmodel <- function(X, V, W, beta,
                       gamma,alpha, zeta, epsilon,
@@ -183,13 +183,13 @@ newmodel <- function(X, V, W, beta,
 setMethod("show", "newmodel",
           function(object) {
               cat(paste0("Object of class newmodel.\n",
-                         nSamples(object), " samples; ", nFeatures(object),
+                         numberSamples(object), " samples; ", numberFeatures(object),
                          " genes.\n",
-                         NCOL(getX(object)),
+                         NCOL(newX(object)),
                          " sample-level covariate(s) (mu); ",
-                         NCOL(getV(object)),
+                         NCOL(newV(object)),
                          " gene-level covariate(s) (mu); ",
-                         nFactors(object), " latent factor(s).\n"))
+                         numberFactors(object), " latent factor(s).\n"))
           }
 )
 
@@ -201,7 +201,7 @@ setMethod("show", "newmodel",
 #' @export
 #' @describeIn newmodel returns the number of samples.
 #' @param x an object of class \code{newmodel}.
-setMethod("nSamples", "newmodel",
+setMethod("numberSamples", "newmodel",
           function(x) {
               return(NROW(x@X))
           }
@@ -209,7 +209,7 @@ setMethod("nSamples", "newmodel",
 
 #' @export
 #' @describeIn newmodel returns the number of features.
-setMethod("nFeatures", "newmodel",
+setMethod("numberFeatures", "newmodel",
           function(x) {
               return(NROW(x@V))
           }
@@ -217,7 +217,7 @@ setMethod("nFeatures", "newmodel",
 
 #' @export
 #' @describeIn newmodel returns the number of latent factors.
-setMethod("nFactors", "newmodel",
+setMethod("numberFactors", "newmodel",
           function(x) {
               return(NCOL(x@W))
           }
@@ -226,7 +226,7 @@ setMethod("nFactors", "newmodel",
 
 #' @export
 #' @describeIn newmodel returns the sample-level design matrix for mu.
-setMethod("getX", "newmodel",
+setMethod("newX", "newmodel",
           function(object) {
               return(object@X)
           }
@@ -234,7 +234,7 @@ setMethod("getX", "newmodel",
 
 #' @export
 #' @describeIn newmodel returns the gene-level design matrix for mu.
-setMethod("getV", "newmodel",
+setMethod("newV", "newmodel",
           function(object) {
               return(object@V)
           }
@@ -243,26 +243,26 @@ setMethod("getV", "newmodel",
 #' @export
 #' @describeIn newmodel returns the logarithm of the mean of the non-zero
 #'   component.
-setMethod("getLogMu", "newmodel",
+setMethod("newLogMu", "newmodel",
           function(object) {
-              return(getX(object) %*% object@beta +
-                         t(getV(object) %*% object@gamma) +
+              return(newX(object) %*% object@beta +
+                         t(newV(object) %*% object@gamma) +
                          object@W %*% object@alpha)
           }
 )
 
 #' @export
 #' @describeIn newmodel returns the mean of the non-zero component.
-setMethod("getMu", "newmodel",
+setMethod("newMu", "newmodel",
     function(object) {
-        return(exp(getLogMu(object)))
+        return(exp(newLogMu(object)))
     }
 )
 
 #' @export
 #' @describeIn newmodel returns the log of the inverse of the dispersion
 #'   parameter.
-setMethod("getZeta", "newmodel",
+setMethod("newZeta", "newmodel",
           function(object) {
               return(object@zeta)
           }
@@ -270,7 +270,7 @@ setMethod("getZeta", "newmodel",
 
 #' @export
 #' @describeIn newmodel returns the dispersion parameter.
-setMethod("getPhi", "newmodel",
+setMethod("newPhi", "newmodel",
           function(object) {
               return(exp(-object@zeta))
           }
@@ -278,7 +278,7 @@ setMethod("getPhi", "newmodel",
 
 #' @export
 #' @describeIn newmodel returns the inverse of the dispersion parameter.
-setMethod("getTheta", "newmodel",
+setMethod("newTheta", "newmodel",
           function(object) {
               return(exp(object@zeta))
           }
@@ -287,7 +287,7 @@ setMethod("getTheta", "newmodel",
 #' @export
 #' @describeIn newmodel returns the regularization parameters for
 #'   \code{beta}.
-setMethod("getEpsilon_beta", "newmodel",
+setMethod("newEpsilon_beta", "newmodel",
           function(object) {
               e <- rep(object@epsilon_beta, ncol(object@X))
               if (object@X_intercept) {
@@ -300,7 +300,7 @@ setMethod("getEpsilon_beta", "newmodel",
 #' @export
 #' @describeIn newmodel returns the regularization parameters for
 #'   \code{gamma}.
-setMethod("getEpsilon_gamma", "newmodel",
+setMethod("newEpsilon_gamma", "newmodel",
           function(object) {
               e <- rep(object@epsilon_gamma, ncol(object@V))
               if (object@V_intercept) {
@@ -315,25 +315,25 @@ setMethod("getEpsilon_gamma", "newmodel",
 #' @export
 #' @describeIn newmodel returns the regularization parameters for
 #'   \code{W}.
-setMethod("getEpsilon_W", "newmodel",
+setMethod("newEpsilon_W", "newmodel",
           function(object) {
-              rep(object@epsilon_W, nFactors(object))
+              rep(object@epsilon_W, numberFactors(object))
           }
 )
 
 #' @export
 #' @describeIn newmodel returns the regularization parameters for
 #'   \code{alpha}.
-setMethod("getEpsilon_alpha", "newmodel",
+setMethod("newEpsilon_alpha", "newmodel",
           function(object) {
-              rep(object@epsilon_alpha, nFactors(object))
+              rep(object@epsilon_alpha, numberFactors(object))
           }
 )
 
 #' @export
 #' @describeIn newmodel returns the regularization parameters for
 #'   \code{zeta}.
-setMethod("getEpsilon_zeta", "newmodel",
+setMethod("newEpsilon_zeta", "newmodel",
           function(object) {
               object@epsilon_zeta
           }
@@ -342,7 +342,7 @@ setMethod("getEpsilon_zeta", "newmodel",
 #' @export
 #' @describeIn newmodel returns the matrix W of inferred sample-level
 #'   covariates.
-setMethod("getW", "newmodel",
+setMethod("newW", "newmodel",
           function(object) {
               object@W
           }
@@ -350,7 +350,7 @@ setMethod("getW", "newmodel",
 
 #' @export
 #' @describeIn newmodel returns the matrix beta of inferred parameters.
-setMethod("getBeta", "newmodel",
+setMethod("newBeta", "newmodel",
           function(object) {
               object@beta
           }
@@ -358,7 +358,7 @@ setMethod("getBeta", "newmodel",
 
 #' @export
 #' @describeIn newmodel returns the matrix gamma of inferred parameters.
-setMethod("getGamma", "newmodel",
+setMethod("newGamma", "newmodel",
           function(object) {
               object@gamma
           }
@@ -367,7 +367,7 @@ setMethod("getGamma", "newmodel",
 
 #' @export
 #' @describeIn newmodel returns the matrix alpha of inferred parameters.
-setMethod("getAlpha", "newmodel",
+setMethod("newAlpha", "newmodel",
           function(object) {
               object@alpha
           }
@@ -375,22 +375,22 @@ setMethod("getAlpha", "newmodel",
 
 
 #' @export
-#' @describeIn nParams returns the total number of parameters in the model.
-setMethod("nParams", "newmodel",
+#' @describeIn numberParams returns the total number of parameters in the model.
+setMethod("numberParams", "newmodel",
           function(model) {
 
-              X <- getX(model)
+              X <- newX(model)
 
-              V <- getV(model)
+              V <- newV(model)
 
-              n <- nSamples(model)
-              J <- nFeatures(model)
-              K <- nFactors(model)
+              n <- numberSamples(model)
+              J <- numberFeatures(model)
+              K <- numberFactors(model)
 
               M <- NCOL(X)
 
               L <- NCOL(V)
-              ndisp <- length(unique(getZeta(model)))
+              ndisp <- length(unique(newZeta(model)))
 
               J * (M) + n * (L) + 2 * K * J + n * K + ndisp
           }
@@ -421,10 +421,10 @@ setMethod(
             on.exit(assign(".Random.seed", R.seed, envir = .GlobalEnv))
         }
 
-        mu <- getMu(object)
-        theta <- getTheta(object)
-        n <- nSamples(object)
-        J <- nFeatures(object)
+        mu <- newMu(object)
+        theta <- newTheta(object)
+        n <- numberSamples(object)
+        J <- numberFeatures(object)
 
         # Simulate negative binomial with the mean matrix and dispersion
         # parameters
@@ -452,8 +452,8 @@ setMethod(
     f="loglik",
     signature=c("newmodel","matrix"),
     definition=function(model, x) {
-        nb.loglik(x, getMu(model),
-                  rep(getTheta(model), rep(nrow(x),ncol(x))))
+        nb.loglik(x, newMu(model),
+                  rep(newTheta(model), rep(nrow(x),ncol(x))))
     }
 )
 
@@ -463,10 +463,10 @@ setMethod(
     f="newAIC",
     signature=c("newmodel","matrix"),
     definition=function(model, x) {
-        if ((nSamples(model) != nrow(x))|(nFeatures(model) != ncol(x))) {
+        if ((numberSamples(model) != nrow(x))|(numberFeatures(model) != ncol(x))) {
             stop("x and model should have the same dimensions!")
         }
-        k <- nParams(model)
+        k <- numberParams(model)
         ll <- loglik(model, x)
         return(2*k - 2*ll)
     }
@@ -478,11 +478,11 @@ setMethod(
     f="newBIC",
     signature=c("newmodel","matrix"),
     definition=function(model, x) {
-        n <- nSamples(model)
-        if ((n != nrow(x))|(nFeatures(model) != ncol(x))) {
+        n <- numberSamples(model)
+        if ((n != nrow(x))|(numberFeatures(model) != ncol(x))) {
             stop("x and model should have the same dimensions!")
         }
-        k <- nParams(model)
+        k <- numberParams(model)
         ll <- loglik(model, x)
         return(log(n)*k - 2*ll)
     }
@@ -494,11 +494,11 @@ setMethod(
     f="penalty",
     signature="newmodel",
     definition=function(model) {
-        sum(getEpsilon_alpha(model)*(model@alpha)^2)/2 +
-        sum(getEpsilon_beta(model)*(model@beta)^2)/2 +
-        sum(getEpsilon_gamma(model)*(model@gamma)^2)/2 +
-        sum(getEpsilon_W(model)*t(model@W)^2)/2 +
-        getEpsilon_zeta(model)*var(getZeta(model))/2
+        sum(newEpsilon_alpha(model)*(model@alpha)^2)/2 +
+        sum(newEpsilon_beta(model)*(model@beta)^2)/2 +
+        sum(newEpsilon_gamma(model)*(model@gamma)^2)/2 +
+        sum(newEpsilon_W(model)*t(model@W)^2)/2 +
+        newEpsilon_zeta(model)*var(newZeta(model))/2
     }
 )
 
