@@ -9,7 +9,6 @@
 #'   sample per row.
 #' @slot V matrix. The design matrix containing gene-level covariates, one gene
 #'   per row.
-#' @slot O matrix. The offset matrix.
 #' @slot X_intercept logical. TRUE if X contains an intercept.
 #' @slot V_intercept logical. TRUE if V contains an intercept.
 #' @slot W matrix. The factors of sample-level latent factors.

@@ -106,7 +106,6 @@ setMethod("newFit", "SummarizedExperiment",
 #'
 #' @seealso \code{\link[stats]{model.matrix}}.
 #'
-#' @import BiocParallel
 #' @examples
 #' bio <- gl(2, 3)
 #' m <- newFit(matrix(rpois(60, lambda=5), nrow=10, ncol=6),
@@ -175,7 +174,11 @@ setMethod("newFit", "matrix",
     return(info)
 })
 
-
+#' @describeIn newFit Y is a DeleyedMatrix of counts (genes in rows).
+#' @export
+#'
+#'
+#' @import DelayedArray
 
 setMethod("newFit", "DelayedMatrix",
           function(Y, X, V, K,
@@ -242,20 +245,13 @@ setMethod("newFit", "dgCMatrix",
 #' 2.You can sample values from a gaussian distribution or a
 #' chisq distibution for the dispersion parameters,
 #'
-#' It creates different shared object and exort them to the father
+#' It creates different shared object and epxort them to the father
 #' and the child process.
 #' @param m The model of class newmodel
 #' @param Y The matrix of counts.
 #' @param random_start The type of start.
 #' @param children Number of child process.
-#' @examples
-#' Y <- matrix(rpois(60, lambda=2), 6, 10)
-#' bio <- gl(2, 3)
-#' time <- rnorm(6)
-#' gc <- rnorm(10)
-#' m <- newmodel(Y, X=model.matrix(~bio + time), V=model.matrix(~gc), K=1)
-#' m <- nbInitialize(m, Y)
-#'
+
 
 setup <- function(cluster, model, random_start, children,
                   random_init, verbose, Y, mode) {
@@ -312,6 +308,16 @@ setup <- function(cluster, model, random_start, children,
   }
 }
 
+#' Initialize the parameters of a Negative Binomial regression model
+#'
+#' It initialize gamma and beta using a Ridge Regression and W and alpha using PCA
+#' @param cluster The PSOCK cluster
+#' @param children Number of child process.
+#' @param model The newmodel object
+#' @param verbose Print proc time
+#' 
+#' @import irlba
+#' 
 
 initialization <- function(cluster, children, model, verbose){
 
@@ -347,20 +353,15 @@ initialization <- function(cluster, children, model, verbose){
 #'
 #' The parameters of the model given as argument are optimized by penalized
 #' maximum likelihood on the count matrix given as argument.
-#' @param m The model of class newmodel
-#' @param Y The matrix of counts.
-#' @param maxiter maximum number of iterations (default 25)
-#' @param stop.epsilon stopping criterion, when the relative gain in
-#'   likelihood is below epsilon (default 0.0001)
+#' @param cluster The PSOCK cluster
+#' @param children Number of child process
+#' @param model newmodel item
+#' @param max_iter maximum number of iterations
+#' @param stop_epsilon stopping criterion, when the relative gain in
+#'   likelihood is below epsilon
 #' @param verbose print information (default FALSE)
 #' @return An object of class newmodel similar to the one given as argument
 #'   with modified parameters alpha, beta, gamma, W.
-#' @examples
-#' Y = matrix(10, 3, 5)
-#' m = newmodel(n=NROW(Y), J=NCOL(Y))
-#' m = nbInitialize(m, Y)
-#' m = nbOptimize(m, Y)
-#' @export
 
 optimization <- function(cluster, children, model ,
                          max_iter, stop_epsilon,

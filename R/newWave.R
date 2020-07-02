@@ -20,57 +20,6 @@ nb.loglik.matrix <- function(model, x) {
   log(lik)
 }
 
-#' Observational weights of the zero-inflated negative binomial model for each entry
-#' in the matrix of counts
-#'
-#' Given a matrix of counts, this function computes the
-#' observational weights of the counts under a zero-inflated negative binomial
-#' (NB) model. For each count, the NB distribution is parametrized by three
-#' parameters: the mean value and the dispersion of the negative binomial
-#' distribution, and the probability of the zero component.
-#'
-#' @param model the nb model
-#' @param x the matrix of counts
-#' @return the matrix of observational weights computed from the model.
-#' @importFrom stats dnbinom
-#' @export
-computeObservationalWeights <- function(model, x){
-  mu <- getMu(model)
-  theta <- getTheta(model)
-  theta <- matrix(rep(theta, each = ncol(x)), ncol = nrow(x))
-  nb_part <- dnbinom(t(x), size = theta, mu = mu)
-  nbwg <- t(nbwg)
-  nbwg[x > 0] <- 1
-  nbwg[nbwg < 1e-15] <- 1e-15
-  nbwg
-}
-
-
-
-#' Deviance residuals of negative binomial model
-#'
-#' Given a matrix of counts, this function computes the
-#' deviance residuals under a negative binomial
-#' (NB) model.
-#'
-#' @param model the nb model
-#' @param x the matrix of counts n cells by J genes
-#' @param ignoreW logical, if true matrix \code{W} is ignored. Default is TRUE.
-#' @export
-#' @return the matrix of deviance residuals of the model.
-computeDevianceResiduals <- function(model, x, ignoreW = TRUE) {
-  
-  # this makes a copy of "model" -- is there a more efficient way?
-  if (ignoreW) {
-    model@W <- matrix(0, ncol = nFactors(model), nrow = nSamples(model))
-  }
-  
-  mu_hat <- getMu(model)
-  ll <- nb.loglik.matrix(model, x)
-  sign <- 1*(x - x_hat > 0)
-  sign[sign == 0] <- -1
-  sign * sqrt(-2 * ll)
-}
 
 
 #' @describeIn newWave Y is a
@@ -187,39 +136,6 @@ setMethod("newWave", "SummarizedExperiment",
                   dataY <- assay(Y, which_assay)
                 }
               }
-              
-              refit <- any(c(observationalWeights, normalizedValues, residuals)) &
-                (nrow(Y) != nFeatures(fitted_model)) & K > 0
-              
-              if(refit) {
-                fitted_model <- newFit(Y, X, V, K, which_assay,
-                                      commondispersion, verbose,
-                                      maxiter_optimize,
-                                      stop_epsilon, children,
-                                      random_init, random_start,
-                                      n_gene_disp,
-                                      n_cell_par, n_gene_par, cross_batch,...)
-              }
-              
-              if (normalizedValues){
-                norm <- computeDevianceResiduals(fitted_model, t(dataY),
-                                                 ignoreW = TRUE)
-                assay(out, "normalizedValues") <- t(norm)
-              }
-              
-              if (residuals){
-                devres <- computeDevianceResiduals(fitted_model, t(dataY),
-                                                   ignoreW = FALSE)
-                assay(out, "residuals") <- t(devres)
-              }
-              
-              
-              if (observationalWeights) {
-                weights <- computeObservationalWeights(fitted_model, dataY)
-                dimnames(weights) <- dimnames(out)
-                assay(out, "weights") <- weights
-              }
-              
             
               return(out)
           }
