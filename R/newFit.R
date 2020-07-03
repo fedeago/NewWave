@@ -3,7 +3,7 @@
 #' @export
 #'
 #' @import SharedObject
-#' @import SummarizedExperiment
+#' @import parallel
 #' @importFrom stats model.matrix as.formula
 #' @param Y The SummarizedExperiment with the data
 #' @param X The design matrix containing sample-level covariates, one sample per

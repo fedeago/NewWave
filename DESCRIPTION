@@ -10,12 +10,13 @@ Depends:
    R (>= 4.0),
    methods,
    SummarizedExperiment,
-   SharedObject(>= 1.2.2),
+   parallel,
    SingleCellExperiment,
-   DelayedArray,
-   Matrix
+   SharedObject(>= 1.2.2),
 Imports: 
-   irlba
+   irlba,
+   Matrix,
+   DelayedArray,
 Suggests:
    testthat
 License: GPL-3
