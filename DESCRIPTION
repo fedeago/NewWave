@@ -12,11 +12,11 @@ Depends:
    SummarizedExperiment,
    parallel,
    SingleCellExperiment,
-   SharedObject(>= 1.2.2),
+   SharedObject(>= 1.2.2)
 Imports: 
    irlba,
    Matrix,
-   DelayedArray,
+   DelayedArray
 Suggests:
    testthat
 License: GPL-3

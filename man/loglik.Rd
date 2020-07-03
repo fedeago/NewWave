@@ -32,5 +32,5 @@ data under the model.
 \examples{
 m <- newmodel(n=5, J=10)
 x <- newSim(m)
-loglik(m, t(x$counts))
+loglik(m, x$counts)
 }

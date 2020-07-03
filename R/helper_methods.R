@@ -452,8 +452,8 @@ setMethod(
     f="loglik",
     signature=c("newmodel","matrix"),
     definition=function(model, x) {
-        nb.loglik(x, newMu(model),
-                  rep(newTheta(model), rep(nrow(x),ncol(x))))
+        nb.loglik(t(x), newMu(model),
+                  rep(newTheta(model), rep(ncol(x),nrow(x))))
     }
 )
 
@@ -463,7 +463,7 @@ setMethod(
     f="newAIC",
     signature=c("newmodel","matrix"),
     definition=function(model, x) {
-        if ((numberSamples(model) != nrow(x))|(numberFeatures(model) != ncol(x))) {
+        if ((numberSamples(model) != ncol(x))|(numberFeatures(model) != nrow(x))) {
             stop("x and model should have the same dimensions!")
         }
         k <- numberParams(model)
@@ -479,7 +479,7 @@ setMethod(
     signature=c("newmodel","matrix"),
     definition=function(model, x) {
         n <- numberSamples(model)
-        if ((n != nrow(x))|(numberFeatures(model) != ncol(x))) {
+        if ((n != ncol(x))|(numberFeatures(model) != nrow(x))) {
             stop("x and model should have the same dimensions!")
         }
         k <- numberParams(model)
