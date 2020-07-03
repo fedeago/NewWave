@@ -193,12 +193,11 @@ setMethod("newFit", "matrix",
 
     }
     
-    orthog <- (numberFactors(m)>0)
-
+    
     # Optimize value
 
     info <- optimization(cluster = cl, children = children, model = m, max_iter = maxiter_optimize,
-                         orthog = orthog, stop_epsilon = stop_epsilon,
+                         stop_epsilon = stop_epsilon,
                          commondispersion = commondispersion,  n_gene_disp = n_gene_disp,
                          n_cell_par = n_cell_par, n_gene_par = n_gene_par, verbose =  verbose,
                          mode = "matrix", cross_batch = cross_batch)
@@ -243,12 +242,11 @@ setMethod("newFit", "DelayedMatrix",
                   random_init = random_init, verbose = verbose, Y = Y, mode = "Deleyed")
             
             
-            orthog <- (numberFactors(m)>0)
             
             # Optimize value
             
             info <- optimization(cluster = cl, children = children, model = m, max_iter = maxiter_optimize,
-                                 orthog = orthog, stop_epsilon = stop_epsilon,
+                                 stop_epsilon = stop_epsilon,
                                  commondispersion = commondispersion,  n_gene_disp = n_gene_disp,
                                  n_cell_par = n_cell_par, n_gene_par = n_gene_par, verbose =  verbose,
                                  mode = "Delayed")
@@ -397,7 +395,6 @@ initialization <- function(cluster, children, model, verbose){
 #' @param n_gene_disp number of genes used in mini-batch dispersion estimation approach(default NULL > all genes are used)
 #' @param n_cell_par number of cells used in mini-batch cells related parameters estimation approach(default NULL > all cells are used)
 #' @param n_gene_par number of genes used in mini-batch genes related parameters estimation approach(default NULL > all genes are used)
-#' @param orthog if TRUE an orthogonalization of the latent variable is done
 #' @param commondispersion Whether or not a single dispersion for all features
 #'   is estimated (default TRUE).
 #' @param verbose print information (default FALSE)
@@ -409,7 +406,7 @@ initialization <- function(cluster, children, model, verbose){
 optimization <- function(cluster, children, model ,
                          max_iter, stop_epsilon,
                          n_gene_disp,
-                         n_cell_par, n_gene_par, orthog,
+                         n_cell_par, n_gene_par,
                          commondispersion, verbose, mode, cross_batch){
 
   iter = 0
@@ -476,11 +473,10 @@ optimization <- function(cluster, children, model ,
     message("after right optimization= ",  l_pen)
     }
 
-    if (orthog) {
-      o <- orthogonalizeTraceNorm(W_sh, alpha_sh, model@epsilon_W, model@epsilon_alpha)
-      W_sh[] <- o$U
-      alpha_sh[] <- o$V
-    }
+    o <- orthogonalizeTraceNorm(W_sh, alpha_sh, model@epsilon_W, model@epsilon_alpha)
+    W_sh[] <- o$U
+    alpha_sh[] <- o$V
+    
 
     if(verbose){
     itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
@@ -508,11 +504,10 @@ optimization <- function(cluster, children, model ,
     message("after left optimization= ",  l_pen)
     }
 
-    if (orthog) {
-      o <- orthogonalizeTraceNorm(W_sh, alpha_sh, model@epsilon_W, model@epsilon_alpha)
-      W_sh[] <- o$U
-      alpha_sh[] <- o$V
-    }
+    o <- orthogonalizeTraceNorm(W_sh, alpha_sh, model@epsilon_W, model@epsilon_alpha)
+    W_sh[] <- o$U
+    alpha_sh[] <- o$V
+    
 
     if(verbose){
     itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +

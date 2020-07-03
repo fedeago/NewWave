@@ -13,7 +13,6 @@ optimization(
   n_gene_disp,
   n_cell_par,
   n_gene_par,
-  orthog,
   commondispersion,
   verbose,
   mode,
@@ -37,8 +36,6 @@ likelihood is below epsilon}
 \item{n_cell_par}{number of cells used in mini-batch cells related parameters estimation approach(default NULL > all cells are used)}
 
 \item{n_gene_par}{number of genes used in mini-batch genes related parameters estimation approach(default NULL > all genes are used)}
-
-\item{orthog}{if TRUE an orthogonalization of the latent variable is done}
 
 \item{commondispersion}{Whether or not a single dispersion for all features
 is estimated (default TRUE).}
