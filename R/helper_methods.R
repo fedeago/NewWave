@@ -447,9 +447,9 @@ setMethod(
 )
 
 #' @export
-#' @describeIn loglik return the log-likelihood of the nb model.
+#' @describeIn newloglik return the log-likelihood of the nb model.
 setMethod(
-    f="loglik",
+    f="newloglik",
     signature=c("newmodel","matrix"),
     definition=function(model, x) {
         nb.loglik(t(x), newMu(model),
@@ -467,7 +467,7 @@ setMethod(
             stop("x and model should have the same dimensions!")
         }
         k <- numberParams(model)
-        ll <- loglik(model, x)
+        ll <- newloglik(model, x)
         return(2*k - 2*ll)
     }
 )
@@ -483,15 +483,15 @@ setMethod(
             stop("x and model should have the same dimensions!")
         }
         k <- numberParams(model)
-        ll <- loglik(model, x)
+        ll <- newloglik(model, x)
         return(log(n)*k - 2*ll)
     }
 )
 
 #' @export
-#' @describeIn penalty return the penalization.
+#' @describeIn newpenalty return the penalization.
 setMethod(
-    f="penalty",
+    f="newpenalty",
     signature="newmodel",
     definition=function(model) {
         sum(newEpsilon_alpha(model)*(model@alpha)^2)/2 +

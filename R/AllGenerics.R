@@ -133,9 +133,9 @@ setGeneric("newSim",function(object, seed, ...) standardGeneric("newSim"))
 #' @examples
 #' m <- newmodel(n=5, J=10)
 #' x <- newSim(m)
-#' loglik(m, x$counts)
+#' newloglik(m, x$counts)
 #' @export
-setGeneric("loglik", function(model, x, ...) standardGeneric("loglik"))
+setGeneric("newloglik", function(model, x, ...) standardGeneric("newloglik"))
 
 #' Compute the penalty of a model
 #'
@@ -146,9 +146,9 @@ setGeneric("loglik", function(model, x, ...) standardGeneric("loglik"))
 #' @return The penalty of the model.
 #' @examples
 #' m <- newmodel(K=2)
-#' penalty(m)
+#' newpenalty(m)
 #' @export
-setGeneric("penalty", function(model) standardGeneric("penalty"))
+setGeneric("newpenalty", function(model) standardGeneric("newpenalty"))
 
 #' Fit a nb regression model
 #'
