@@ -7,13 +7,21 @@
 setup(cluster, model, random_start, children, random_init, verbose, Y, mode)
 }
 \arguments{
-\item{random_start}{The type of start.}
+\item{cluster}{the PSOCK cluster object}
+
+\item{model}{The model of class newmodel}
+
+\item{random_start}{if TRUE the setup of parameters is a random samplig(default FALSE)}
 
 \item{children}{Number of child process.}
 
-\item{Y}{The matrix of counts.}
+\item{random_init}{if TRUE no initializations is done(default FALSE)}
 
-\item{m}{The model of class newmodel}
+\item{verbose}{Print helpful messages(default FALSE).}
+
+\item{Y}{matrix of counts}
+
+\item{mode}{if Y is a matrix or a DelayedArray}
 }
 \description{
 There are different type of starting values:

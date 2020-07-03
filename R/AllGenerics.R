@@ -133,7 +133,7 @@ setGeneric("newSim",function(object, seed, ...) standardGeneric("newSim"))
 #' @examples
 #' m <- newmodel(n=5, J=10)
 #' x <- newSim(m)
-#' loglik(m, x$counts)
+#' loglik(m, t(x$counts))
 #' @export
 setGeneric("loglik", function(model, x, ...) standardGeneric("loglik"))
 

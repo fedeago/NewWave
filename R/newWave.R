@@ -7,7 +7,7 @@
 #' parameters: the mean value and the dispersion of the negative binomial
 #' distribution, and the probability of the zero component.
 #'
-#' @param model the nb model
+#' @param model the newmodel
 #' @param x the matrix of counts
 #' @return the matrix of log-likelihood of the model.
 #' @importFrom stats dnbinom
@@ -25,7 +25,8 @@ nb.loglik.matrix <- function(model, x) {
 #' @describeIn newWave Y is a
 #'   \code{\link[SummarizedExperiment]{SummarizedExperiment}}.
 #' @export
-#'
+#' 
+#' @param Y The SummarizedExperiment with the data
 #' @param X The design matrix containing sample-level covariates, one sample per
 #'   row. If missing, X will contain only an intercept. If Y is a
 #'   SummarizedExperiment object, X can be a formula using the variables in the
@@ -34,28 +35,24 @@ nb.loglik.matrix <- function(model, x) {
 #'   per row. If missing, V will contain only an intercept. If Y is a
 #'   SummarizedExperiment object, V can be a formula using the variables in the
 #'   rowData slot of Y.
-#' @param K integer. Number of latent factors. Specify \code{K = 0} if only
-#'   computing observational weights.
-#' @param fitted_model a \code{\link{newmodel}} object.
+#' @param K integer. Number of latent factors(default 2).
 #' @param which_assay numeric or character. Which assay of Y to use. If missing,
 #'   if `assayNames(Y)` contains "counts" then that is used. Otherwise, the
 #'   first assay is used.
 #' @param commondispersion Whether or not a single dispersion for all features
 #'   is estimated (default TRUE).
-#' @param verbose Print helpful messages.
-#' @param nb.repeat.initialize Number of iterations for the initialization of
-#'   beta_mu and gamma_mu.
-#' @param maxiter.optimize maximum number of iterations for the optimization
-#'   step (default 25).
-#' @param stop.epsilon.optimize stopping criterion in the optimization step,
+#' @param verbose Print helpful messages(default FALSE).
+#' @param maxiter_optimize maximum number of iterations for the optimization
+#'   step (default 100).
+#' @param stop_epsilon stopping criterion in the optimization step,
 #'   when the relative gain in likelihood is below epsilon (default 0.0001).
-#' @param normalizedValues indicates wether or not you want to compute
-#' normalized values for the counts after adjusting for gene and cell-level
-#' covariates.
-#' @param residuals indicates wether or not you want to compute the residuals
-#' of the NB model. Deviance residuals are computed.
-#' @param observationalWeights indicates whether to compute the observational
-#'   weights for differential expression (see vignette).
+#' @param children number of cores of the used cluster(default 1)
+#' @param random_init if TRUE no initializations is done(default FALSE)
+#' @param random_start if TRUE the setup of parameters is a random samplig(default FALSE)
+#' @param n_gene_disp number of genes used in mini-batch dispersion estimation approach(default NULL > all genes are used)
+#' @param n_cell_par number of cells used in mini-batch cells related parameters estimation approach(default NULL > all cells are used)
+#' @param n_gene_par number of genes used in mini-batch genes related parameters estimation approach(default NULL > all genes are used)
+#' @param cross_batch going to be eliminated
 #'
 #' @details For visualization (heatmaps, ...), please use the normalized values.
 #' It corresponds to the deviance residuals when the \code{W} is not included
@@ -98,8 +95,7 @@ setMethod("newWave", "SummarizedExperiment",
                    random_init = FALSE, random_start = FALSE,
                    n_gene_disp = NULL,
                    n_cell_par = NULL, n_gene_par = NULL,
-                   normalizedValues = FALSE, residuals = FALSE,
-                   observationalWeights = FALSE, cross_batch = FALSE,...) {
+                   cross_batch = FALSE,...) {
               
             
             

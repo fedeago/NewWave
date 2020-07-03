@@ -32,7 +32,22 @@ optimization(
 \item{stop_epsilon}{stopping criterion, when the relative gain in
 likelihood is below epsilon}
 
+\item{n_gene_disp}{number of genes used in mini-batch dispersion estimation approach(default NULL > all genes are used)}
+
+\item{n_cell_par}{number of cells used in mini-batch cells related parameters estimation approach(default NULL > all cells are used)}
+
+\item{n_gene_par}{number of genes used in mini-batch genes related parameters estimation approach(default NULL > all genes are used)}
+
+\item{orthog}{if TRUE an orthogonalization of the latent variable is done}
+
+\item{commondispersion}{Whether or not a single dispersion for all features
+is estimated (default TRUE).}
+
 \item{verbose}{print information (default FALSE)}
+
+\item{mode}{if Y is a matrix or a DelayedArray}
+
+\item{cross_batch}{going to be eliminated}
 }
 \value{
 An object of class newmodel similar to the one given as argument

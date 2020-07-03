@@ -8,7 +8,7 @@ in the matrix of counts}
 nb.loglik.matrix(model, x)
 }
 \arguments{
-\item{model}{the nb model}
+\item{model}{the newmodel}
 
 \item{x}{the matrix of counts}
 }

@@ -24,16 +24,12 @@ newWave(Y, ...)
   n_gene_disp = NULL,
   n_cell_par = NULL,
   n_gene_par = NULL,
-  normalizedValues = FALSE,
-  residuals = FALSE,
-  observationalWeights = FALSE,
   cross_batch = FALSE,
   ...
 )
 }
 \arguments{
-\item{Y}{The data (genes in rows, samples in columns). Currently implemented
-only for \code{SummarizedExperiment}.}
+\item{Y}{The SummarizedExperiment with the data}
 
 \item{...}{Additional parameters to describe the model, see
 \code{\link{newmodel}}.}
@@ -48,8 +44,7 @@ per row. If missing, V will contain only an intercept. If Y is a
 SummarizedExperiment object, V can be a formula using the variables in the
 rowData slot of Y.}
 
-\item{K}{integer. Number of latent factors. Specify \code{K = 0} if only
-computing observational weights.}
+\item{K}{integer. Number of latent factors(default 2).}
 
 \item{which_assay}{numeric or character. Which assay of Y to use. If missing,
 if `assayNames(Y)` contains "counts" then that is used. Otherwise, the
@@ -58,28 +53,27 @@ first assay is used.}
 \item{commondispersion}{Whether or not a single dispersion for all features
 is estimated (default TRUE).}
 
-\item{verbose}{Print helpful messages.}
+\item{verbose}{Print helpful messages(default FALSE).}
 
-\item{normalizedValues}{indicates wether or not you want to compute
-normalized values for the counts after adjusting for gene and cell-level
-covariates.}
+\item{maxiter_optimize}{maximum number of iterations for the optimization
+step (default 100).}
 
-\item{residuals}{indicates wether or not you want to compute the residuals
-of the NB model. Deviance residuals are computed.}
-
-\item{observationalWeights}{indicates whether to compute the observational
-weights for differential expression (see vignette).}
-
-\item{fitted_model}{a \code{\link{newmodel}} object.}
-
-\item{nb.repeat.initialize}{Number of iterations for the initialization of
-beta_mu and gamma_mu.}
-
-\item{maxiter.optimize}{maximum number of iterations for the optimization
-step (default 25).}
-
-\item{stop.epsilon.optimize}{stopping criterion in the optimization step,
+\item{stop_epsilon}{stopping criterion in the optimization step,
 when the relative gain in likelihood is below epsilon (default 0.0001).}
+
+\item{children}{number of cores of the used cluster(default 1)}
+
+\item{random_init}{if TRUE no initializations is done(default FALSE)}
+
+\item{random_start}{if TRUE the setup of parameters is a random samplig(default FALSE)}
+
+\item{n_gene_disp}{number of genes used in mini-batch dispersion estimation approach(default NULL > all genes are used)}
+
+\item{n_cell_par}{number of cells used in mini-batch cells related parameters estimation approach(default NULL > all cells are used)}
+
+\item{n_gene_par}{number of genes used in mini-batch genes related parameters estimation approach(default NULL > all genes are used)}
+
+\item{cross_batch}{going to be eliminated}
 }
 \value{
 An object of class \code{SingleCellExperiment}; the dimensionality

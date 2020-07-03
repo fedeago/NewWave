@@ -5,9 +5,34 @@
 #' @import SharedObject
 #' @import SummarizedExperiment
 #' @importFrom stats model.matrix as.formula
-#' 
-#' @param which_assay numeric or character. Which assay of Y to use (only if Y
-#'   is a SummarizedExperiment).
+#' @param Y The SummarizedExperiment with the data
+#' @param X The design matrix containing sample-level covariates, one sample per
+#'   row. If missing, X will contain only an intercept. If Y is a
+#'   SummarizedExperiment object, X can be a formula using the variables in the
+#'   colData slot of Y.
+#' @param V The design matrix containing gene-level covariates, one gene
+#'   per row. If missing, V will contain only an intercept. If Y is a
+#'   SummarizedExperiment object, V can be a formula using the variables in the
+#'   rowData slot of Y.
+#' @param K integer. Number of latent factors(default 2).
+#' @param which_assay numeric or character. Which assay of Y to use. If missing,
+#'   if `assayNames(Y)` contains "counts" then that is used. Otherwise, the
+#'   first assay is used.
+#' @param commondispersion Whether or not a single dispersion for all features
+#'   is estimated (default TRUE).
+#' @param verbose Print helpful messages(default FALSE).
+#' @param maxiter_optimize maximum number of iterations for the optimization
+#'   step (default 100).
+#' @param stop_epsilon stopping criterion in the optimization step,
+#'   when the relative gain in likelihood is below epsilon (default 0.0001).
+#' @param children number of cores of the used cluster(default 1)
+#' @param random_init if TRUE no initializations is done(default FALSE)
+#' @param random_start if TRUE the setup of parameters is a random samplig(default FALSE)
+#' @param n_gene_disp number of genes used in mini-batch dispersion estimation approach(default NULL > all genes are used)
+#' @param n_cell_par number of cells used in mini-batch cells related parameters estimation approach(default NULL > all cells are used)
+#' @param n_gene_par number of genes used in mini-batch genes related parameters estimation approach(default NULL > all genes are used)
+#' @param cross_batch going to be eliminated
+#'
 #' @examples
 #' se <- SummarizedExperiment(matrix(rpois(60, lambda=5), nrow=10, ncol=6),
 #'                            colData = data.frame(bio = gl(2, 3)))
@@ -80,22 +105,29 @@ setMethod("newFit", "SummarizedExperiment",
 #' @describeIn newFit Y is a matrix of counts (genes in rows).
 #' @export
 #'
+#' @param Y The matrix with the data
 #' @param X The design matrix containing sample-level covariates, one sample per
-#'   row. If missing, X will contain only an intercept. If Y is a
-#'   SummarizedExperiment object, X can be a formula using the variables in the
-#'   colData slot of Y.
+#'   row. If missing, X will contain only an intercept.
 #' @param V The design matrix containing gene-level covariates, one gene
-#'   per row. If missing, V will contain only an intercept. If Y is a
-#'   SummarizedExperiment object, V can be a formula using the variables in the
-#'   rowData slot of Y.
-#' @param K integer. Number of latent factors..
-#' @param verbose Print helpful messages.
-#' @param nb.repeat.initialize Number of iterations for the initialization of
-#'   beta and gamma.
-#' @param maxiter.optimize maximum number of iterations for the optimization
-#'   step (default 25).
-#' @param stop.epsilon.optimize stopping criterion in the optimization step,
+#'   per row. If missing, V will contain only an intercept.
+#' @param K integer. Number of latent factors(default 2).
+#' @param which_assay numeric or character. Which assay of Y to use. If missing,
+#'   if `assayNames(Y)` contains "counts" then that is used. Otherwise, the
+#'   first assay is used.
+#' @param commondispersion Whether or not a single dispersion for all features
+#'   is estimated (default TRUE).
+#' @param verbose Print helpful messages(default FALSE).
+#' @param maxiter_optimize maximum number of iterations for the optimization
+#'   step (default 100).
+#' @param stop_epsilon stopping criterion in the optimization step,
 #'   when the relative gain in likelihood is below epsilon (default 0.0001).
+#' @param children number of cores of the used cluster(default 1)
+#' @param random_init if TRUE no initializations is done(default FALSE)
+#' @param random_start if TRUE the setup of parameters is a random samplig(default FALSE)
+#' @param n_gene_disp number of genes used in mini-batch dispersion estimation approach(default NULL > all genes are used)
+#' @param n_cell_par number of cells used in mini-batch cells related parameters estimation approach(default NULL > all cells are used)
+#' @param n_gene_par number of genes used in mini-batch genes related parameters estimation approach(default NULL > all genes are used)
+#' @param cross_batch going to be eliminated
 #'
 #' @details By default, i.e., if no arguments other than \code{Y} are passed,
 #'   the model is fitted with an intercept for the regression across-samples and
@@ -182,8 +214,7 @@ setMethod("newFit", "matrix",
 
 setMethod("newFit", "DelayedMatrix",
           function(Y, X, V, K,
-                   commondispersion, verbose,
-                   nb_repeat, maxiter_optimize,
+                   commondispersion, verbose, maxiter_optimize,
                    stop_epsilon, children,
                    random_start, n_gene_disp,
                    n_cell_par, n_gene_par,
@@ -247,10 +278,14 @@ setMethod("newFit", "dgCMatrix",
 #'
 #' It creates different shared object and epxort them to the father
 #' and the child process.
-#' @param m The model of class newmodel
-#' @param Y The matrix of counts.
-#' @param random_start The type of start.
+#' @param cluster the PSOCK cluster object
+#' @param model The model of class newmodel
+#' @param random_start if TRUE the setup of parameters is a random samplig(default FALSE)
 #' @param children Number of child process.
+#' @param random_init if TRUE no initializations is done(default FALSE)
+#' @param verbose Print helpful messages(default FALSE).
+#' @param Y matrix of counts
+#' @param mode if Y is a matrix or a DelayedArray
 
 
 setup <- function(cluster, model, random_start, children,
@@ -359,7 +394,15 @@ initialization <- function(cluster, children, model, verbose){
 #' @param max_iter maximum number of iterations
 #' @param stop_epsilon stopping criterion, when the relative gain in
 #'   likelihood is below epsilon
+#' @param n_gene_disp number of genes used in mini-batch dispersion estimation approach(default NULL > all genes are used)
+#' @param n_cell_par number of cells used in mini-batch cells related parameters estimation approach(default NULL > all cells are used)
+#' @param n_gene_par number of genes used in mini-batch genes related parameters estimation approach(default NULL > all genes are used)
+#' @param orthog if TRUE an orthogonalization of the latent variable is done
+#' @param commondispersion Whether or not a single dispersion for all features
+#'   is estimated (default TRUE).
 #' @param verbose print information (default FALSE)
+#' @param mode if Y is a matrix or a DelayedArray
+#' @param cross_batch going to be eliminated
 #' @return An object of class newmodel similar to the one given as argument
 #'   with modified parameters alpha, beta, gamma, W.
 
