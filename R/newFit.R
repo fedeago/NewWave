@@ -4,7 +4,7 @@
 #'
 #' @import SharedObject
 #' @import parallel
-#' @importFrom stats model.matrix as.formula
+#' @importFrom stats model.matrix as.formula optimize rnbinom rnorm runif var
 #' @param Y The SummarizedExperiment with the data
 #' @param X The design matrix containing sample-level covariates, one sample per
 #'   row. If missing, X will contain only an intercept. If Y is a
