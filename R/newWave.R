@@ -12,12 +12,12 @@
 #' @return the matrix of log-likelihood of the model.
 #' @importFrom stats dnbinom
 nb.loglik.matrix <- function(model, x) {
-  mu <- newMu(model)
-  theta <- newTheta(model)
-  theta_mat <- matrix(rep(theta, each = nrow(x)), ncol = ncol(x))
-  lik <- dnbinom(x, size = theta_mat, mu = mu)
-  lik[lik == 0] <- min(lik[lik != 0]) #to avoid log lik to be infinite
-  log(lik)
+    mu <- newMu(model)
+    theta <- newTheta(model)
+    theta_mat <- matrix(rep(theta, each = nrow(x)), ncol = ncol(x))
+    lik <- dnbinom(x, size = theta_mat, mu = mu)
+    lik[lik == 0] <- min(lik[lik != 0]) #to avoid log lik to be infinite
+    log(lik)
 }
 
 
@@ -88,7 +88,7 @@ nb.loglik.matrix <- function(model, x) {
 #'
 #' m <- newWave(se, X="~bio")
 setMethod("newWave", "SummarizedExperiment",
-          function(Y, X, V, K=2, which_assay,
+       function(Y, X, V, K=2, which_assay,
                    commondispersion = TRUE, verbose=FALSE,
                    maxiter_optimize=100,
                    stop_epsilon=.0001,  children = 1,
@@ -99,40 +99,40 @@ setMethod("newWave", "SummarizedExperiment",
               
             
             
-              fitted_model <- newFit(Y, X, V, K,
-                                      which_assay, commondispersion,
-                                      verbose,
-                                      maxiter_optimize, stop_epsilon,
-                                      children, random_init, 
-                                      random_start, n_gene_disp,
-                                      n_cell_par, n_gene_par, cross_batch, ...)
+           fitted_model <- newFit(Y, X, V, K,
+                                     which_assay, commondispersion,
+                                     verbose,
+                                     maxiter_optimize, stop_epsilon,
+                                     children, random_init, 
+                                     random_start, n_gene_disp,
+                                     n_cell_par, n_gene_par, cross_batch, ...)
               
               
               
-              out <- as(Y, "SingleCellExperiment")
+           out <- as(Y, "SingleCellExperiment")
               
-              if (numberFactors(fitted_model) > 0){
-                W <- newW(fitted_model)
-                colnames(W) <- paste0('W', seq_len(numberFactors(fitted_model)))
-                reducedDim(out, "newWave") <- W
-              }
+               if (numberFactors(fitted_model) > 0){
+                   W <- newW(fitted_model)
+                   colnames(W) <- paste0('W', seq_len(numberFactors(fitted_model)))
+                   reducedDim(out, "newWave") <- W
+               }
               
-              if(missing(which_assay)) {
-                if("counts" %in% assayNames(Y)) {
-                  dataY <- assay(Y, "counts")
-                } else {
-                  warning("No assay named `counts`, using first assay.",
+               if(missing(which_assay)) {
+                   if("counts" %in% assayNames(Y)) {
+                   dataY <- assay(Y, "counts")
+                   } else {
+                   warning("No assay named `counts`, using first assay.",
                           "Use `assay` to specify a different assay.")
-                  dataY <- assay(Y)
-                }
-              } else {
-                if(!(is.character(which_assay) | is.numeric(which_assay))) {
-                  stop("assay needs to be a numeric or character specifying which assay to use")
-                } else {
-                  dataY <- assay(Y, which_assay)
-                }
-              }
+                   dataY <- assay(Y)
+                   }
+               } else {
+                   if(!(is.character(which_assay) | is.numeric(which_assay))) {
+                   stop("assay needs to be a numeric or character specifying which assay to use")
+               } else {
+                   dataY <- assay(Y, which_assay)
+               }
+           }
             
-              return(out)
+               return(out)
           }
 )

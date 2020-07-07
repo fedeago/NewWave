@@ -319,6 +319,9 @@ setGeneric("newEpsilon_zeta",
 #' @param x an object that describes a dataset or a model.
 #' @return the number of features.
 #' @export
+#' #' @examples
+#' a <- newmodel(n=5, J=10)
+#' numberFeatures(a)
 setGeneric(
     name = "numberFeatures",
     def = function(x) {
@@ -333,6 +336,9 @@ setGeneric(
 #' @param x an object that describes a dataset or a model.
 #' @return the number of samples.
 #' @export
+#' #' @examples
+#' a <- newmodel(n=5, J=10)
+#' numberSamples(a)
 setGeneric(
     name = "numberSamples",
     def = function(x) {
@@ -347,6 +353,9 @@ setGeneric(
 #' @param model an object that describes a dataset or a model.
 #' @return the total number of parameters of the model.
 #' @export
+#' #' @examples
+#' a <- newmodel(n=5, J=10)
+#' numberParams(a)
 setGeneric(
     name = "numberParams",
     def = function(model) {

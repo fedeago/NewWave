@@ -8,19 +8,27 @@ Description: A model designed for dimensionality reduction and batch effect remo
     It is designed to be massively parallelizable and it can be used with different
     mini-batch approaches in order to reduce time consumption.
 Depends: 
-   R (>= 4.0),
-   methods,
-   SummarizedExperiment,
-   parallel,
-   SingleCellExperiment,
-   SharedObject(>= 1.2.2)
+    R (>= 4.0),
+    methods,
+    SummarizedExperiment,
+    parallel,
+    SingleCellExperiment,
+    SharedObject(>= 1.2.2)
 Imports: 
-   irlba,
-   Matrix,
-   DelayedArray
+    irlba,
+    Matrix,
+    DelayedArray,
+    stats
 Suggests:
-   testthat
+    testthat,
+    knitr
 License: GPL-3
+VignetteBuilder: knitr
+biocViews: Software,
+    GeneExpression,
+    Transcriptomics,
+    SingleCell,
+    BatchEffect
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1

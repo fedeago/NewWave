@@ -67,103 +67,103 @@
 #' numberFactors(a)
 
 newmodel <- function(X, V, W, beta,
-                      gamma,alpha, zeta, epsilon,
-                      epsilon_beta, epsilon_gamma, epsilon_W, epsilon_alpha,
-                      epsilon_zeta, n, J, K) {
+                       gamma,alpha, zeta, epsilon,
+                       epsilon_beta, epsilon_gamma, epsilon_W, epsilon_alpha,
+                       epsilon_zeta, n, J, K) {
 
-    # Find n (default 50), J (default 100), K (default 0)
-    if (missing(n)) {
-        if (!missing(X)) {
-            n <- NROW(X)
-        } else if (!missing(gamma)) {
-            n <- NCOL(gamma)
-        }  else if (!missing(W)) {
-            n <- NROW(W)
-        } else {
-            n <- 50
-        }
-    }
-    if (missing(J)) {
-        if (!missing(V)) {
-            J <- NROW(V)
-        } else if (!missing(beta)) {
-            J <- NCOL(beta)
-        }  else if (!missing(alpha)) {
-            J <- NCOL(alpha)
-        }  else if (!missing(zeta)) {
-            J <- length(zeta)
-        } else {
-            J <- 100
-        }
-    }
-    if (missing(K)) {
-        if (!missing(W)) {
-            K <- NCOL(W)
-        } else {
-            K <- 0
-        }
-    }
+   # Find n (default 50), J (default 100), K (default 0)
+   if (missing(n)) {
+           if (!missing(X)) {
+               n <- NROW(X)
+           } else if (!missing(gamma)) {
+               n <- NCOL(gamma)
+           }  else if (!missing(W)) {
+               n <- NROW(W)
+           } else {
+               n <- 50
+           }
+       }
+           if (missing(J)) {
+               if (!missing(V)) {
+               J <- NROW(V)
+           } else if (!missing(beta)) {
+               J <- NCOL(beta)
+           }  else if (!missing(alpha)) {
+               J <- NCOL(alpha)
+           }  else if (!missing(zeta)) {
+               J <- length(zeta)
+           } else {
+               J <- 100
+           }
+       }
+       if (missing(K)) {
+           if (!missing(W)) {
+               K <- NCOL(W)
+           } else {
+               K <- 0
+           }
+       }
 
     # Set the different slots for the matrices
-    if(missing(X)) {
-        X <- matrix(1, nrow=n, ncol=1)
-    }
+       if(missing(X)) {
+           X <- matrix(1, nrow=n, ncol=1)
+       }
 
-    if (missing(V)) {
-        V <- matrix(1, nrow=J, ncol=1)
-    }
-
-
-    X_intercept <- FALSE
-    if(ncol(X) > 0) {
-        X_intercept <- TRUE
-    }
+       if (missing(V)) {
+           V <- matrix(1, nrow=J, ncol=1)
+       }
 
 
-    V_intercept <- FALSE
-    if(ncol(V) > 0) {
-        V_intercept <- TRUE
+       X_intercept <- FALSE
+       if(ncol(X) > 0) {
+           X_intercept <- TRUE
+       }
 
-    }
 
-    if (missing(W)) {
-        W <- matrix(0, nrow=n , ncol=K)
-    }
+       V_intercept <- FALSE
+       if(ncol(V) > 0) {
+           V_intercept <- TRUE
 
-    if (missing(beta)) {
-        beta <- matrix(0, nrow=ncol(X), ncol=J)
-    }
-    if (missing(gamma)) {
-        gamma <- matrix(0, nrow=ncol(V), ncol=n)
-    }
-    if (missing(alpha)) {
-        alpha <- matrix(0, nrow=K , ncol=J)
-    }
-    if (missing(zeta)) {
-        zeta <- numeric(J)
-    }
+       }
 
-    # Regularization parameters
-    if (missing(epsilon)) {
-        epsilon <- J
-    }
-    if (missing(epsilon_beta)) {
-        epsilon_beta <- epsilon/J
-    }
-    if (missing(epsilon_gamma)) {
-        epsilon_gamma <- epsilon/n
-    }
-    if (missing(epsilon_W)) {
-        epsilon_W <- epsilon/n
-    }
-    if (missing(epsilon_alpha)) {
-        epsilon_alpha <- epsilon/J
-    }
-    if (missing(epsilon_zeta)) {
-        epsilon_zeta <- epsilon
-    }
+       if (missing(W)) {
+           W <- matrix(0, nrow=n , ncol=K)
+       }
 
-    obj <- new(Class="newmodel",
+       if (missing(beta)) {
+           beta <- matrix(0, nrow=ncol(X), ncol=J)
+       }
+       if (missing(gamma)) {
+           gamma <- matrix(0, nrow=ncol(V), ncol=n)
+       }
+       if (missing(alpha)) {
+           alpha <- matrix(0, nrow=K , ncol=J)
+       }
+       if (missing(zeta)) {
+           zeta <- numeric(J)
+       }
+
+       # Regularization parameters
+       if (missing(epsilon)) {
+           epsilon <- J
+       }
+       if (missing(epsilon_beta)) {
+           epsilon_beta <- epsilon/J
+       }
+       if (missing(epsilon_gamma)) {
+           epsilon_gamma <- epsilon/n
+       }
+       if (missing(epsilon_W)) {
+           epsilon_W <- epsilon/n
+       }
+       if (missing(epsilon_alpha)) {
+           epsilon_alpha <- epsilon/J
+       }
+       if (missing(epsilon_zeta)) {
+           epsilon_zeta <- epsilon
+       }
+
+       obj <- new(Class="newmodel",
                X = X, V = V, X_intercept = X_intercept,
                V_intercept = V_intercept, W = W, beta = beta,
                gamma = gamma, alpha = alpha, zeta = zeta,
@@ -172,8 +172,8 @@ newmodel <- function(X, V, W, beta,
                epsilon_W = epsilon_W, epsilon_alpha = epsilon_alpha,
                epsilon_zeta = epsilon_zeta)
 
-    validObject(obj) # call of the inspector
-    return(obj)
+       validObject(obj) # call of the inspector
+       return(obj)
 }
 
 #' @export
@@ -183,7 +183,7 @@ newmodel <- function(X, V, W, beta,
 setMethod("show", "newmodel",
           function(object) {
               cat(paste0("Object of class newmodel.\n",
-                         numberSamples(object), " samples; ", numberFeatures(object),
+                numberSamples(object), " samples; ", numberFeatures(object),
                          " genes.\n",
                          NCOL(newX(object)),
                          " sample-level covariate(s) (mu); ",
@@ -463,7 +463,7 @@ setMethod(
     f="newAIC",
     signature=c("newmodel","matrix"),
     definition=function(model, x) {
-        if ((numberSamples(model) != ncol(x))|(numberFeatures(model) != nrow(x))) {
+    if ((numberSamples(model) != ncol(x))|(numberFeatures(model) != nrow(x))) {
             stop("x and model should have the same dimensions!")
         }
         k <- numberParams(model)

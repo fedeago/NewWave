@@ -3,7 +3,12 @@ title: "NewWave example"
 author: "Federico Agostinis"
 date: "22/6/2020"
 output: html_document
+vignette: >
+  %\VignetteIndexEntry{NewWave example}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
 ---
+
 
 ```{r}
 library(splatter)
@@ -74,11 +79,11 @@ Let's try to correct it.
 The default options use 1 core and no mini-batch approaches, it don't use the verbose option but I set it TRUE for example purpose(not suggested with big dataset).
 The default number of latent variables is 2, I will set it equal to 10.
 ```{r}
-res <- newWave(data,X = "~Batch", K=10, verbose = T)
+res <- newWave(data,X = "~Batch", K=10, verbose = TRUE)
 ```
 In order to make it faster you can increase the number of cores using "children" parameter:
 ```{r}
-res2 <- newWave(data,X = "~Batch", K=10, verbose = T, children=10)
+res2 <- newWave(data,X = "~Batch", K=10, verbose = TRUE, children=10)
 ```
 
 Or use some mini-batch approaches:
@@ -87,7 +92,7 @@ Or use some mini-batch approaches:
  - n_gene_par : Number of genes to use in the genes related parameters optimization
 
 ```{r}
-res3 <- newWave(data,X = "~Batch", verbose = T,K=10, children=10, n_gene_disp=100,  n_gene_par = 100, n_cell_par = 100, commondispersion = F)
+res3 <- newWave(data,X = "~Batch", verbose = T,K=10, children=10, n_gene_disp=100,  n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)
 ```
 
 Now I can use the latent dimension rapresentation for  visualization purpose:

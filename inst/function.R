@@ -236,7 +236,7 @@ optim_genwise_dispersion <- function(k, num_gene, iter) {
   
 }
 
-optimr <- function(k, num_gene,cross_batch=F, iter) {
+optimr <- function(k, num_gene,cross_batch=FALSE, iter) {
 
     step <- ceiling(ncol(Y_sh) / children)
     j1 <- (k-1) * step + 1
@@ -261,8 +261,8 @@ optimr <- function(k, num_gene,cross_batch=F, iter) {
     for ( j in intervall){
 
       out <- optimright_fun_nb(
-        beta_sh[,j,drop=F], alpha_sh[,j,drop=F], Y_sh[cells,j,drop=F], X_sh[cells,,drop=F],
-        W_sh[cells,,drop=F], V_sh[j,,drop=F], gamma_sh[,cells, drop=F], zeta_sh[j],
+        beta_sh[,j,drop=FALSE], alpha_sh[,j,drop=FALSE], Y_sh[cells,j,drop=FALSE], X_sh[cells,,drop=FALSE],
+        W_sh[cells,,drop=FALSE], V_sh[j,,drop=FALSE], gamma_sh[,cells, drop=FALSE], zeta_sh[j],
         length(cells), epsilonright)
 
       params <- split_params(out, "right")
@@ -297,8 +297,8 @@ optimr_delayed <- function(k, num_gene) {
         refdim = dim(Y_sh[,intervall]),
         spacings = c(nrow(Y_sh[,intervall]), 1L)),
       BPPARAM = BiocParallel::SerialParam(),
-      beta = beta_sh[,intervall, drop = F], alpha = alpha_sh[,intervall, drop = F], X = X_sh,
-      W = W_sh, V = V_sh[intervall,,drop = F], gamma = gamma_sh, 
+      beta = beta_sh[,intervall, drop = FALSE], alpha = alpha_sh[,intervall, drop = FALSE], X = X_sh,
+      W = W_sh, V = V_sh[intervall,,drop = FALSE], gamma = gamma_sh, 
       zeta = zeta_sh[intervall], n = nrow(Y_sh),epsilonright = epsilonright,
       intervall = intervall
     )
@@ -335,7 +335,7 @@ optimright_fun_nb <- function(beta, alpha, Y, X, W,
          method="BFGS")$par
 }
 
-optiml <- function(k, num_cell,cross_batch=F, iter){
+optiml <- function(k, num_cell,cross_batch=FALSE, iter){
 
     step <- ceiling( nrow(Y_sh) / children)
     j1 <- (k-1) * step + 1
@@ -395,8 +395,8 @@ optiml_delayed <- function(k, num_cell){
         refdim = dim(Y_sh[intervall,]),
         spacings = c( 1L, ncol(Y_sh[intervall,]))),
       BPPARAM = BiocParallel::SerialParam(),
-      gamma = gamma_sh[,intervall, drop = F],  W = W_sh[intervall,, drop = F], V = V_sh,
-      alpha = alpha_sh, X = X_sh[intervall,, drop = F], beta = beta_sh,  
+      gamma = gamma_sh[,intervall, drop = FALSE],  W = W_sh[intervall,, drop = FALSE], V = V_sh,
+      alpha = alpha_sh, X = X_sh[intervall,, drop = FALSE], beta = beta_sh,  
       zeta = zeta_sh, epsilonleft = epsilonleft,
       intervall = intervall)
     

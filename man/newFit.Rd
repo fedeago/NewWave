@@ -16,7 +16,7 @@ newFit(Y, ...)
   V,
   K = 2,
   which_assay,
-  commondispersion = T,
+  commondispersion = TRUE,
   verbose = FALSE,
   maxiter_optimize = 100,
   stop_epsilon = 1e-04,
@@ -26,7 +26,7 @@ newFit(Y, ...)
   n_gene_disp = NULL,
   n_cell_par = NULL,
   n_gene_par = NULL,
-  cross_batch = F,
+  cross_batch = FALSE,
   ...
 )
 
@@ -35,7 +35,7 @@ newFit(Y, ...)
   X,
   V,
   K = 2,
-  commondispersion = T,
+  commondispersion = TRUE,
   verbose = FALSE,
   maxiter_optimize = 100,
   stop_epsilon = 1e-04,
@@ -45,7 +45,7 @@ newFit(Y, ...)
   n_gene_disp = NULL,
   n_cell_par = NULL,
   n_gene_par = NULL,
-  cross_batch = F,
+  cross_batch = FALSE,
   ...
 )
 
