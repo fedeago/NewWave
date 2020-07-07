@@ -3,7 +3,6 @@
 \docType{class}
 \name{newmodel-class}
 \alias{newmodel-class}
-\alias{newmodel}
 \alias{show,newmodel-method}
 \alias{numberSamples,newmodel-method}
 \alias{numberFeatures,newmodel-method}

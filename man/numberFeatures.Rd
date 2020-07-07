@@ -5,14 +5,27 @@
 \title{Generic function that returns the number of features}
 \usage{
 numberFeatures(x)
+
+numberFeatures(x)
 }
 \arguments{
 \item{x}{an object that describes a dataset or a model.}
 }
 \value{
+the number of features
+
 the number of features.
 }
 \description{
+Given an object that describes a dataset or a model involving features,
+this function returns the number of features
+
 Given an object that describes a dataset or a model, it returns the number of
 features.
+}
+\examples{
+a <- newmodel(n=5, J=10)
+numberFeatures(a)
+a <- newmodel(n=5, J=10)
+numberFeatures(a)
 }

@@ -33,7 +33,6 @@
 #' @name newmodel-class
 #' @import methods
 #' @exportClass newmodel
-#' @aliases newmodel
 #'
 #' @return \code{numberSamples} returns the number of samples; \code{numberFeatures}
 #' returns the number of features; \code{numberFactors} returns the number of latent

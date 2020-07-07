@@ -5,14 +5,27 @@
 \title{Generic function that returns the number of samples}
 \usage{
 numberSamples(x)
+
+numberSamples(x)
 }
 \arguments{
 \item{x}{an object that describes a dataset or a model.}
 }
 \value{
+the number of samples
+
 the number of samples.
 }
 \description{
+Given an object that describes a dataset or a model involving samples,
+this function returns the number of samples.
+
 Given an object that describes a model or a dataset, it returns the number of
 samples.
+}
+\examples{
+a <- newmodel(n=5, J=10)
+numberSamples(a)
+a <- newmodel(n=5, J=10)
+numberSamples(a)
 }

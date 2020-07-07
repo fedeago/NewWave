@@ -7,14 +7,14 @@
 newPhi(object)
 }
 \arguments{
-\item{object}{an object that describes a matrix of zero-inflated.
+\item{object}{an object that describes a matrix of negative binomial.
 distributions.}
 }
 \value{
 the vector of dispersion parameters
 }
 \description{
-Given an object that describes a matrix of zero-inflated negative binomial
+Given an object that describes a matrix of negative binomial negative binomial
 distributions, returns the vector of dispersion parameters \code{phi}.
 }
 \examples{

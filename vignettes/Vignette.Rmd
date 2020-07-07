@@ -13,7 +13,6 @@ vignette: >
 ```{r}
 library(splatter)
 library(NewWave)
-library(scran)
 library(irlba)
 library(Rtsne)
 library(ggplot2)
@@ -77,13 +76,13 @@ Let's try to correct it.
 # NewWave
 
 The default options use 1 core and no mini-batch approaches, it don't use the verbose option but I set it TRUE for example purpose(not suggested with big dataset).
-The default number of latent variables is 2, I will set it equal to 10.
+The default number of latent variables is 2.
 ```{r}
-res <- newWave(data,X = "~Batch", K=10, verbose = TRUE)
+res <- newWave(data,X = "~Batch", K=2, verbose = TRUE)
 ```
 In order to make it faster you can increase the number of cores using "children" parameter:
 ```{r}
-res2 <- newWave(data,X = "~Batch", K=10, verbose = TRUE, children=10)
+res2 <- newWave(data,X = "~Batch", K=2, verbose = TRUE, children=2)
 ```
 
 Or use some mini-batch approaches:
@@ -92,7 +91,7 @@ Or use some mini-batch approaches:
  - n_gene_par : Number of genes to use in the genes related parameters optimization
 
 ```{r}
-res3 <- newWave(data,X = "~Batch", verbose = T,K=10, children=10, n_gene_disp=100,  n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)
+res3 <- newWave(data,X = "~Batch", verbose = T,K=2, children=2, n_gene_disp=100,  n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)
 ```
 
 Now I can use the latent dimension rapresentation for  visualization purpose:

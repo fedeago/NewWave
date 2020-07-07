@@ -21,6 +21,11 @@ Imports:
     stats
 Suggests:
     testthat,
+    rmarkdown,
+    splatter,
+    mclust,
+    Rtsne,
+    ggplot2,
     knitr
 License: GPL-3
 VignetteBuilder: knitr

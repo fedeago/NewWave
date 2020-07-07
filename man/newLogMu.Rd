@@ -7,14 +7,14 @@
 newLogMu(object)
 }
 \arguments{
-\item{object}{an object that describes a matrix of zero-inflated
+\item{object}{an object that describes a matrix of negative binomial
 distributions.}
 }
 \value{
 the matrix of logarithms of mean parameters
 }
 \description{
-Given an object that describes a matrix of zero-inflated distributions,
+Given an object that describes a matrix of negative binomial distributions,
 returns the matrix of logarithm of mean parameters.
 }
 \details{

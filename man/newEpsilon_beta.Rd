@@ -7,7 +7,7 @@
 newEpsilon_beta(object)
 }
 \arguments{
-\item{object}{an object that describes a matrix of zero-inflated
+\item{object}{an object that describes a matrix of negative binomial
 distributions.}
 }
 \value{

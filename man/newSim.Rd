@@ -3,14 +3,14 @@
 \name{newSim}
 \alias{newSim}
 \alias{newSim,newmodel-method}
-\title{Simulate counts from a zero-inflated negative binomial model}
+\title{Simulate counts from a negative binomial model}
 \usage{
 newSim(object, seed, ...)
 
 \S4method{newSim}{newmodel}(object, seed)
 }
 \arguments{
-\item{object}{an object that describes a matrix of zero-inflated negative
+\item{object}{an object that describes a matrix of  negative
 binomial.}
 
 \item{seed}{an optional integer to specify how the random number generator
@@ -29,7 +29,7 @@ A list with the following elements.
   }
 }
 \description{
-Given an object that describes zero-inflated negative binomial distribution,
+Given an object that describes negative binomial distribution,
 simulate counts from the distribution.
 }
 \section{Methods (by class)}{

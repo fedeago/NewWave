@@ -26,3 +26,8 @@ of the model given the data, i.e., the BIC of the data under the model.
 \item \code{newBIC,newmodel,matrix-method}: returns the BIC of the NB model.
 }}
 
+\examples{
+m <- newmodel(n=5, J=10)
+x <- newSim(m)
+newBIC(m, x$counts)
+}

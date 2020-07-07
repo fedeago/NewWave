@@ -376,7 +376,6 @@ initialization <- function(cluster, children, model, verbose){
     D <- L_sh - (X_sh %*% beta_sh) - t(V_sh %*% gamma_sh)
 
 
-    set.seed(1234)
     
     R <- irlba::irlba(D, nu=numberFactors(model), nv=numberFactors(model))
 

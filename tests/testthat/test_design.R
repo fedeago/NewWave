@@ -40,7 +40,9 @@ test_that("newFit gives the same results with matrix and SE", {
   counts <- matrix(rnbinom(60, mu=5,size=2), nrow=10, ncol=6)
   se <- SummarizedExperiment(counts)
   
+  set.seed(1234)
   m1 <- newFit(counts)
+  set.seed(1234)
   m2 <- newFit(se)
   expect_equal(m1, m2)
 })

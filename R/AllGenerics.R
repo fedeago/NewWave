@@ -5,14 +5,54 @@
 #' @param x an object that describes a dataset or a model involving latent
 #'   factors
 #' @return the number of latent factors
+#' @examples
+#' a <- newmodel(n=5, J=10)
+#' numberFactors(a)
 #' @export
 setGeneric("numberFactors", function(x) standardGeneric("numberFactors"))
 
+
+#' Generic function that returns the number of samples
+#'
+#' Given an object that describes a dataset or a model involving samples,
+#' this function returns the number of samples.
+#' @param x an object that describes a dataset or a model involving samples
+#' @return the number of samples
+#' @examples
+#' a <- newmodel(n=5, J=10)
+#' numberSamples(a)
+#' @export
+setGeneric("numberSamples", function(x) standardGeneric("numberSamples"))
+
+#' Generic function that returns the number of features
+#'
+#' Given an object that describes a dataset or a model involving features,
+#' this function returns the number of features
+#' @param x an object that describes a dataset or a model involving features
+#' @return the number of features
+#' @examples
+#' a <- newmodel(n=5, J=10)
+#' numberFeatures(a)
+#' @export
+setGeneric("numberFeatures", function(x) standardGeneric("numberFeatures"))
+
+#' Generic function that returns the number of params
+#'
+#' Given an object that describes a dataset or a model involving params,
+#' this function returns the number of params
+#' @param x an object that describes a dataset or a model involving params
+#' @return the number of params
+#' @examples
+#' a <- newmodel(n=5, J=10)
+#' numberParams(a)
+#' @export
+setGeneric("numberParams", function(x) standardGeneric("numberParams"))
+
 #' Returns the matrix of mean parameters
 #'
-#' Given an object that describes a matrix of zero-inflated distributions,
+#' Given an object that describes a matrix of negative binomial distributions,
 #' returns the matrix of mean parameters.
-#' @param object an object that describes a matrix of zero-inflated
+#' @param object an object that describes a matrix of negative binomial
 #'   distributions.
 #' @return the matrix of mean parameters
 #' @details Note that although the user interface of \code{\link{newFit}}
@@ -27,9 +67,9 @@ setGeneric("newMu", function(object) standardGeneric("newMu"))
 
 #' Returns the matrix of logarithm of mean parameters
 #'
-#' Given an object that describes a matrix of zero-inflated distributions,
+#' Given an object that describes a matrix of negative binomial distributions,
 #' returns the matrix of logarithm of mean parameters.
-#' @param object an object that describes a matrix of zero-inflated
+#' @param object an object that describes a matrix of negative binomial
 #'   distributions.
 #' @return the matrix of logarithms of mean parameters
 #' @details Note that although the user interface of \code{\link{newFit}}
@@ -44,9 +84,9 @@ setGeneric("newLogMu", function(object) standardGeneric("newLogMu"))
 
 #' Returns the vector of dispersion parameters
 #'
-#' Given an object that describes a matrix of zero-inflated negative binomial
+#' Given an object that describes a matrix of negative binomial negative binomial
 #' distributions, returns the vector of dispersion parameters \code{phi}.
-#' @param object an object that describes a matrix of zero-inflated.
+#' @param object an object that describes a matrix of negative binomial.
 #'   distributions.
 #' @return the vector of dispersion parameters
 #' @examples
@@ -57,10 +97,10 @@ setGeneric("newPhi", function(object) standardGeneric("newPhi"))
 
 #' Returns the vector of inverse dispersion parameters
 #'
-#' Given an object that describes a matrix of zero-inflated negative binomial
+#' Given an object that describes a matrix of negative binomial negative binomial
 #' distributions, returns the vector of inverse dispersion parameters
 #' \code{theta}.
-#' @param object an object that describes a matrix of zero-inflated
+#' @param object an object that describes a matrix of negative binomial
 #'   distributions.
 #' @return the vector of inverse dispersion parameters theta
 #' @examples
@@ -71,10 +111,10 @@ setGeneric("newTheta", function(object) standardGeneric("newTheta"))
 
 #' Returns the vector of log of inverse dispersion parameters
 #'
-#' Given an object that describes a matrix of zero-inflated negative binomial
+#' Given an object that describes a matrix of negative binomial negative binomial
 #' distributions, returns the vector \code{zeta} of log of inverse dispersion
 #' parameters
-#' @param object an object that describes a matrix of zero-inflated
+#' @param object an object that describes a matrix of negative binomial
 #'   distributions.
 #' @return the vector \code{zeta} of log of inverse dispersion parameters
 #' @examples
@@ -98,11 +138,11 @@ setGeneric("newZeta", function(object) standardGeneric("newZeta"))
 #' @export
 setGeneric("newW", function(object) standardGeneric("newW"))
 
-#' Simulate counts from a zero-inflated negative binomial model
+#' Simulate counts from a negative binomial model
 #'
-#' Given an object that describes zero-inflated negative binomial distribution,
+#' Given an object that describes negative binomial distribution,
 #' simulate counts from the distribution.
-#' @param object an object that describes a matrix of zero-inflated negative
+#' @param object an object that describes a matrix of  negative
 #'   binomial.
 #' @param seed an optional integer to specify how the random number generator
 #'   should be initialized with a call to \code{set.seed}. If missing, the
@@ -121,21 +161,7 @@ setGeneric("newW", function(object) standardGeneric("newW"))
 #' @export
 setGeneric("newSim",function(object, seed, ...) standardGeneric("newSim"))
 
-#' Compute the log-likelihood of a model given some data
-#'
-#' Given a statistical model and some data, this function computes the
-#' log-likelihood of the model given the data, i.e., the log-probability of the
-#' data under the model.
-#' @param model an object that describes a statistical model.
-#' @param x an object that describes data.
-#' @param ... additional arguments.
-#' @return The log-likelihood of the model given the data.
-#' @examples
-#' m <- newmodel(n=5, J=10)
-#' x <- newSim(m)
-#' newloglik(m, x$counts)
-#' @export
-setGeneric("newloglik", function(model, x, ...) standardGeneric("newloglik"))
+
 
 #' Compute the penalty of a model
 #'
@@ -164,9 +190,9 @@ setGeneric("newFit", function(Y, ...) standardGeneric("newFit"))
 
 #' Returns the sample-level design matrix for mu
 #'
-#' Given an object that describes a matrix of zero-inflated distributions,
+#' Given an object that describes a matrix of negative binomial distributions,
 #' returns the sample-level design matrix for mu
-#' @param object an object that describes a matrix of zero-inflated
+#' @param object an object that describes a matrix of negative binomial
 #'   distributions.
 #' @param ... Additional parameters.
 #' @return the sample-level design matrix for mu
@@ -179,9 +205,9 @@ setGeneric("newX", function(object, ...) standardGeneric("newX"))
 
 #' Returns the gene-level design matrix for mu
 #'
-#' Given an object that describes a matrix of zero-inflated distributions,
+#' Given an object that describes a matrix of negative binomial distributions,
 #' returns the gene-level design matrix for mu
-#' @param object an object that describes a matrix of zero-inflated
+#' @param object an object that describes a matrix of negative binomial
 #'   distributions.
 #' @param ... Additional parameters.
 #' @return the gene-level design matrix for mu
@@ -194,9 +220,9 @@ setGeneric("newV", function(object, ...) standardGeneric("newV"))
 
 #' Returns the matrix of paramters beta
 #'
-#' Given an object that describes a matrix of zero-inflated distributions,
+#' Given an object that describes a matrix of negative binomial distributions,
 #' returns the matrix of parameters associated with X
-#' @param object an object that describes a matrix of zero-inflated
+#' @param object an object that describes a matrix of negative binomial
 #'   distributions.
 #' @param ... Additional parameters.
 #' @return the matrix of beta parameters
@@ -209,9 +235,9 @@ setGeneric("newBeta", function(object, ...) standardGeneric("newBeta"))
 
 #' Returns the matrix of paramters gamma
 #'
-#' Given an object that describes a matrix of zero-inflated distributions,
+#' Given an object that describes a matrix of negative binomial distributions,
 #' returns the matrix of parameters associated with V
-#' @param object an object that describes a matrix of zero-inflated
+#' @param object an object that describes a matrix of negative binomial
 #'   distributions.
 #' @param ... Additional parameters.
 #' @return the matrix of gamma parameters
@@ -224,9 +250,9 @@ setGeneric("newGamma", function(object, ...) standardGeneric("newGamma"))
 
 #' Returns the matrix of paramters alpha
 #'
-#' Given an object that describes a matrix of zero-inflated distributions,
+#' Given an object that describes a matrix of negative binomial distributions,
 #' returns the matrix of parameters associated with W for the mean part (mu)
-#' @param object an object that describes a matrix of zero-inflated
+#' @param object an object that describes a matrix of negative binomial
 #'   distributions.
 #' @param ... Additional parameters.
 #' @return the matrix of alpha parameters
@@ -242,7 +268,7 @@ setGeneric("newAlpha", function(object, ...) standardGeneric("newAlpha"))
 #' Given an object describing a nb model, returns a vector of size the number
 #' of rows in the parameter \code{beta} with the regularization parameters
 #' associated to each row.
-#' @param object an object that describes a matrix of zero-inflated
+#' @param object an object that describes a matrix of negative binomial
 #'   distributions.
 #' @return the regularization parameters for \code{beta}.
 #' @export
@@ -257,7 +283,7 @@ setGeneric("newEpsilon_beta",
 #' Given an object describing a nb model, returns a vector of size the number
 #' of columns in the parameter \code{gamma} with the regularization
 #' parameters associated to each row.
-#' @param object an object that describes a matrix of zero-inflated
+#' @param object an object that describes a matrix of negative binomial
 #'   distributions.
 #' @return the regularization parameters for \code{gamma}.
 #' @export
@@ -274,7 +300,7 @@ setGeneric("newEpsilon_gamma",
 #' Given an object describing a nb model, returns a vector of size the number
 #' of columns in the parameter \code{W} with the regularization
 #' parameters associated to each column.
-#' @param object an object that describes a matrix of zero-inflated
+#' @param object an object that describes a matrix of negative binomial
 #'   distributions.
 #' @return the regularization parameters for \code{W}.
 #' @export
@@ -288,7 +314,7 @@ setGeneric("newEpsilon_W", function(object) standardGeneric("newEpsilon_W"))
 #' Given an object describing a nb model, returns a vector of size the number
 #' of rows in the parameter \code{alpha} with the regularization parameters
 #' associated to each row.
-#' @param object an object that describes a matrix of zero-inflated
+#' @param object an object that describes a matrix of negative binomial
 #'   distributions.
 #' @return the regularization parameters for \code{alpha}.
 #' @export
@@ -302,7 +328,7 @@ setGeneric("newEpsilon_alpha",
 #'
 #' The regularization parameter penalizes the variance of zeta, the log of
 #' the dispersion parameters across samples.
-#' @param object an object that describes a matrix of zero-inflated
+#' @param object an object that describes a matrix of negative binomial
 #'   distributions.
 #' @return the regularization parameters for \code{zeta}.
 #' @export
@@ -319,7 +345,7 @@ setGeneric("newEpsilon_zeta",
 #' @param x an object that describes a dataset or a model.
 #' @return the number of features.
 #' @export
-#' #' @examples
+#' @examples
 #' a <- newmodel(n=5, J=10)
 #' numberFeatures(a)
 setGeneric(
@@ -336,7 +362,7 @@ setGeneric(
 #' @param x an object that describes a dataset or a model.
 #' @return the number of samples.
 #' @export
-#' #' @examples
+#' @examples
 #' a <- newmodel(n=5, J=10)
 #' numberSamples(a)
 setGeneric(
@@ -353,7 +379,7 @@ setGeneric(
 #' @param model an object that describes a dataset or a model.
 #' @return the total number of parameters of the model.
 #' @export
-#' #' @examples
+#' @examples
 #' a <- newmodel(n=5, J=10)
 #' numberParams(a)
 setGeneric(
@@ -379,6 +405,22 @@ setGeneric(
 #' @export
 setGeneric("newWave", function(Y, ...) standardGeneric("newWave"))
 
+#' Compute the log-likelihood of a model given some data
+#'
+#' Given a statistical model and some data, this function computes the
+#' log-likelihood of the model given the data, i.e., the log-probability of the
+#' data under the model.
+#' @param model an object that describes a statistical model.
+#' @param x an object that describes data.
+#' @param ... additional arguments.
+#' @return The log-likelihood of the model given the data.
+#' @examples
+#' m <- newmodel(n=5, J=10)
+#' x <- newSim(m)
+#' newloglik(m, x$counts)
+#' @export
+setGeneric("newloglik", function(model, x, ...) standardGeneric("newloglik"))
+
 #' Compute the AIC of a model given some data
 #'
 #' Given a statistical model and some data, this function computes the AIC
@@ -386,6 +428,10 @@ setGeneric("newWave", function(Y, ...) standardGeneric("newWave"))
 #' @param model an object that describes a statistical model.
 #' @param x an object that describes data.
 #' @return the AIC of the model.
+#' @examples
+#' m <- newmodel(n=5, J=10)
+#' x <- newSim(m)
+#' newAIC(m, x$counts)
 #' @export
 setGeneric(
     name = "newAIC",
@@ -401,6 +447,10 @@ setGeneric(
 #' @param model an object that describes a statistical model.
 #' @param x an object that describes data.
 #' @return the BIC of the model.
+#' @examples
+#' m <- newmodel(n=5, J=10)
+#' x <- newSim(m)
+#' newBIC(m, x$counts)
 #' @export
 setGeneric(
     name = "newBIC",

@@ -26,3 +26,8 @@ of the model given the data, i.e., the AIC of the data under the model.
 \item \code{newAIC,newmodel,matrix-method}: returns the AIC of the NB model.
 }}
 
+\examples{
+m <- newmodel(n=5, J=10)
+x <- newSim(m)
+newAIC(m, x$counts)
+}
