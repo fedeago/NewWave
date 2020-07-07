@@ -382,12 +382,12 @@ initialization <- function(cluster, children, model, verbose){
 
     # Orthogonalize to get W and alpha
     W_sh[] <- (newEpsilon_alpha(model) / newEpsilon_W(model))[1]^(1/4) *
-        R$u %*% diag(sqrt(R$d[1:numberFactors(model)]),
-        nrow = length(R$d[1:numberFactors(model)]))
+        R$u %*% diag(sqrt(R$d[seq.int(numberFactors(model))]),
+        nrow = length(R$d[seq.int(numberFactors(model))]))
     
     alpha_sh[] <- (newEpsilon_W(model)/newEpsilon_alpha(model))[1]^(1/4) *
-        diag(sqrt(R$d[1:numberFactors(model)]),
-        nrow = length(R$d[1:numberFactors(model)])) %*% t(R$v)
+        diag(sqrt(R$d[seq.int(numberFactors(model))]),
+        nrow = length(R$d[seq.int(numberFactors(model))])) %*% t(R$v)
  
     if(verbose){
         cat("Time of initialization\n")
