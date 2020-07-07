@@ -1,6 +1,7 @@
 # NewWave
 
-A scalable R package for dimensionality reduction and batch effect removal of single-cell RNA-seq data.
+A scalable R package for dimensionality reduction and batch effect removal
+of single-cell RNA-seq data.
 
 ## How to install 
 
@@ -12,7 +13,8 @@ install.packages("path/to/NewWave", repos = NULL, type="source")
 
 ## How to use
 
-If you have your data stored in a SummarizedExperiment object with a batch effect variable called "batch" stored in colData then:
+If you have your data stored in a SummarizedExperiment object with 
+batch effect variable called "batch" stored in colData then:
 
 ```
 newWave(data,X = "~batch")

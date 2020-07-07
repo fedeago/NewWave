@@ -34,9 +34,9 @@
 #' @import methods
 #' @exportClass newmodel
 #'
-#' @return \code{numberSamples} returns the number of samples; \code{numberFeatures}
-#' returns the number of features; \code{numberFactors} returns the number of latent
-#' factors.
+#' @return \code{numberSamples} returns the number of samples;
+#'  \code{numberFeatures}returns the number of features; 
+#'  \code{numberFactors} returns the number of latent factors.
 #'
 setClass(
     Class = "newmodel",
@@ -71,10 +71,12 @@ setValidity("newmodel", function(object){
         return("W must have n rows!")
     }
     if(NCOL(newX(object)) != NROW(newBeta(object))){
-        return("beta must have the same number of rows as there are columns in X!")
+        return("beta must have the same number of rows
+                as there are columns in X!")
     }
     if(NCOL(newV(object)) != NROW(newGamma(object))){
-        return("gamma must have the same number of rows as there are columns in V!")
+        return("gamma must have the same number of rows
+                as there are columns in V!")
     }
     if(NCOL(newBeta(object)) != J) {
         return("beta must have J columns!")

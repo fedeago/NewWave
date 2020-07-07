@@ -3,7 +3,7 @@
 #' Given an object that describes a dataset or a model involving latent factors,
 #' this function returns the number of latent factors.
 #' @param x an object that describes a dataset or a model involving latent
-#'   factors
+#'  factors
 #' @return the number of latent factors
 #' @examples
 #' a <- newmodel(n=5, J=10)
@@ -53,7 +53,7 @@ setGeneric("numberParams", function(x) standardGeneric("numberParams"))
 #' Given an object that describes a matrix of negative binomial distributions,
 #' returns the matrix of mean parameters.
 #' @param object an object that describes a matrix of negative binomial
-#'   distributions.
+#'  distributions.
 #' @return the matrix of mean parameters
 #' @details Note that although the user interface of \code{\link{newFit}}
 #' requires a J x n matrix, internally this is stored as a n x J matrix (i.e.,
@@ -70,12 +70,12 @@ setGeneric("newMu", function(object) standardGeneric("newMu"))
 #' Given an object that describes a matrix of negative binomial distributions,
 #' returns the matrix of logarithm of mean parameters.
 #' @param object an object that describes a matrix of negative binomial
-#'   distributions.
+#'  distributions.
 #' @return the matrix of logarithms of mean parameters
 #' @details Note that although the user interface of \code{\link{newFit}}
-#' requires a J x n matrix, internally this is stored as a n x J matrix (i.e.,
-#' samples in row and genes in column). Hence the parameter matrix returned by
-#' this function is of n x J dimensions.
+#'  requires a J x n matrix, internally this is stored as a n x J matrix (i.e.,
+#'  samples in row and genes in column). Hence the parameter matrix returned by
+#'  this function is of n x J dimensions.
 #' @examples
 #' a <- newmodel(n=5, J=10)
 #' newLogMu(a)
@@ -87,7 +87,7 @@ setGeneric("newLogMu", function(object) standardGeneric("newLogMu"))
 #' Given an object that describes a matrix of negative binomial negative binomial
 #' distributions, returns the vector of dispersion parameters \code{phi}.
 #' @param object an object that describes a matrix of negative binomial.
-#'   distributions.
+#'  distributions.
 #' @return the vector of dispersion parameters
 #' @examples
 #' a <- newmodel(n=5, J=10)
@@ -101,7 +101,7 @@ setGeneric("newPhi", function(object) standardGeneric("newPhi"))
 #' distributions, returns the vector of inverse dispersion parameters
 #' \code{theta}.
 #' @param object an object that describes a matrix of negative binomial
-#'   distributions.
+#'  distributions.
 #' @return the vector of inverse dispersion parameters theta
 #' @examples
 #' a <- newmodel(n=5, J=10)
@@ -115,7 +115,7 @@ setGeneric("newTheta", function(object) standardGeneric("newTheta"))
 #' distributions, returns the vector \code{zeta} of log of inverse dispersion
 #' parameters
 #' @param object an object that describes a matrix of negative binomial
-#'   distributions.
+#'  distributions.
 #' @return the vector \code{zeta} of log of inverse dispersion parameters
 #' @examples
 #' a <- newmodel(n=5, J=10)
@@ -130,7 +130,7 @@ setGeneric("newZeta", function(object) standardGeneric("newZeta"))
 #' covariates.
 #'
 #' @param object a \code{\linkS4class{newmodel}} object, typically the result
-#'   of \code{\link{newFit}}.
+#'  of \code{\link{newFit}}.
 #' @return the matrix \code{W} of inferred sample-level covariates.
 #' @examples
 #' a <- newmodel(n=5, J=10)
@@ -143,18 +143,18 @@ setGeneric("newW", function(object) standardGeneric("newW"))
 #' Given an object that describes negative binomial distribution,
 #' simulate counts from the distribution.
 #' @param object an object that describes a matrix of  negative
-#'   binomial.
+#'  binomial.
 #' @param seed an optional integer to specify how the random number generator
-#'   should be initialized with a call to \code{set.seed}. If missing, the
-#'   random generator state is not changed.
+#'  should be initialized with a call to \code{set.seed}. If missing, the
+#'  random generator state is not changed.
 #' @param ... additional arguments.
 #' @return A list with the following elements.
-#'   \itemize{
-#'   \item{counts}{the matrix with the simulated counts.}
-#'   \item{dataNB}{the data simulated from the negative binomial.}
-#'   \item{dataDropouts}{the data simulated from the binomial process.}
-#'   \item{zeroFraction}{the fraction of zeros.}
-#'   }
+#'  \itemize{
+#'  \item{counts}{the matrix with the simulated counts.}
+#'  \item{dataNB}{the data simulated from the negative binomial.}
+#'  \item{dataDropouts}{the data simulated from the binomial process.}
+#'  \item{zeroFraction}{the fraction of zeros.}
+#'  }
 #' @examples
 #' a <- newmodel(n=5, J=10)
 #' newSim(a)
@@ -168,7 +168,7 @@ setGeneric("newSim",function(object, seed, ...) standardGeneric("newSim"))
 #' Given a statistical model with regularization parameters, compute the
 #' penalty.
 #' @param model an object that describes a statistical model with regularization
-#'   parameters.
+#'  parameters.
 #' @return The penalty of the model.
 #' @examples
 #' m <- newmodel(K=2)
@@ -182,9 +182,9 @@ setGeneric("newpenalty", function(model) standardGeneric("newpenalty"))
 #'
 #' @param Y The data (genes in rows, samples in columns).
 #' @param ... Additional parameters to describe the model, see
-#'   \code{\link{newmodel}}.
+#'  \code{\link{newmodel}}.
 #' @return An object of class \code{newmodel} that has been fitted by penalized
-#'   maximum likelihood on the data.
+#'  maximum likelihood on the data.
 #' @export
 setGeneric("newFit", function(Y, ...) standardGeneric("newFit"))
 
@@ -193,7 +193,7 @@ setGeneric("newFit", function(Y, ...) standardGeneric("newFit"))
 #' Given an object that describes a matrix of negative binomial distributions,
 #' returns the sample-level design matrix for mu
 #' @param object an object that describes a matrix of negative binomial
-#'   distributions.
+#'  distributions.
 #' @param ... Additional parameters.
 #' @return the sample-level design matrix for mu
 #' @export
@@ -208,7 +208,7 @@ setGeneric("newX", function(object, ...) standardGeneric("newX"))
 #' Given an object that describes a matrix of negative binomial distributions,
 #' returns the gene-level design matrix for mu
 #' @param object an object that describes a matrix of negative binomial
-#'   distributions.
+#'  distributions.
 #' @param ... Additional parameters.
 #' @return the gene-level design matrix for mu
 #' @export
@@ -223,7 +223,7 @@ setGeneric("newV", function(object, ...) standardGeneric("newV"))
 #' Given an object that describes a matrix of negative binomial distributions,
 #' returns the matrix of parameters associated with X
 #' @param object an object that describes a matrix of negative binomial
-#'   distributions.
+#'  distributions.
 #' @param ... Additional parameters.
 #' @return the matrix of beta parameters
 #' @export
@@ -238,7 +238,7 @@ setGeneric("newBeta", function(object, ...) standardGeneric("newBeta"))
 #' Given an object that describes a matrix of negative binomial distributions,
 #' returns the matrix of parameters associated with V
 #' @param object an object that describes a matrix of negative binomial
-#'   distributions.
+#'  distributions.
 #' @param ... Additional parameters.
 #' @return the matrix of gamma parameters
 #' @export
@@ -253,7 +253,7 @@ setGeneric("newGamma", function(object, ...) standardGeneric("newGamma"))
 #' Given an object that describes a matrix of negative binomial distributions,
 #' returns the matrix of parameters associated with W for the mean part (mu)
 #' @param object an object that describes a matrix of negative binomial
-#'   distributions.
+#'  distributions.
 #' @param ... Additional parameters.
 #' @return the matrix of alpha parameters
 #' @export
@@ -269,7 +269,7 @@ setGeneric("newAlpha", function(object, ...) standardGeneric("newAlpha"))
 #' of rows in the parameter \code{beta} with the regularization parameters
 #' associated to each row.
 #' @param object an object that describes a matrix of negative binomial
-#'   distributions.
+#'  distributions.
 #' @return the regularization parameters for \code{beta}.
 #' @export
 #' @examples
@@ -284,7 +284,7 @@ setGeneric("newEpsilon_beta",
 #' of columns in the parameter \code{gamma} with the regularization
 #' parameters associated to each row.
 #' @param object an object that describes a matrix of negative binomial
-#'   distributions.
+#'  distributions.
 #' @return the regularization parameters for \code{gamma}.
 #' @export
 #' @examples
@@ -301,7 +301,7 @@ setGeneric("newEpsilon_gamma",
 #' of columns in the parameter \code{W} with the regularization
 #' parameters associated to each column.
 #' @param object an object that describes a matrix of negative binomial
-#'   distributions.
+#'  distributions.
 #' @return the regularization parameters for \code{W}.
 #' @export
 #' @examples
@@ -315,7 +315,7 @@ setGeneric("newEpsilon_W", function(object) standardGeneric("newEpsilon_W"))
 #' of rows in the parameter \code{alpha} with the regularization parameters
 #' associated to each row.
 #' @param object an object that describes a matrix of negative binomial
-#'   distributions.
+#'  distributions.
 #' @return the regularization parameters for \code{alpha}.
 #' @export
 #' @examples
@@ -329,7 +329,7 @@ setGeneric("newEpsilon_alpha",
 #' The regularization parameter penalizes the variance of zeta, the log of
 #' the dispersion parameters across samples.
 #' @param object an object that describes a matrix of negative binomial
-#'   distributions.
+#'  distributions.
 #' @return the regularization parameters for \code{zeta}.
 #' @export
 #' @examples
@@ -374,8 +374,8 @@ setGeneric(
 
 #' Generic function that returns the total number of parameters of the model
 #'
-#' Given an object that describes a model or a dataset, it returns total number of
-#' parameters of the model.
+#' Given an object that describes a model or a dataset, it returns total number
+#'  of parameters of the model.
 #' @param model an object that describes a dataset or a model.
 #' @return the total number of parameters of the model.
 #' @export
@@ -396,12 +396,12 @@ setGeneric(
 #' a nb regression model with gene and cell-level covariates.
 #'
 #' @param Y The data (genes in rows, samples in columns). Currently implemented
-#'   only for \code{SummarizedExperiment}.
+#'  only for \code{SummarizedExperiment}.
 #' @param ... Additional parameters to describe the model, see
-#'   \code{\link{newmodel}}.
+#'  \code{\link{newmodel}}.
 #' @return An object of class \code{SingleCellExperiment}; the dimensionality
-#'   reduced matrix is stored in the \code{reducedDims} slot and optionally
-#'   normalized values and residuals are added in the list of assays.
+#'  reduced matrix is stored in the \code{reducedDims} slot and optionally
+#'  normalized values and residuals are added in the list of assays.
 #' @export
 setGeneric("newWave", function(Y, ...) standardGeneric("newWave"))
 

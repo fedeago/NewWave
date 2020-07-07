@@ -27,8 +27,8 @@ nb.loglik.matrix <- function(model, x) {
 #' @export
 #' 
 #' @param Y The SummarizedExperiment with the data
-#' @param X The design matrix containing sample-level covariates, one sample per
-#'   row. If missing, X will contain only an intercept. If Y is a
+#' @param X The design matrix containing sample-level covariates, one sample 
+#'   per row. If missing, X will contain only an intercept. If Y is a
 #'   SummarizedExperiment object, X can be a formula using the variables in the
 #'   colData slot of Y.
 #' @param V The design matrix containing gene-level covariates, one gene
@@ -36,9 +36,9 @@ nb.loglik.matrix <- function(model, x) {
 #'   SummarizedExperiment object, V can be a formula using the variables in the
 #'   rowData slot of Y.
 #' @param K integer. Number of latent factors(default 2).
-#' @param which_assay numeric or character. Which assay of Y to use. If missing,
-#'   if `assayNames(Y)` contains "counts" then that is used. Otherwise, the
-#'   first assay is used.
+#' @param which_assay numeric or character. Which assay of Y to use. 
+#'   If missing, if `assayNames(Y)` contains "counts" then that is used.
+#'   Otherwise, the first assay is used.
 #' @param commondispersion Whether or not a single dispersion for all features
 #'   is estimated (default TRUE).
 #' @param verbose Print helpful messages(default FALSE).
@@ -48,10 +48,14 @@ nb.loglik.matrix <- function(model, x) {
 #'   when the relative gain in likelihood is below epsilon (default 0.0001).
 #' @param children number of cores of the used cluster(default 1)
 #' @param random_init if TRUE no initializations is done(default FALSE)
-#' @param random_start if TRUE the setup of parameters is a random samplig(default FALSE)
-#' @param n_gene_disp number of genes used in mini-batch dispersion estimation approach(default NULL > all genes are used)
-#' @param n_cell_par number of cells used in mini-batch cells related parameters estimation approach(default NULL > all cells are used)
-#' @param n_gene_par number of genes used in mini-batch genes related parameters estimation approach(default NULL > all genes are used)
+#' @param random_start if TRUE the setup of parameters is a random samplig
+#' (default FALSE)
+#' @param n_gene_disp number of genes used in mini-batch dispersion 
+#' estimation approach(default NULL > all genes are used)
+#' @param n_cell_par number of cells used in mini-batch cells related 
+#' parameters estimation approach(default NULL > all cells are used)
+#' @param n_gene_par number of genes used in mini-batch genes related 
+#' parameters estimation approach(default NULL > all genes are used)
 #' @param cross_batch going to be eliminated
 #'
 #' @details For visualization (heatmaps, ...), please use the normalized values.
@@ -59,8 +63,8 @@ nb.loglik.matrix <- function(model, x) {
 #' in the model but the gene and cell-level covariates are. As a results, when
 #' \code{W} is not included in the model, the deviance residuals should capture
 #' the biology. Note that we do not recommend to use the normalized values for
-#' any downstream analysis (such as clustering, or differential expression), but
-#' only for visualization.
+#' any downstream analysis (such as clustering, or differential expression), 
+#' but only for visualization.
 #'
 #' @details If one has already fitted a model using \code{\link{newmodel}},
 #' the object containing such model can be used as input of \code{newWave} to
@@ -71,8 +75,8 @@ nb.loglik.matrix <- function(model, x) {
 #' @details By default \code{newWave} uses all genes to estimate \code{W}.
 #'   However, we recommend to use the top 1,000 most variable genes for this
 #'   step. In general, a user can specify any custom set of genes to be used to
-#'   estimate \code{W}, by specifying either a vector of gene names, or a single
-#'   character string corresponding to a column of the \code{rowData}.
+#'   estimate \code{W}, by specifying either a vector of gene names, or a
+#'   single character string corresponding to a column of the \code{rowData}.
 #'
 #' @details Note that if both \code{which_genes} is specified and at least one
 #'   among \code{observationalWeights}, \code{imputedValues}, \code{residuals},
@@ -89,50 +93,51 @@ nb.loglik.matrix <- function(model, x) {
 #' m <- newWave(se, X="~bio")
 setMethod("newWave", "SummarizedExperiment",
        function(Y, X, V, K=2, which_assay,
-                   commondispersion = TRUE, verbose=FALSE,
-                   maxiter_optimize=100,
-                   stop_epsilon=.0001,  children = 1,
-                   random_init = FALSE, random_start = FALSE,
-                   n_gene_disp = NULL,
-                   n_cell_par = NULL, n_gene_par = NULL,
-                   cross_batch = FALSE,...) {
+                    commondispersion = TRUE, verbose=FALSE,
+                    maxiter_optimize=100,
+                    stop_epsilon=.0001,  children = 1,
+                    random_init = FALSE, random_start = FALSE,
+                    n_gene_disp = NULL,
+                    n_cell_par = NULL, n_gene_par = NULL,
+                    cross_batch = FALSE,...) {
               
             
             
-           fitted_model <- newFit(Y, X, V, K,
-                                     which_assay, commondispersion,
-                                     verbose,
-                                     maxiter_optimize, stop_epsilon,
-                                     children, random_init, 
-                                     random_start, n_gene_disp,
-                                     n_cell_par, n_gene_par, cross_batch, ...)
+        fitted_model <- newFit(Y, X, V, K,
+                            which_assay, commondispersion,
+                            verbose,
+                            maxiter_optimize, stop_epsilon,
+                            children, random_init, 
+                            random_start, n_gene_disp,
+                            n_cell_par, n_gene_par, cross_batch, ...)
               
               
               
-           out <- as(Y, "SingleCellExperiment")
+        out <- as(Y, "SingleCellExperiment")
               
-               if (numberFactors(fitted_model) > 0){
-                   W <- newW(fitted_model)
-                   colnames(W) <- paste0('W', seq_len(numberFactors(fitted_model)))
-                   reducedDim(out, "newWave") <- W
-               }
+            if (numberFactors(fitted_model) > 0){
+                W <- newW(fitted_model)
+                colnames(W) <- paste0('W', seq_len(numberFactors(fitted_model)))
+                reducedDim(out, "newWave") <- W
+            }
               
-               if(missing(which_assay)) {
-                   if("counts" %in% assayNames(Y)) {
-                   dataY <- assay(Y, "counts")
-                   } else {
-                   warning("No assay named `counts`, using first assay.",
-                          "Use `assay` to specify a different assay.")
-                   dataY <- assay(Y)
-                   }
-               } else {
-                   if(!(is.character(which_assay) | is.numeric(which_assay))) {
-                   stop("assay needs to be a numeric or character specifying which assay to use")
-               } else {
-                   dataY <- assay(Y, which_assay)
-               }
+            if(missing(which_assay)) {
+                if("counts" %in% assayNames(Y)) {
+                    dataY <- assay(Y, "counts")
+                } else {
+                    warning("No assay named `counts`, using first assay.",
+                        "Use `assay` to specify a different assay.")
+                    dataY <- assay(Y)
+                }
+                } else {
+                    if(!(is.character(which_assay) | is.numeric(which_assay))) {
+                    stop("assay needs to be a numeric or
+                         character specifying which assay to use")
+                } else {
+                    dataY <- assay(Y, which_assay)
+                }
+            }
+            
+                return(out)
            }
-            
-               return(out)
-          }
 )

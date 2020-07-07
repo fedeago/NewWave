@@ -19,7 +19,8 @@ library(ggplot2)
 library(mclust)
 ```
 
-I am going to show how to use NewWave with example data. To do this I am going to generate some data using splatter.
+I am going to show how to use NewWave with example data.
+To do this I am going to generate some data using splatter.
 
 ```{r}
 params <- newSplatParams()
@@ -75,8 +76,9 @@ Let's try to correct it.
 
 # NewWave
 
-The default options use 1 core and no mini-batch approaches, it don't use the verbose option but I set it TRUE for example purpose(not suggested with big dataset).
-The default number of latent variables is 2.
+The default options use 1 core and no mini-batch approaches, it don't use
+the verbose option but I set it TRUE for example purpose(not suggested with
+big dataset). The default number of latent variables is 2.
 ```{r}
 res <- newWave(data,X = "~Batch", K=2, verbose = TRUE)
 ```
@@ -86,15 +88,19 @@ res2 <- newWave(data,X = "~Batch", K=2, verbose = TRUE, children=2)
 ```
 
 Or use some mini-batch approaches:
- - n_gene_disp : Number of genes to use in the dispersion optimization
- - n_cell_par : Number of cells to use in the cells related parameters optimization
- - n_gene_par : Number of genes to use in the genes related parameters optimization
+    - n_gene_disp : Number of genes to use in the dispersion optimization
+    - n_cell_par : Number of cells to use in the cells related parameters
+        optimization
+    - n_gene_par : Number of genes to use in the genes related parameters
+        optimization
 
 ```{r}
-res3 <- newWave(data,X = "~Batch", verbose = T,K=2, children=2, n_gene_disp=100,  n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)
+res3 <- newWave(data,X = "~Batch", verbose = TRUE,K=2, children=2,
+                n_gene_disp=100,  n_gene_par = 100, n_cell_par = 100,
+                commondispersion = FALSE)
 ```
 
-Now I can use the latent dimension rapresentation for  visualization purpose:
+Now I can use the latent dimension rapresentation for visualization purpose:
 
 ```{r}
 latent <- reducedDim(res)

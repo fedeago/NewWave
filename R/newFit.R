@@ -27,10 +27,16 @@
 #'   when the relative gain in likelihood is below epsilon (default 0.0001).
 #' @param children number of cores of the used cluster(default 1)
 #' @param random_init if TRUE no initializations is done(default FALSE)
-#' @param random_start if TRUE the setup of parameters is a random samplig(default FALSE)
-#' @param n_gene_disp number of genes used in mini-batch dispersion estimation approach(default NULL > all genes are used)
-#' @param n_cell_par number of cells used in mini-batch cells related parameters estimation approach(default NULL > all cells are used)
-#' @param n_gene_par number of genes used in mini-batch genes related parameters estimation approach(default NULL > all genes are used)
+#' @param random_start if TRUE the setup of parameters is
+#'  a random samplig(default FALSE)
+#' @param n_gene_disp number of genes used in mini-batch dispersion estimation
+#'  approach(default NULL > all genes are used)
+#' @param n_cell_par number of cells used in mini-batch
+#'  cell's related parameters estimation approach
+#'  (default NULL > all cells are used)
+#' @param n_gene_par number of genes used in mini-batch
+#'  gene's related parameters estimation approach
+#'  (default NULL > all genes are used)
 #' @param cross_batch going to be eliminated
 #'
 #' @examples
@@ -40,65 +46,68 @@
 #' m <- newFit(se, X=model.matrix(~bio, data=colData(se)))
 setMethod("newFit", "SummarizedExperiment",
           function(Y, X, V, K = 2, which_assay,
-                   commondispersion = TRUE, verbose=FALSE,
-                   maxiter_optimize = 100,
-                   stop_epsilon=.0001, children = 1,
-                   random_init = FALSE, random_start = FALSE,
-                   n_gene_disp = NULL,
-                   n_cell_par = NULL, n_gene_par = NULL,
-                   cross_batch = FALSE, ... ) {
+                    commondispersion = TRUE, verbose=FALSE,
+                    maxiter_optimize = 100,
+                    stop_epsilon=.0001, children = 1,
+                    random_init = FALSE, random_start = FALSE,
+                    n_gene_disp = NULL,
+                    n_cell_par = NULL, n_gene_par = NULL,
+                    cross_batch = FALSE, ... ) {
 
-              if(missing(which_assay)) {
-                  if("counts" %in% assayNames(Y)) {
-                      dataY <- assay(Y, "counts")
-                  } else {
-                      dataY <- assay(Y)
-                  }
-              } else {
-                  if(!(is.character(which_assay) | is.numeric(which_assay))) {
-                      stop("Assay needs to be a numeric or character specifying which assay to use")
-                  } else {
-                      dataY <- assay(Y, which_assay)
-                  }
-              }
+            if(missing(which_assay)) {
+                if("counts" %in% assayNames(Y)) {
+                    dataY <- assay(Y, "counts")
+                } else {
+                    dataY <- assay(Y)
+                }
+            } else {
+                if(!(is.character(which_assay) | is.numeric(which_assay))) {
+                    stop("Assay needs to be a numeric or character specifying
+                         which assay to use")
+                } else {
+                    dataY <- assay(Y, which_assay)
+                }
+            }
 
-              if(!missing(X)) {
-                  if(!is.matrix(X)) {
-                      tryCatch({
-                          f <- as.formula(X)
-                          X <- model.matrix(f, data=colData(Y))
-                      },
-                      error = function(e) {
-                          stop("X must be a matrix or a formula with variables in colData(Y)")
-                      })
-                  }
-              }
+            if(!missing(X)) {
+                if(!is.matrix(X)) {
+                    tryCatch({
+                        f <- as.formula(X)
+                        X <- model.matrix(f, data=colData(Y))
+                    },
+                    error = function(e) {
+                        stop("X must be a matrix or a formula with variables in
+                             colData(Y)")
+                    })
+                }
+            }
 
-              if(!missing(V)) {
-                  if(!is.matrix(V)) {
-                      tryCatch({
-                          f <- as.formula(V)
-                          V <- model.matrix(f, data=rowData(Y))
-                      },
-                      error = function(e) {
-                          stop("V must be a matrix or a formula with variables in rowData(Y)")
-                      })
-                  }
-              }
+            if(!missing(V)) {
+                if(!is.matrix(V)) {
+                    tryCatch({
+                        f <- as.formula(V)
+                        V <- model.matrix(f, data=rowData(Y))
+                    },
+                    error = function(e) {
+                        stop("V must be a matrix or a formula with variables in
+                             rowData(Y)")
+                    })
+                }
+            }
 
               # Apply newFit on the assay of SummarizedExperiment
-              res <- newFit(Y = dataY, X = X, V = V, K = K,
-                           commondispersion = commondispersion, 
-                           verbose = verbose,
-                           maxiter_optimize = maxiter_optimize,
-                           stop_epsilon = stop_epsilon, children = children,
-                           random_init = random_init, random_start = random_start,
-                           n_gene_disp = n_gene_disp , n_cell_par = n_cell_par,
-                           n_gene_par = n_gene_par,cross_batch=cross_batch)
+            res <- newFit(Y = dataY, X = X, V = V, K = K,
+                        commondispersion = commondispersion, 
+                        verbose = verbose,
+                        maxiter_optimize = maxiter_optimize,
+                        stop_epsilon = stop_epsilon, children = children,
+                        random_init = random_init, random_start = random_start,
+                        n_gene_disp = n_gene_disp , n_cell_par = n_cell_par,
+                        n_gene_par = n_gene_par,cross_batch=cross_batch)
               
               
                
-              return(res)
+            return(res)
 })
 
 
@@ -123,10 +132,14 @@ setMethod("newFit", "SummarizedExperiment",
 #'   when the relative gain in likelihood is below epsilon (default 0.0001).
 #' @param children number of cores of the used cluster(default 1)
 #' @param random_init if TRUE no initializations is done(default FALSE)
-#' @param random_start if TRUE the setup of parameters is a random samplig(default FALSE)
-#' @param n_gene_disp number of genes used in mini-batch dispersion estimation approach(default NULL > all genes are used)
-#' @param n_cell_par number of cells used in mini-batch cells related parameters estimation approach(default NULL > all cells are used)
-#' @param n_gene_par number of genes used in mini-batch genes related parameters estimation approach(default NULL > all genes are used)
+#' @param random_start if TRUE the setup of parameters is
+#'  a random samplig(default FALSE)
+#' @param n_gene_disp number of genes used in mini-batch dispersion estimation
+#'  approach(default NULL > all genes are used)
+#' @param n_cell_par number of cells used in mini-batch cell's related
+#'  parameters estimation approach(default NULL > all cells are used)
+#' @param n_gene_par number of genes used in mini-batch gene's related
+#'  parameters estimation approach(default NULL > all genes are used)
 #' @param cross_batch going to be eliminated
 #'
 #' @details By default, i.e., if no arguments other than \code{Y} are passed,
@@ -145,14 +158,14 @@ setMethod("newFit", "SummarizedExperiment",
 
 
 setMethod("newFit", "matrix",
-          function(Y, X, V, K = 2,
-                   commondispersion = TRUE, verbose=FALSE,
-                   maxiter_optimize = 100,
-                   stop_epsilon=.0001, children = 1,
-                   random_init = FALSE, random_start = FALSE,
-                   n_gene_disp = NULL,
-                   n_cell_par = NULL, n_gene_par = NULL,
-                   cross_batch = FALSE, ... ) {
+        function(Y, X, V, K = 2,
+                commondispersion = TRUE, verbose=FALSE,
+                maxiter_optimize = 100,
+                stop_epsilon=.0001, children = 1,
+                random_init = FALSE, random_start = FALSE,
+                n_gene_disp = NULL,
+                n_cell_par = NULL, n_gene_par = NULL,
+                cross_batch = FALSE, ... ) {
 
     # Check that Y contains whole numbers
     if(!all(.is_wholenumber(Y))) {
@@ -163,11 +176,11 @@ setMethod("newFit", "matrix",
     Y <- t(Y)
     
     if(any(rowSums(Y) == 0)) {
-      stop("Sample ", which(rowSums(Y) == 0)[1], " has only 0 counts!")
+        stop("Sample ", which(rowSums(Y) == 0)[1], " has only 0 counts!")
     }
     
     if(any(colSums(Y) == 0)) {
-      stop("Gene ", which(colSums(Y) == 0)[1], " has only 0 counts!")
+        stop("Gene ", which(colSums(Y) == 0)[1], " has only 0 counts!")
     }
     
     # Create a newmodel object
@@ -181,26 +194,29 @@ setMethod("newFit", "matrix",
     # If the set the value of parameters is zero we must do the initialization
     if(random_init){ random_start = TRUE}
     
-    setup(cluster = cl, model = m, random_start = random_start, children = children,
-          random_init = random_init, verbose = verbose, Y = Y,mode = "matrix")
+    setup(cluster = cl, model = m, random_start = random_start,
+        children = children, random_init = random_init, verbose = verbose,
+        Y = Y,mode = "matrix")
     
     # Initializize value
 
     if (!random_init){
 
-      initialization(cluster = cl, children = children, model = m,
-                     verbose = verbose)
+        initialization(cluster = cl, children = children, model = m,
+                    verbose = verbose)
 
     }
     
     
     # Optimize value
 
-    info <- optimization(cluster = cl, children = children, model = m, max_iter = maxiter_optimize,
-                         stop_epsilon = stop_epsilon,
-                         commondispersion = commondispersion,  n_gene_disp = n_gene_disp,
-                         n_cell_par = n_cell_par, n_gene_par = n_gene_par, verbose =  verbose,
-                         mode = "matrix", cross_batch = cross_batch)
+    info <- optimization(cluster = cl, children = children, model = m,
+                        max_iter = maxiter_optimize,
+                        stop_epsilon = stop_epsilon,
+                        commondispersion = commondispersion,
+                        n_gene_disp = n_gene_disp, n_cell_par = n_cell_par,
+                        n_gene_par = n_gene_par, verbose =  verbose,
+                        mode = "matrix", cross_batch = cross_batch)
     
     return(info)
 })
@@ -213,11 +229,11 @@ setMethod("newFit", "matrix",
 
 setMethod("newFit", "DelayedMatrix",
           function(Y, X, V, K,
-                   commondispersion, verbose, maxiter_optimize,
-                   stop_epsilon, children,
-                   random_start, n_gene_disp,
-                   n_cell_par, n_gene_par,
-                   ... ) {
+                  commondispersion, verbose, maxiter_optimize,
+                  stop_epsilon, children,
+                  random_start, n_gene_disp,
+                  n_cell_par, n_gene_par,
+                  ... ) {
             
     # if(!all(.is_wholenumber(Y))) {
     #   stop("The input matrix should contain only whole numbers.")
@@ -238,8 +254,9 @@ setMethod("newFit", "DelayedMatrix",
     random_start = TRUE
 
     # Exporting values to the main and the child process
-    setup(cluster = cl, model = m, random_start = random_start, children = children,
-        random_init = random_init, verbose = verbose, Y = Y, mode = "Deleyed")
+    setup(cluster = cl, model = m, random_start = random_start,
+        children = children, random_init = random_init, verbose = verbose,
+        Y = Y, mode = "Deleyed")
 
 
 
@@ -252,7 +269,7 @@ setMethod("newFit", "DelayedMatrix",
         n_cell_par = n_cell_par, n_gene_par = n_gene_par, verbose =  verbose,
         mode = "Delayed")
 
-return(info)
+    return(info)
 })
             
 #' @describeIn newFit Y is a sparse matrix of counts (genes in rows).
@@ -263,9 +280,9 @@ return(info)
 #'
 #' @importClassesFrom Matrix dgCMatrix
 setMethod("newFit", "dgCMatrix",
-          function(Y, ...) {
-            newFit(as.matrix(Y), ...)
-          })
+            function(Y, ...) {
+                newFit(as.matrix(Y), ...)
+            })
 
 
 # Setup the parameters of a Negative Binomial regression model
@@ -279,7 +296,8 @@ setMethod("newFit", "dgCMatrix",
 # and the child process.
 # @param cluster the PSOCK cluster object
 # @param model The model of class newmodel
-# @param random_start if TRUE the setup of parameters is a random samplig(default FALSE)
+# @param random_start if TRUE the setup of parameters is a 
+#   random samplig(default FALSE)
 # @param children Number of child process.
 # @param random_init if TRUE no initializations is done(default FALSE)
 # @param verbose Print helpful messages(default FALSE).
@@ -315,8 +333,9 @@ setup <- function(cluster, model, random_start, children,
     } else {
         beta_sh <<- SharedObject::share(matrix(rnorm(ncol(X_sh)*ncol(Y_sh)), 
             nrow = ncol(X_sh)), copyOnWrite=FALSE)
-        alpha_sh <<- SharedObject::share(matrix(rnorm(numberFactors(model)*ncol(Y_sh)), 
-            nrow = numberFactors(model)), copyOnWrite=FALSE)
+        alpha_sh <<- SharedObject::share(matrix(rnorm(
+            numberFactors(model)*ncol(Y_sh)), nrow = numberFactors(model)),
+            copyOnWrite=FALSE)
         W_sh <<- SharedObject::share(matrix(rnorm(nrow(Y_sh)*numberFactors(model)), 
             nrow = nrow(Y_sh)), copyOnWrite=FALSE)
         gamma_sh <<- SharedObject::share(matrix(rnorm(nrow(Y_sh)*ncol(V_sh)), 
@@ -407,9 +426,12 @@ initialization <- function(cluster, children, model, verbose){
 # @param max_iter maximum number of iterations
 # @param stop_epsilon stopping criterion, when the relative gain in
 #   likelihood is below epsilon
-# @param n_gene_disp number of genes used in mini-batch dispersion estimation approach(default NULL > all genes are used)
-# @param n_cell_par number of cells used in mini-batch cells related parameters estimation approach(default NULL > all cells are used)
-# @param n_gene_par number of genes used in mini-batch genes related parameters estimation approach(default NULL > all genes are used)
+# @param n_gene_disp number of genes used in mini-batch dispersion estimation
+#   approach(default NULL > all genes are used)
+# @param n_cell_par number of cells used in mini-batch cell's related
+#   parameters estimation approach(default NULL > all cells are used)
+# @param n_gene_par number of genes used in mini-batch gene's related
+#   parameters estimation approach(default NULL > all genes are used)
 # @param commondispersion Whether or not a single dispersion for all features
 #   is estimated (default TRUE).
 # @param verbose print information (default FALSE)
@@ -419,22 +441,23 @@ initialization <- function(cluster, children, model, verbose){
 #   with modified parameters alpha, beta, gamma, W.
 
 optimization <- function(cluster, children, model ,
-                         max_iter, stop_epsilon,
-                         n_gene_disp,
-                         n_cell_par, n_gene_par,
-                         commondispersion, verbose, mode, cross_batch){
+                        max_iter, stop_epsilon,
+                        n_gene_disp,
+                        n_cell_par, n_gene_par,
+                        commondispersion, verbose, mode, cross_batch){
 
     iter = 0
 
     total.lik=rep(NA,max_iter)
 
 
-    mu_sh <<- SharedObject::share(exp(newX(model) %*% beta_sh + t(newV(model) %*% gamma_sh) +
-                   W_sh %*% alpha_sh))
+    mu_sh <<- SharedObject::share(exp(newX(model) %*% beta_sh +
+                t(newV(model) %*% gamma_sh) +  W_sh %*% alpha_sh))
     clusterExport(cl = cluster, "mu_sh",
-              envir = environment())
-    total.lik[1] <- ll_calc(mu = mu_sh, model  = model, Y_sh = as.matrix(Y_sh), z = zeta_sh,
-                        alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
+                envir = environment())
+    total.lik[1] <- ll_calc(mu = mu_sh, model  = model, Y_sh = as.matrix(Y_sh),
+                z = zeta_sh,
+                alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
 
     for (iter in seq.int(max_iter)){
 
@@ -446,8 +469,9 @@ optimization <- function(cluster, children, model ,
             mu_sh[] <- exp(newX(model) %*% beta_sh + t(newV(model) %*% gamma_sh) + 
                 W_sh %*% alpha_sh)
   
-            total.lik[iter] <- ll_calc(mu = mu_sh, model  = model, Y_sh = as.matrix(Y_sh),
-                z = zeta_sh, alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
+            total.lik[iter] <- ll_calc(mu = mu_sh, model  = model,
+                Y_sh = as.matrix(Y_sh), z = zeta_sh, alpha_sh, beta_sh,
+                gamma_sh, W_sh, commondispersion)
   
             if(abs((total.lik[iter]-total.lik[iter-1]) / total.lik[iter-1])<stop_epsilon) break
   
@@ -469,8 +493,9 @@ optimization <- function(cluster, children, model ,
             cat("Time of dispersion optimization\n")
             print(proc.time()-ptm)
 
-            l_pen <- ll_calc(mu = mu_sh, model  = model, Y_sh = Y_sh, z = zeta_sh,
-                alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
+            l_pen <- ll_calc(mu = mu_sh, model  = model, Y_sh = Y_sh,
+                z = zeta_sh, alpha_sh, beta_sh, gamma_sh, W_sh,
+                commondispersion)
             message("after optimize dispersion = ",  l_pen)
         }
 
@@ -489,12 +514,15 @@ optimization <- function(cluster, children, model ,
             print(proc.time()-ptm)
             itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
                 W_sh %*% alpha_sh)
-            l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = Y_sh, z = zeta_sh,
-                alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
+            l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = Y_sh,
+                z = zeta_sh, alpha_sh, beta_sh, gamma_sh, W_sh,
+                commondispersion)
             message("after right optimization= ",  l_pen)
         }
 
-        o <- orthogonalizeTraceNorm(W_sh, alpha_sh, model@epsilon_W, model@epsilon_alpha)
+        o <- orthogonalizeTraceNorm(W_sh, alpha_sh, model@epsilon_W,
+                model@epsilon_alpha)
+        
         W_sh[] <- o$U
         alpha_sh[] <- o$V
 
@@ -502,59 +530,64 @@ optimization <- function(cluster, children, model ,
         if(verbose){
             itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
                 W_sh %*% alpha_sh)
-            l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = Y_sh, z = zeta_sh,
-                alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
+            l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = Y_sh,
+                z = zeta_sh, alpha_sh, beta_sh, gamma_sh, W_sh,
+                commondispersion)
             message("after orthogonalization = ",  l_pen)
-         }
+        }
 
 
-         ptm <- proc.time()
+        ptm <- proc.time()
 
-         if(mode == "matrix"){
-         clusterApply(cluster, seq.int(children), "optiml" , 
-             num_cell = n_cell_par, cross_batch = cross_batch, iter = iter) 
+        if(mode == "matrix"){
+        clusterApply(cluster, seq.int(children), "optiml" , 
+            num_cell = n_cell_par, cross_batch = cross_batch, iter = iter) 
           
-         } else clusterApply(cluster, seq.int(children), "optiml_delayed" , 
-                    num_cell = n_cell_par)
+        } else clusterApply(cluster, seq.int(children), "optiml_delayed" , 
+            num_cell = n_cell_par)
 
 
-         if(verbose){
-             cat("Time of left optimization\n")
-             print(proc.time()-ptm)
-             itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
-                 W_sh %*% alpha_sh)
-             l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = Y_sh, z = zeta_sh,
-                 alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
+        if(verbose){
+            cat("Time of left optimization\n")
+            print(proc.time()-ptm)
+            itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
+                W_sh %*% alpha_sh)
+            l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = Y_sh,
+                z = zeta_sh, alpha_sh, beta_sh, gamma_sh, W_sh,
+                commondispersion)
             message("after left optimization= ",  l_pen)
-          }
+        }
 
-          o <- orthogonalizeTraceNorm(W_sh, alpha_sh, model@epsilon_W, model@epsilon_alpha)
-          W_sh[] <- o$U
-          alpha_sh[] <- o$V
+        o <- orthogonalizeTraceNorm(W_sh, alpha_sh, model@epsilon_W,
+                model@epsilon_alpha)
+        W_sh[] <- o$U
+        alpha_sh[] <- o$V
 
 
-          if(verbose){
-              itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
-                  W_sh %*% alpha_sh)
-              l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = Y_sh, z = zeta_sh,
-                  alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
-              message("after orthogonalization = ",  l_pen)
-          }
+        if(verbose){
+            itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
+                W_sh %*% alpha_sh)
+            l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = Y_sh,
+                z = zeta_sh, alpha_sh, beta_sh, gamma_sh, W_sh,
+                commondispersion)
+            message("after orthogonalization = ",  l_pen)
+        }
 
-          m <- newmodel(X = model@X, V = model@V,
-              W = W_sh, beta = beta_sh,
-              gamma = gamma_sh,
-              alpha = alpha_sh, zeta = zeta_sh,
-              epsilon_beta = model@epsilon_beta,
-              epsilon_gamma = model@epsilon_gamma,
-              epsilon_W = model@epsilon_W, epsilon_alpha = model@epsilon_alpha,
-              epsilon_zeta = model@epsilon_zeta)
+        m <- newmodel(X = model@X, V = model@V,
+            W = W_sh, beta = beta_sh,
+            gamma = gamma_sh,
+            alpha = alpha_sh, zeta = zeta_sh,
+            epsilon_beta = model@epsilon_beta,
+            epsilon_gamma = model@epsilon_gamma,
+            epsilon_W = model@epsilon_W, epsilon_alpha = model@epsilon_alpha,
+            epsilon_zeta = model@epsilon_zeta)
     }
 
     return(m)
 }
 
-optimd <- function(J, mu, cluster, children, num_gene = NULL, commondispersion, iter){
+optimd <- function(J, mu, cluster, children, num_gene = NULL, commondispersion,
+                   iter){
   
     if (commondispersion || iter == 1){
   
@@ -575,7 +608,8 @@ optimd <- function(J, mu, cluster, children, num_gene = NULL, commondispersion, 
   
     } else {
   
-        clusterApply(cluster, seq.int(children), "optim_genwise_dispersion",num_gene = num_gene, iter = iter)
+        clusterApply(cluster, seq.int(children), "optim_genwise_dispersion",
+                     num_gene = num_gene, iter = iter)
     }
 
 }
@@ -611,34 +645,36 @@ orthogonalizeTraceNorm <- function(U, V, a=1, b=1) {
 
 nb.loglik <- function(Y, mu, theta) {
   
-   # log-probabilities of counts under the NB model
-   logPnb <- suppressWarnings(dnbinom(Y, size = theta, mu = mu, log = TRUE))
-   sum(logPnb)
+    # log-probabilities of counts under the NB model
+    logPnb <- suppressWarnings(dnbinom(Y, size = theta, mu = mu, log = TRUE))
+    sum(logPnb)
   
 }
 
 nb.loglik.dispersion <- function(zeta, Y, mu){
 
-   nb.loglik(Y, mu, exp(zeta))
+    nb.loglik(Y, mu, exp(zeta))
 
 }
 
 
-ll_calc <- function(mu, model, Y_sh, z, alpha , beta, gamma, W, commondispersion){
+ll_calc <- function(mu, model, Y_sh, z, alpha , beta, gamma, W,
+                    commondispersion){
   
-   theta <- exp(z)
+    theta <- exp(z)
   
-   loglik <- nb.loglik(Y_sh, mu, rep(theta, rep(nrow(Y_sh),ncol(Y_sh))))
+    loglik <- nb.loglik(Y_sh, mu, rep(theta, rep(nrow(Y_sh),ncol(Y_sh))))
   
-   zeta_pen <- ifelse(commondispersion == TRUE,  newEpsilon_zeta(model)*var(z)/2, 0)
+    zeta_pen <- ifelse(commondispersion == TRUE,
+                       newEpsilon_zeta(model)*var(z)/2, 0)
   
-   penalty <- sum(newEpsilon_alpha(model) * (alpha)^2)/2 +
+    penalty <- sum(newEpsilon_alpha(model) * (alpha)^2)/2 +
        sum(newEpsilon_beta(model) * (beta)^2)/2 +
        sum(newEpsilon_gamma(model)*(gamma)^2)/2 +
        sum(newEpsilon_W(model)*t(W)^2)/2 +
        zeta_pen
   
-   loglik - penalty
+    loglik - penalty
 }
 
 

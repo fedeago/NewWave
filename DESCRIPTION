@@ -4,9 +4,9 @@ Title: Negative binomial model for scRNA-seq
 Version: 0.1.0
 Author: Federico Agostinis, Chiara Romualdi, Gabriele Sales, Davide Risso
 Maintainer: Federico Agostinis <federico.agostinis@outlook.com>
-Description: A model designed for dimensionality reduction and batch effect removal.
-    It is designed to be massively parallelizable and it can be used with different
-    mini-batch approaches in order to reduce time consumption.
+Description: A model designed for dimensionality reduction and batch effect
+    removal. It is designed to be massively parallelizable and it can be used
+    with different mini-batch approaches in order to reduce time consumption.
 Depends: 
     R (>= 4.0),
     methods,
