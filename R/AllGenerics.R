@@ -36,18 +36,6 @@ setGeneric("numberSamples", function(x) standardGeneric("numberSamples"))
 #' @export
 setGeneric("numberFeatures", function(x) standardGeneric("numberFeatures"))
 
-#' Generic function that returns the number of params
-#'
-#' Given an object that describes a dataset or a model involving params,
-#' this function returns the number of params
-#' @param x an object that describes a dataset or a model involving params
-#' @return the number of params
-#' @examples
-#' a <- newmodel(n=5, J=10)
-#' numberParams(a)
-#' @export
-setGeneric("numberParams", function(x) standardGeneric("numberParams"))
-
 #' Returns the matrix of mean parameters
 #'
 #' Given an object that describes a matrix of negative binomial distributions,

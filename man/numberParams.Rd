@@ -3,30 +3,21 @@
 \name{numberParams}
 \alias{numberParams}
 \alias{numberParams,newmodel-method}
-\title{Generic function that returns the number of params}
+\title{Generic function that returns the total number of parameters of the model}
 \usage{
-numberParams(model)
-
 numberParams(model)
 
 \S4method{numberParams}{newmodel}(model)
 }
 \arguments{
 \item{model}{an object that describes a dataset or a model.}
-
-\item{x}{an object that describes a dataset or a model involving params}
 }
 \value{
-the number of params
-
 the total number of parameters of the model.
 }
 \description{
-Given an object that describes a dataset or a model involving params,
-this function returns the number of params
-
-Given an object that describes a model or a dataset, it returns total number of
-parameters of the model.
+Given an object that describes a model or a dataset, it returns total number
+ of parameters of the model.
 }
 \section{Functions}{
 \itemize{
@@ -34,8 +25,6 @@ parameters of the model.
 }}
 
 \examples{
-a <- newmodel(n=5, J=10)
-numberParams(a)
 a <- newmodel(n=5, J=10)
 numberParams(a)
 }

@@ -34,8 +34,8 @@ newWave(Y, ...)
 \item{...}{Additional parameters to describe the model, see
 \code{\link{newmodel}}.}
 
-\item{X}{The design matrix containing sample-level covariates, one sample per
-row. If missing, X will contain only an intercept. If Y is a
+\item{X}{The design matrix containing sample-level covariates, one sample 
+per row. If missing, X will contain only an intercept. If Y is a
 SummarizedExperiment object, X can be a formula using the variables in the
 colData slot of Y.}
 
@@ -46,9 +46,9 @@ rowData slot of Y.}
 
 \item{K}{integer. Number of latent factors(default 2).}
 
-\item{which_assay}{numeric or character. Which assay of Y to use. If missing,
-if `assayNames(Y)` contains "counts" then that is used. Otherwise, the
-first assay is used.}
+\item{which_assay}{numeric or character. Which assay of Y to use. 
+If missing, if `assayNames(Y)` contains "counts" then that is used.
+Otherwise, the first assay is used.}
 
 \item{commondispersion}{Whether or not a single dispersion for all features
 is estimated (default TRUE).}
@@ -65,20 +65,24 @@ when the relative gain in likelihood is below epsilon (default 0.0001).}
 
 \item{random_init}{if TRUE no initializations is done(default FALSE)}
 
-\item{random_start}{if TRUE the setup of parameters is a random samplig(default FALSE)}
+\item{random_start}{if TRUE the setup of parameters is a random samplig
+(default FALSE)}
 
-\item{n_gene_disp}{number of genes used in mini-batch dispersion estimation approach(default NULL > all genes are used)}
+\item{n_gene_disp}{number of genes used in mini-batch dispersion 
+estimation approach(default NULL > all genes are used)}
 
-\item{n_cell_par}{number of cells used in mini-batch cells related parameters estimation approach(default NULL > all cells are used)}
+\item{n_cell_par}{number of cells used in mini-batch cells related 
+parameters estimation approach(default NULL > all cells are used)}
 
-\item{n_gene_par}{number of genes used in mini-batch genes related parameters estimation approach(default NULL > all genes are used)}
+\item{n_gene_par}{number of genes used in mini-batch genes related 
+parameters estimation approach(default NULL > all genes are used)}
 
 \item{cross_batch}{going to be eliminated}
 }
 \value{
 An object of class \code{SingleCellExperiment}; the dimensionality
-  reduced matrix is stored in the \code{reducedDims} slot and optionally
-  normalized values and residuals are added in the list of assays.
+ reduced matrix is stored in the \code{reducedDims} slot and optionally
+ normalized values and residuals are added in the list of assays.
 }
 \description{
 Given an object with the data, it performs dimensionality reduction using
@@ -90,8 +94,8 @@ It corresponds to the deviance residuals when the \code{W} is not included
 in the model but the gene and cell-level covariates are. As a results, when
 \code{W} is not included in the model, the deviance residuals should capture
 the biology. Note that we do not recommend to use the normalized values for
-any downstream analysis (such as clustering, or differential expression), but
-only for visualization.
+any downstream analysis (such as clustering, or differential expression), 
+but only for visualization.
 
 If one has already fitted a model using \code{\link{newmodel}},
 the object containing such model can be used as input of \code{newWave} to
@@ -102,8 +106,8 @@ model.
 By default \code{newWave} uses all genes to estimate \code{W}.
   However, we recommend to use the top 1,000 most variable genes for this
   step. In general, a user can specify any custom set of genes to be used to
-  estimate \code{W}, by specifying either a vector of gene names, or a single
-  character string corresponding to a column of the \code{rowData}.
+  estimate \code{W}, by specifying either a vector of gene names, or a
+  single character string corresponding to a column of the \code{rowData}.
 
 Note that if both \code{which_genes} is specified and at least one
   among \code{observationalWeights}, \code{imputedValues}, \code{residuals},

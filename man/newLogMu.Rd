@@ -19,9 +19,9 @@ returns the matrix of logarithm of mean parameters.
 }
 \details{
 Note that although the user interface of \code{\link{newFit}}
-requires a J x n matrix, internally this is stored as a n x J matrix (i.e.,
-samples in row and genes in column). Hence the parameter matrix returned by
-this function is of n x J dimensions.
+ requires a J x n matrix, internally this is stored as a n x J matrix (i.e.,
+ samples in row and genes in column). Hence the parameter matrix returned by
+ this function is of n x J dimensions.
 }
 \examples{
 a <- newmodel(n=5, J=10)

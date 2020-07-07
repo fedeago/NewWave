@@ -387,9 +387,9 @@ setMethod("numberParams", "newmodel",
             J <- numberFeatures(model)
             K <- numberFactors(model)
 
-            M <- NCOL(X)
+            M <- NCOL(model)
 
-            L <- NCOL(V)
+            L <- NCOL(model)
             ndisp <- length(unique(newZeta(model)))
 
             J * (M) + n * (L) + 2 * K * J + n * K + ndisp

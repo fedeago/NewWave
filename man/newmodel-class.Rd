@@ -71,9 +71,9 @@
 \item{x}{an object of class \code{newmodel}.}
 }
 \value{
-\code{numberSamples} returns the number of samples; \code{numberFeatures}
-returns the number of features; \code{numberFactors} returns the number of latent
-factors.
+\code{numberSamples} returns the number of samples;
+ \code{numberFeatures}returns the number of features; 
+ \code{numberFactors} returns the number of latent factors.
 }
 \description{
 Objects of this class store all the values needed to work with a

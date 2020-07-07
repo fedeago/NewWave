@@ -101,19 +101,23 @@ when the relative gain in likelihood is below epsilon (default 0.0001).}
 
 \item{random_init}{if TRUE no initializations is done(default FALSE)}
 
-\item{random_start}{if TRUE the setup of parameters is a random samplig(default FALSE)}
+\item{random_start}{if TRUE the setup of parameters is
+a random samplig(default FALSE)}
 
-\item{n_gene_disp}{number of genes used in mini-batch dispersion estimation approach(default NULL > all genes are used)}
+\item{n_gene_disp}{number of genes used in mini-batch dispersion estimation
+approach(default NULL > all genes are used)}
 
-\item{n_cell_par}{number of cells used in mini-batch cells related parameters estimation approach(default NULL > all cells are used)}
+\item{n_cell_par}{number of cells used in mini-batch cell's related
+parameters estimation approach(default NULL > all cells are used)}
 
-\item{n_gene_par}{number of genes used in mini-batch genes related parameters estimation approach(default NULL > all genes are used)}
+\item{n_gene_par}{number of genes used in mini-batch gene's related
+parameters estimation approach(default NULL > all genes are used)}
 
 \item{cross_batch}{going to be eliminated}
 }
 \value{
 An object of class \code{newmodel} that has been fitted by penalized
-  maximum likelihood on the data.
+ maximum likelihood on the data.
 }
 \description{
 Given an object with the data, it fits a nb model.

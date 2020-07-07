@@ -70,36 +70,36 @@ Initialize an object of class newmodel
 }
 \details{
 This is a wrapper around the new() function to create an
-  instance of class \code{newmodel}. Rarely, the user will need to create a
-  \code{newmodel} object from scratch, as tipically this is the result of
-  \code{\link{newFit}}.
+ instance of class \code{newmodel}. Rarely, the user will need to create a
+ \code{newmodel} object from scratch, as tipically this is the result of
+ \code{\link{newFit}}.
 
 If any of \code{X}, \code{V}, \code{W} matrices are passed,
-  \code{n}, \code{J}, and \code{K} are inferred. Alternatively, the user can
-  specify one or more of \code{n}, \code{J}, and \code{K}.
+ \code{n}, \code{J}, and \code{K} are inferred. Alternatively, the user can
+ specify one or more of \code{n}, \code{J}, and \code{K}.
 
 The regularization parameters can be set by a unique parameter
-  \code{epsilon} or specific values for the different regularization
-  parameters can also be provided.
-  If only \code{epsilon} is specified, the other parameters take the
-  following values:
-  \itemize{
-  \item epsilon_beta = epsilon/J
-  \item epsilon_gamma = epsilon/n
-  \item epsilon_W = epsilon/n
-  \item epsilon_alpha = epsilon/J
-  \item epsilon_zeta = epsilon
-  }
-  We empirically found that large values of \code{epsilon} provide a more
-  stable estimation of \code{W}.
+ \code{epsilon} or specific values for the different regularization
+ parameters can also be provided.
+ If only \code{epsilon} is specified, the other parameters take the
+ following values:
+ \itemize{
+ \item epsilon_beta = epsilon/J
+ \item epsilon_gamma = epsilon/n
+ \item epsilon_W = epsilon/n
+ \item epsilon_alpha = epsilon/J
+ \item epsilon_zeta = epsilon
+ }
+ We empirically found that large values of \code{epsilon} provide a more
+ stable estimation of \code{W}.
 
 A call with no argument has the following default values: \code{n =
-  50}, \code{J = 100}, \code{K = 0}, \code{epsilon=J}.
+ 50}, \code{J = 100}, \code{K = 0}, \code{epsilon=J}.
 
 Although it is possible to create new instances of the class by
-  calling this function, this is not the most common way of creating
-  \code{newmodel} objects. The main use of the class is within the
-  \code{\link{newFit}} function.
+ calling this function, this is not the most common way of creating
+ \code{newmodel} objects. The main use of the class is within the
+ \code{\link{newFit}} function.
 }
 \examples{
 a <- newmodel()

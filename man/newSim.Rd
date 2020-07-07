@@ -21,12 +21,12 @@ random generator state is not changed.}
 }
 \value{
 A list with the following elements.
-  \itemize{
-  \item{counts}{the matrix with the simulated counts.}
-  \item{dataNB}{the data simulated from the negative binomial.}
-  \item{dataDropouts}{the data simulated from the binomial process.}
-  \item{zeroFraction}{the fraction of zeros.}
-  }
+ \itemize{
+ \item{counts}{the matrix with the simulated counts.}
+ \item{dataNB}{the data simulated from the negative binomial.}
+ \item{dataDropouts}{the data simulated from the binomial process.}
+ \item{zeroFraction}{the fraction of zeros.}
+ }
 }
 \description{
 Given an object that describes negative binomial distribution,
