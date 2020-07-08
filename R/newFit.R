@@ -173,18 +173,18 @@ setMethod("newFit", "matrix",
     }
 
     # Transpose Y: UI wants genes in rows, internals genes in columns!
-    Y <- t(Y)
+    Y_sh <- share(t(Y))
     
-    if(any(rowSums(Y) == 0)) {
-        stop("Sample ", which(rowSums(Y) == 0)[1], " has only 0 counts!")
+    if(any(rowSums(Y_sh) == 0)) {
+        stop("Sample ", which(rowSums(Y_sh) == 0)[1], " has only 0 counts!")
     }
     
-    if(any(colSums(Y) == 0)) {
-        stop("Gene ", which(colSums(Y) == 0)[1], " has only 0 counts!")
+    if(any(colSums(Y_sh) == 0)) {
+        stop("Gene ", which(colSums(Y_sh) == 0)[1], " has only 0 counts!")
     }
     
     # Create a newmodel object
-    m <- newmodel(n=NROW(Y), J=NCOL(Y), K=K, X=X, V=V)
+    m <- newmodel(n=NROW(Y_sh), J=NCOL(Y_sh), K=K, X=X, V=V)
 
     cl <- makePSOCKcluster(children)
     on.exit(stopCluster(cl), add = TRUE)
@@ -194,23 +194,23 @@ setMethod("newFit", "matrix",
     # If the set the value of parameters is zero we must do the initialization
     if(random_init){ random_start = TRUE}
     
-    setup(cluster = cl, model = m, random_start = random_start,
+    m <- setup(cluster = cl, model = m, random_start = random_start,
         children = children, random_init = random_init, verbose = verbose,
-        Y = Y,mode = "matrix")
+        Y_sh = Y_sh,mode = "matrix")
     
     # Initializize value
 
     if (!random_init){
 
         initialization(cluster = cl, children = children, model = m,
-                    verbose = verbose)
+                    verbose = verbose, Y = Y_sh)
 
     }
     
     
     # Optimize value
 
-    info <- optimization(cluster = cl, children = children, model = m,
+    info <- optimization(Y = Y_sh, cluster = cl, children = children, model = m,
                         max_iter = maxiter_optimize,
                         stop_epsilon = stop_epsilon,
                         commondispersion = commondispersion,
@@ -254,10 +254,9 @@ setMethod("newFit", "DelayedMatrix",
     random_start = TRUE
 
     # Exporting values to the main and the child process
-    setup(cluster = cl, model = m, random_start = random_start,
+    m <- setup(cluster = cl, model = m, random_start = random_start,
         children = children, random_init = random_init, verbose = verbose,
         Y = Y, mode = "Deleyed")
-
 
 
     # Optimize value
@@ -306,41 +305,35 @@ setMethod("newFit", "dgCMatrix",
 
 
 setup <- function(cluster, model, random_start, children,
-                  random_init, verbose, Y, mode) {
+                  random_init, verbose, Y_sh, mode) {
 
     ptm <- proc.time()
 
-    if (mode == "matrix"){
-        Y_sh <<- SharedObject::share(Y)
-        if(!random_init){
-        L_sh <<- SharedObject::share(log1p(Y_sh))
-        clusterExport(cluster,"L_sh",envir = environment())
-        }
-    } else {
+    if (mode != "matrix"){
         Y_sh <<- Y
         L_sh <<- log1p(Y_sh)
     }
     
-    X_sh <<- SharedObject::share(model@X)
-    V_sh <<- SharedObject::share(model@V)
+    X_sh <- SharedObject::share(model@X)
+    V_sh <- SharedObject::share(model@V)
 
     if (!random_start){
-        beta_sh <<- SharedObject::share(model@beta, copyOnWrite=FALSE)
-        alpha_sh <<- SharedObject::share(model@alpha, copyOnWrite=FALSE)
-        W_sh <<- SharedObject::share(model@W, copyOnWrite=FALSE)
-        gamma_sh <<- SharedObject::share(model@gamma, copyOnWrite=FALSE)
-        zeta_sh <<- SharedObject::share(model@zeta, copyOnWrite=FALSE)
+        beta_sh <- SharedObject::share(model@beta, copyOnWrite=FALSE)
+        alpha_sh <- SharedObject::share(model@alpha, copyOnWrite=FALSE)
+        W_sh <- SharedObject::share(model@W, copyOnWrite=FALSE)
+        gamma_sh <- SharedObject::share(model@gamma, copyOnWrite=FALSE)
+        zeta_sh <- SharedObject::share(model@zeta, copyOnWrite=FALSE)
     } else {
-        beta_sh <<- SharedObject::share(matrix(rnorm(ncol(X_sh)*ncol(Y_sh)), 
+        beta_sh <- SharedObject::share(matrix(rnorm(ncol(X_sh)*ncol(Y_sh)), 
             nrow = ncol(X_sh)), copyOnWrite=FALSE)
-        alpha_sh <<- SharedObject::share(matrix(rnorm(
+        alpha_sh <- SharedObject::share(matrix(rnorm(
             numberFactors(model)*ncol(Y_sh)), nrow = numberFactors(model)),
             copyOnWrite=FALSE)
-        W_sh <<- SharedObject::share(matrix(rnorm(nrow(Y_sh)*numberFactors(model)), 
+        W_sh <- SharedObject::share(matrix(rnorm(nrow(Y_sh)*numberFactors(model)), 
             nrow = nrow(Y_sh)), copyOnWrite=FALSE)
-        gamma_sh <<- SharedObject::share(matrix(rnorm(nrow(Y_sh)*ncol(V_sh)), 
+        gamma_sh <- SharedObject::share(matrix(rnorm(nrow(Y_sh)*ncol(V_sh)), 
             nrow = ncol(V_sh)), copyOnWrite=FALSE)
-        zeta_sh <<- SharedObject::share(rep(rnorm(1), 
+        zeta_sh <- SharedObject::share(rep(rnorm(1), 
             length = ncol(Y_sh)), copyOnWrite=FALSE)
     }
     
@@ -363,13 +356,23 @@ setup <- function(cluster, model, random_start, children,
         envir = environment())
     
     clusterEvalQ(cluster, source(fun_path))
-
+    
+    m <- newmodel(X = X_sh, V = V_sh,
+                  W = W_sh, beta = beta_sh,
+                  gamma = gamma_sh,
+                  alpha = alpha_sh, zeta = zeta_sh,
+                  epsilon_beta = model@epsilon_beta,
+                  epsilon_gamma = model@epsilon_gamma,
+                  epsilon_W = model@epsilon_W, epsilon_alpha = model@epsilon_alpha,
+                  epsilon_zeta = model@epsilon_zeta)
 
     if(verbose){
         cat("Time of setup\n")
         init.t <- proc.time()
         print(init.t-ptm)
     }
+    
+    return(m)
 }
 
 # Initialize the parameters of a Negative Binomial regression model
@@ -383,31 +386,38 @@ setup <- function(cluster, model, random_start, children,
 # 
 # 
 
-initialization <- function(cluster, children, model, verbose){
-
+initialization <- function(cluster, children, model, verbose, Y){
+    
+  
     ptm <- proc.time()
-
+    
+    L_sh <- SharedObject::share(log1p(Y))
+    
+    clusterExport(cluster,"L_sh",envir = environment())
+    
     clusterApply(cluster, seq.int(children), "gamma_init")
 
     clusterApply(cluster, seq.int(children), "beta_init")
 
   
-    D <- L_sh - (X_sh %*% beta_sh) - t(V_sh %*% gamma_sh)
+    D <- L_sh - (model@X %*% model@beta) - t(model@V %*% model@gamma)
 
 
     
     R <- irlba::irlba(D, nu=numberFactors(model), nv=numberFactors(model))
-
+    
+    
 
     # Orthogonalize to get W and alpha
-    W_sh[] <- (newEpsilon_alpha(model) / newEpsilon_W(model))[1]^(1/4) *
+    model@W[] <- (newEpsilon_alpha(model) / newEpsilon_W(model))[1]^(1/4) *
         R$u %*% diag(sqrt(R$d[seq.int(numberFactors(model))]),
         nrow = length(R$d[seq.int(numberFactors(model))]))
     
-    alpha_sh[] <- (newEpsilon_W(model)/newEpsilon_alpha(model))[1]^(1/4) *
+    model@alpha[] <- (newEpsilon_W(model)/newEpsilon_alpha(model))[1]^(1/4) *
         diag(sqrt(R$d[seq.int(numberFactors(model))]),
         nrow = length(R$d[seq.int(numberFactors(model))])) %*% t(R$v)
- 
+    
+    
     if(verbose){
         cat("Time of initialization\n")
         init.t <- proc.time()
@@ -440,7 +450,7 @@ initialization <- function(cluster, children, model, verbose){
 # @return An object of class newmodel similar to the one given as argument
 #   with modified parameters alpha, beta, gamma, W.
 
-optimization <- function(cluster, children, model ,
+optimization <- function(Y, cluster, children, model ,
                         max_iter, stop_epsilon,
                         n_gene_disp,
                         n_cell_par, n_gene_par,
@@ -449,10 +459,18 @@ optimization <- function(cluster, children, model ,
     iter = 0
 
     total.lik=rep(NA,max_iter)
-
-
-    mu_sh <<- SharedObject::share(exp(newX(model) %*% beta_sh +
-                t(newV(model) %*% gamma_sh) +  W_sh %*% alpha_sh))
+    
+    Y_sh <- Y
+    alpha_sh <- model@alpha
+    beta_sh <-model@beta
+    gamma_sh <- model@gamma
+    W_sh <- model@W
+    X_sh <- model@X
+    V_sh <- model@V
+    zeta_sh <-model@zeta
+    
+    mu_sh <- SharedObject::share(exp(X_sh %*% beta_sh +
+                t(V_sh %*% gamma_sh) +  W_sh %*% alpha_sh))
     clusterExport(cl = cluster, "mu_sh",
                 envir = environment())
     total.lik[1] <- ll_calc(mu = mu_sh, model  = model, Y_sh = as.matrix(Y_sh),
@@ -485,9 +503,9 @@ optimization <- function(cluster, children, model ,
             
          }
 
-        optimd(ncol(Y_sh), mu = mu_sh, cluster = cluster,
+        optimd(Y_sh, mu = mu_sh, cluster = cluster,
             children = children, commondispersion = commondispersion,
-            num_gene = n_gene_disp, iter = iter)
+            num_gene = n_gene_disp, iter = iter, zeta_sh = zeta_sh)
 
         if(verbose){
             cat("Time of dispersion optimization\n")
@@ -586,9 +604,11 @@ optimization <- function(cluster, children, model ,
     return(m)
 }
 
-optimd <- function(J, mu, cluster, children, num_gene = NULL, commondispersion,
-                   iter){
-  
+optimd <- function(Y_sh, mu, cluster, children, num_gene = NULL, commondispersion,
+                   iter, zeta_sh){
+    
+    J <- ncol(Y_sh)
+    
     if (commondispersion || iter == 1){
   
         genes = seq.int(J)
