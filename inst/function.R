@@ -369,7 +369,7 @@ optiml <- function(k, num_cell,cross_batch=FALSE, iter){
       
         out <- optimleft_fun_nb(gamma_sh[,i],
                             W_sh[i,], Y_sh[i,] , V_sh, alpha_sh,
-                            X_sh[i,], beta_sh, zeta_sh, epsilonleft)$par
+                            X_sh[i,], beta_sh, zeta_sh, epsilonleft)
 
         par <- split_params(out, eq = "left")
         gamma_sh[,i] <- par$gamma
@@ -423,7 +423,8 @@ over_optl <- function(x, gamma,  W, V , alpha,
     gamma_sh[,intervall[i]] <- params$gamma
     W_sh[intervall[i],] <- params$W
 }
-
+# beta_sh[,intervall[j]] <- params$beta
+# alpha_sh[,intervall[j]] <- params$alpha
 
 optimleft_fun_nb <- function(gamma, W, Y, V, alpha,
                              X, beta, zeta, epsilonleft) {
@@ -437,7 +438,7 @@ optimleft_fun_nb <- function(gamma, W, Y, V, alpha,
         C.theta=zeta,
         epsilon=epsilonleft,
         control=list(fnscale = -1,trace=0),
-        method="BFGS")
+        method="BFGS")$par
 }
 
 

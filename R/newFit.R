@@ -166,7 +166,7 @@ setMethod("newFit", "matrix",
                 n_gene_disp = NULL,
                 n_cell_par = NULL, n_gene_par = NULL,
                 cross_batch = FALSE, ... ) {
-
+      
     # Check that Y contains whole numbers
     if(!all(.is_wholenumber(Y))) {
         stop("The input matrix should contain only whole numbers.")
@@ -196,7 +196,7 @@ setMethod("newFit", "matrix",
     
     m <- setup(cluster = cl, model = m, random_start = random_start,
         children = children, random_init = random_init, verbose = verbose,
-        Y_sh = Y_sh,mode = "matrix")
+        Y_sh = Y_sh)
     
     # Initializize value
 
@@ -234,7 +234,7 @@ setMethod("newFit", "DelayedMatrix",
                   random_start, n_gene_disp,
                   n_cell_par, n_gene_par,
                   ... ) {
-            
+          
     # if(!all(.is_wholenumber(Y))) {
     #   stop("The input matrix should contain only whole numbers.")
     # }
@@ -250,18 +250,19 @@ setMethod("newFit", "DelayedMatrix",
     clusterEvalQ(cl, library(DelayedArray))
 
     # If the set the value of parameters is zero we must do the initialization
-    random_init = TRUE
-    random_start = TRUE
+    # random_init = TRUE
+    # random_start = TRUE
 
     # Exporting values to the main and the child process
     m <- setup(cluster = cl, model = m, random_start = random_start,
         children = children, random_init = random_init, verbose = verbose,
-        Y = Y, mode = "Deleyed")
-
+        Y_sh = Y)
+    initialization(cluster = cl, children = children, model = m,
+                   verbose = verbose, Y = as.matrix(Y))
 
     # Optimize value
 
-    info <- optimization(cluster = cl, children = children,
+    info <- delayed_optimization(Y=Y, cluster = cl, children = children,
         model = m, max_iter = maxiter_optimize,
         stop_epsilon = stop_epsilon,
         commondispersion = commondispersion,  n_gene_disp = n_gene_disp,
@@ -305,14 +306,10 @@ setMethod("newFit", "dgCMatrix",
 
 
 setup <- function(cluster, model, random_start, children,
-                  random_init, verbose, Y_sh, mode) {
+                  random_init, verbose, Y_sh) {
 
     ptm <- proc.time()
-
-    if (mode != "matrix"){
-        Y_sh <<- Y
-        L_sh <<- log1p(Y_sh)
-    }
+    
     
     X_sh <- SharedObject::share(model@X)
     V_sh <- SharedObject::share(model@V)
@@ -391,7 +388,7 @@ initialization <- function(cluster, children, model, verbose, Y){
   
     ptm <- proc.time()
     
-    L_sh <- SharedObject::share(log1p(Y))
+    L_sh <- log1p(Y)
     
     clusterExport(cluster,"L_sh",envir = environment())
     
@@ -473,7 +470,7 @@ optimization <- function(Y, cluster, children, model ,
                 t(V_sh %*% gamma_sh) +  W_sh %*% alpha_sh))
     clusterExport(cl = cluster, "mu_sh",
                 envir = environment())
-    total.lik[1] <- ll_calc(mu = mu_sh, model  = model, Y_sh = as.matrix(Y_sh),
+    total.lik[1] <- ll_calc(mu = mu_sh, model  = model, Y_sh = Y_sh,
                 z = zeta_sh,
                 alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
 
@@ -488,7 +485,7 @@ optimization <- function(Y, cluster, children, model ,
                 W_sh %*% alpha_sh)
   
             total.lik[iter] <- ll_calc(mu = mu_sh, model  = model,
-                Y_sh = as.matrix(Y_sh), z = zeta_sh, alpha_sh, beta_sh,
+                Y_sh = Y_sh, z = zeta_sh, alpha_sh, beta_sh,
                 gamma_sh, W_sh, commondispersion)
   
             if(abs((total.lik[iter]-total.lik[iter-1]) / total.lik[iter-1])<stop_epsilon) break
@@ -519,12 +516,9 @@ optimization <- function(Y, cluster, children, model ,
 
         ptm <- proc.time()
 
-        if(mode == "matrix"){
-            clusterApply(cluster, seq.int(children), "optimr",  
+        
+        clusterApply(cluster, seq.int(children), "optimr",  
                 num_gene = n_gene_par, cross_batch = cross_batch, iter = iter)
-          
-        } else clusterApply(cluster, seq.int(children), "optimr_delayed",  
-                   num_gene = n_gene_par)
 
 
         if(verbose){
@@ -557,12 +551,9 @@ optimization <- function(Y, cluster, children, model ,
 
         ptm <- proc.time()
 
-        if(mode == "matrix"){
+        
         clusterApply(cluster, seq.int(children), "optiml" , 
             num_cell = n_cell_par, cross_batch = cross_batch, iter = iter) 
-          
-        } else clusterApply(cluster, seq.int(children), "optiml_delayed" , 
-            num_cell = n_cell_par)
 
 
         if(verbose){
@@ -602,6 +593,176 @@ optimization <- function(Y, cluster, children, model ,
     }
 
     return(m)
+}
+
+# Optimize the parameters of a Negative Binomial regression model
+#
+# The parameters of the model given as argument are optimized by penalized
+# maximum likelihood on the count matrix given as argument.
+# @param cluster The PSOCK cluster
+# @param children Number of child process
+# @param model newmodel item
+# @param max_iter maximum number of iterations
+# @param stop_epsilon stopping criterion, when the relative gain in
+#   likelihood is below epsilon
+# @param n_gene_disp number of genes used in mini-batch dispersion estimation
+#   approach(default NULL > all genes are used)
+# @param n_cell_par number of cells used in mini-batch cell's related
+#   parameters estimation approach(default NULL > all cells are used)
+# @param n_gene_par number of genes used in mini-batch gene's related
+#   parameters estimation approach(default NULL > all genes are used)
+# @param commondispersion Whether or not a single dispersion for all features
+#   is estimated (default TRUE).
+# @param verbose print information (default FALSE)
+# @param mode if Y is a matrix or a DelayedArray
+# @param cross_batch going to be eliminated
+# @return An object of class newmodel similar to the one given as argument
+#   with modified parameters alpha, beta, gamma, W.
+
+delayed_optimization <- function(Y, cluster, children, model ,
+                         max_iter, stop_epsilon,
+                         n_gene_disp,
+                         n_cell_par, n_gene_par,
+                         commondispersion, verbose, mode, cross_batch){
+  
+  iter = 0
+  
+  total.lik=rep(NA,max_iter)
+  
+  Y_sh <- Y
+  alpha_sh <- model@alpha
+  beta_sh <-model@beta
+  gamma_sh <- model@gamma
+  W_sh <- model@W
+  X_sh <- model@X
+  V_sh <- model@V
+  zeta_sh <-model@zeta
+  
+  mu_sh <- SharedObject::share(exp(X_sh %*% beta_sh +
+                                     t(V_sh %*% gamma_sh) +  W_sh %*% alpha_sh))
+  clusterExport(cl = cluster, "mu_sh",
+                envir = environment())
+  total.lik[1] <- ll_calc(mu = mu_sh, model  = model, Y_sh = as.matrix(Y_sh),
+                          z = zeta_sh,
+                          alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
+  
+  for (iter in seq.int(max_iter)){
+    
+    ptm <- proc.time()
+    
+    
+    if(iter > 1){
+      
+      mu_sh[] <- exp(newX(model) %*% beta_sh + t(newV(model) %*% gamma_sh) + 
+                       W_sh %*% alpha_sh)
+      
+      total.lik[iter] <- ll_calc(mu = mu_sh, model  = model,
+                                 Y_sh = as.matrix(Y_sh), z = zeta_sh, alpha_sh, beta_sh,
+                                 gamma_sh, W_sh, commondispersion)
+      
+      if(abs((total.lik[iter]-total.lik[iter-1]) / total.lik[iter-1])<stop_epsilon) break
+      
+      
+    }
+    
+    if(verbose){
+      
+      message("Iteration ",iter)
+      message("penalized log-likelihood = ",  total.lik[iter])
+      
+    }
+    
+    optimd(Y_sh, mu = mu_sh, cluster = cluster,
+           children = children, commondispersion = commondispersion,
+           num_gene = n_gene_disp, iter = iter, zeta_sh = zeta_sh)
+    
+    if(verbose){
+      cat("Time of dispersion optimization\n")
+      print(proc.time()-ptm)
+      
+      l_pen <- ll_calc(mu = mu_sh, model  = model, Y_sh = as.matrix(Y_sh),
+                       z = zeta_sh, alpha_sh, beta_sh, gamma_sh, W_sh,
+                       commondispersion)
+      message("after optimize dispersion = ",  l_pen)
+    }
+    
+    ptm <- proc.time()
+    
+    clusterApply(cluster, seq.int(children), "optimr_delayed",  
+                      num_gene = n_gene_par)
+    
+    
+    if(verbose){
+      cat("Time of right optimization\n")
+      print(proc.time()-ptm)
+      itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
+                      W_sh %*% alpha_sh)
+      l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = as.matrix(Y_sh),
+                       z = zeta_sh, alpha_sh, beta_sh, gamma_sh, W_sh,
+                       commondispersion)
+      message("after right optimization= ",  l_pen)
+    }
+    
+    o <- orthogonalizeTraceNorm(W_sh, alpha_sh, model@epsilon_W,
+                                model@epsilon_alpha)
+    
+    W_sh[] <- o$U
+    alpha_sh[] <- o$V
+    
+    
+    if(verbose){
+      itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
+                      W_sh %*% alpha_sh)
+      l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = as.matrix(Y_sh),
+                       z = zeta_sh, alpha_sh, beta_sh, gamma_sh, W_sh,
+                       commondispersion)
+      message("after orthogonalization = ",  l_pen)
+    }
+    
+    
+    ptm <- proc.time()
+    
+    clusterApply(cluster, seq.int(children), "optiml_delayed" , 
+                      num_cell = n_cell_par)
+    
+    
+    if(verbose){
+      cat("Time of left optimization\n")
+      print(proc.time()-ptm)
+      itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
+                      W_sh %*% alpha_sh)
+      l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = as.matrix(Y_sh),
+                       z = zeta_sh, alpha_sh, beta_sh, gamma_sh, W_sh,
+                       commondispersion)
+      message("after left optimization= ",  l_pen)
+    }
+    
+    o <- orthogonalizeTraceNorm(W_sh, alpha_sh, model@epsilon_W,
+                                model@epsilon_alpha)
+    W_sh[] <- o$U
+    alpha_sh[] <- o$V
+    
+    
+    if(verbose){
+      itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
+                      W_sh %*% alpha_sh)
+      l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = as.matrix(Y_sh),
+                       z = zeta_sh, alpha_sh, beta_sh, gamma_sh, W_sh,
+                       commondispersion)
+      message("after orthogonalization = ",  l_pen)
+    }
+    
+    m <- newmodel(X = model@X, V = model@V,
+                  W = W_sh, beta = beta_sh,
+                  gamma = gamma_sh,
+                  alpha = alpha_sh, zeta = zeta_sh,
+                  epsilon_beta = model@epsilon_beta,
+                  epsilon_gamma = model@epsilon_gamma,
+                  epsilon_W = model@epsilon_W, epsilon_alpha = model@epsilon_alpha,
+                  epsilon_zeta = model@epsilon_zeta)
+  }
+  
+  return(m)
 }
 
 optimd <- function(Y_sh, mu, cluster, children, num_gene = NULL, commondispersion,
