@@ -18,6 +18,7 @@ Imports:
     irlba,
     Matrix,
     DelayedArray,
+    BiocSingular,
     stats
 Suggests:
     testthat,
