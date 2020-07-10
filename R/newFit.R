@@ -226,14 +226,17 @@ setMethod("newFit", "matrix",
 #'
 #'
 #' @import DelayedArray
+#' @import BiocSingular
 
 setMethod("newFit", "DelayedMatrix",
-          function(Y, X, V, K,
-                  commondispersion, verbose, maxiter_optimize,
-                  stop_epsilon, children,
-                  random_start, n_gene_disp,
-                  n_cell_par, n_gene_par,
-                  ... ) {
+          function(Y, X, V, K = 2,
+                   commondispersion = TRUE, verbose=FALSE,
+                   maxiter_optimize = 100,
+                   stop_epsilon=.0001, children = 1,
+                   random_init = FALSE, random_start = FALSE,
+                   n_gene_disp = NULL,
+                   n_cell_par = NULL, n_gene_par = NULL,
+                   cross_batch = FALSE, ... ) {
           
     # if(!all(.is_wholenumber(Y))) {
     #   stop("The input matrix should contain only whole numbers.")
@@ -257,8 +260,9 @@ setMethod("newFit", "DelayedMatrix",
     m <- setup(cluster = cl, model = m, random_start = random_start,
         children = children, random_init = random_init, verbose = verbose,
         Y_sh = Y)
-    initialization(cluster = cl, children = children, model = m,
-                   verbose = verbose, Y = as.matrix(Y))
+    
+    delayed_initialization(cluster = cl, children = children, model = m,
+                   verbose = verbose, Y = Y)
 
     # Optimize value
 
@@ -266,8 +270,7 @@ setMethod("newFit", "DelayedMatrix",
         model = m, max_iter = maxiter_optimize,
         stop_epsilon = stop_epsilon,
         commondispersion = commondispersion,  n_gene_disp = n_gene_disp,
-        n_cell_par = n_cell_par, n_gene_par = n_gene_par, verbose =  verbose,
-        mode = "Delayed")
+        n_cell_par = n_cell_par, n_gene_par = n_gene_par, verbose =  verbose)
 
     return(info)
 })
@@ -310,7 +313,6 @@ setup <- function(cluster, model, random_start, children,
 
     ptm <- proc.time()
     
-    
     X_sh <- SharedObject::share(model@X)
     V_sh <- SharedObject::share(model@V)
 
@@ -336,20 +338,16 @@ setup <- function(cluster, model, random_start, children,
     
     epsilon_gamma <- newEpsilon_gamma(model)
     epsilon_beta <- newEpsilon_beta(model)
+    epsilon_alpha <- newEpsilon_alpha(model)
+    epsilon_W <- newEpsilon_W(model)
     epsilonright <- c(newEpsilon_beta(model), newEpsilon_alpha(model))
     epsilonleft <- c(newEpsilon_gamma(model), newEpsilon_W(model))
-
-    n = numberSamples(model)
-    J = numberFeatures(model)
-
-
-    #Cluster
     
     fun_path <- system.file("function.R", package = "NewWave")
     clusterExport(cluster, c("beta_sh" ,"alpha_sh","Y_sh","X_sh","W_sh","V_sh",
         "gamma_sh","zeta_sh", "epsilonright",
         "epsilonleft","children", "epsilon_gamma",
-        "epsilon_beta", "fun_path"),
+        "epsilon_beta", "epsilon_alpha", "epsilon_W", "fun_path"),
         envir = environment())
     
     clusterEvalQ(cluster, source(fun_path))
@@ -420,6 +418,63 @@ initialization <- function(cluster, children, model, verbose, Y){
         init.t <- proc.time()
         print(init.t-ptm)
     }
+}
+
+
+# Initialize the parameters of a Negative Binomial regression model with a 
+# DelayedArray object
+#
+# It initialize gamma and beta using a Ridge Regression and W and alpha using PCA
+# @param cluster The PSOCK cluster
+# @param children Number of child process.
+# @param model The newmodel object
+# @param verbose Print proc time
+# 
+# 
+# 
+
+delayed_initialization <- function(cluster, children, model, verbose, Y){
+  
+  
+  ptm <- proc.time()
+  
+  L_sh <- log1p(Y)
+  
+  clusterExport(cluster,"L_sh",envir = environment())
+  
+  clusterApply(cluster, seq.int(children), "delayed_gamma_init")
+  
+  clusterApply(cluster, seq.int(children), "delayed_beta_init")
+  
+  
+  # D<- L_sh
+  # 
+  # clusterExport(cluster,"D",envir = environment())
+  
+  # clusterApply(cluster, seq.int(children), "create_D")
+  
+  # D <- as.matrix(L_sh) - (model@X %*% model@beta) - t(model@V %*% model@gamma)
+  
+  # I am not able to create a DelayedArray object like D in the matrix framework
+  
+  R <- BiocSingular::runIrlbaSVD(L_sh, k=numberFactors(model))
+  
+  
+  # Orthogonalize to get W and alpha
+  model@W[] <- (newEpsilon_alpha(model) / newEpsilon_W(model))[1]^(1/4) *
+    R$u %*% diag(sqrt(R$d[seq.int(numberFactors(model))]),
+                 nrow = length(R$d[seq.int(numberFactors(model))]))
+  
+  model@alpha[] <- (newEpsilon_W(model)/newEpsilon_alpha(model))[1]^(1/4) *
+    diag(sqrt(R$d[seq.int(numberFactors(model))]),
+         nrow = length(R$d[seq.int(numberFactors(model))])) %*% t(R$v)
+  
+  
+  if(verbose){
+    cat("Time of initialization\n")
+    init.t <- proc.time()
+    print(init.t-ptm)
+  }
 }
 
 
@@ -623,7 +678,7 @@ delayed_optimization <- function(Y, cluster, children, model ,
                          max_iter, stop_epsilon,
                          n_gene_disp,
                          n_cell_par, n_gene_par,
-                         commondispersion, verbose, mode, cross_batch){
+                         commondispersion, verbose, cross_batch){
   
   iter = 0
   
@@ -638,13 +693,8 @@ delayed_optimization <- function(Y, cluster, children, model ,
   V_sh <- model@V
   zeta_sh <-model@zeta
   
-  mu_sh <- SharedObject::share(exp(X_sh %*% beta_sh +
-                                     t(V_sh %*% gamma_sh) +  W_sh %*% alpha_sh))
-  clusterExport(cl = cluster, "mu_sh",
-                envir = environment())
-  total.lik[1] <- ll_calc(mu = mu_sh, model  = model, Y_sh = as.matrix(Y_sh),
-                          z = zeta_sh,
-                          alpha_sh, beta_sh, gamma_sh, W_sh, commondispersion)
+  
+  total.lik[1] <- delayed_calc(cluster, children, model)
   
   for (iter in seq.int(max_iter)){
     
@@ -653,12 +703,7 @@ delayed_optimization <- function(Y, cluster, children, model ,
     
     if(iter > 1){
       
-      mu_sh[] <- exp(newX(model) %*% beta_sh + t(newV(model) %*% gamma_sh) + 
-                       W_sh %*% alpha_sh)
-      
-      total.lik[iter] <- ll_calc(mu = mu_sh, model  = model,
-                                 Y_sh = as.matrix(Y_sh), z = zeta_sh, alpha_sh, beta_sh,
-                                 gamma_sh, W_sh, commondispersion)
+      total.lik[iter] <- delayed_calc(cluster, children, model)
       
       if(abs((total.lik[iter]-total.lik[iter-1]) / total.lik[iter-1])<stop_epsilon) break
       
@@ -669,21 +714,16 @@ delayed_optimization <- function(Y, cluster, children, model ,
       
       message("Iteration ",iter)
       message("penalized log-likelihood = ",  total.lik[iter])
-      
     }
     
-    optimd(Y_sh, mu = mu_sh, cluster = cluster,
-           children = children, commondispersion = commondispersion,
-           num_gene = n_gene_disp, iter = iter, zeta_sh = zeta_sh)
+    optimd_delayed(Y_sh, X=X_sh,beta=beta_sh,V=V_sh,
+                   gamma=gamma_sh,W=W_sh,alpha=alpha_sh,
+                   zeta_sh=zeta_sh)
     
     if(verbose){
       cat("Time of dispersion optimization\n")
       print(proc.time()-ptm)
-      
-      l_pen <- ll_calc(mu = mu_sh, model  = model, Y_sh = as.matrix(Y_sh),
-                       z = zeta_sh, alpha_sh, beta_sh, gamma_sh, W_sh,
-                       commondispersion)
-      message("after optimize dispersion = ",  l_pen)
+      message("after optimize dispersion = ",  delayed_calc(cluster, children, model))
     }
     
     ptm <- proc.time()
@@ -695,12 +735,7 @@ delayed_optimization <- function(Y, cluster, children, model ,
     if(verbose){
       cat("Time of right optimization\n")
       print(proc.time()-ptm)
-      itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
-                      W_sh %*% alpha_sh)
-      l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = as.matrix(Y_sh),
-                       z = zeta_sh, alpha_sh, beta_sh, gamma_sh, W_sh,
-                       commondispersion)
-      message("after right optimization= ",  l_pen)
+      message("after right optimization= ",  delayed_calc(cluster, children, model))
     }
     
     o <- orthogonalizeTraceNorm(W_sh, alpha_sh, model@epsilon_W,
@@ -711,12 +746,7 @@ delayed_optimization <- function(Y, cluster, children, model ,
     
     
     if(verbose){
-      itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
-                      W_sh %*% alpha_sh)
-      l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = as.matrix(Y_sh),
-                       z = zeta_sh, alpha_sh, beta_sh, gamma_sh, W_sh,
-                       commondispersion)
-      message("after orthogonalization = ",  l_pen)
+      message("after orthogonalization = ",  delayed_calc(cluster, children, model))
     }
     
     
@@ -729,12 +759,8 @@ delayed_optimization <- function(Y, cluster, children, model ,
     if(verbose){
       cat("Time of left optimization\n")
       print(proc.time()-ptm)
-      itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
-                      W_sh %*% alpha_sh)
-      l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = as.matrix(Y_sh),
-                       z = zeta_sh, alpha_sh, beta_sh, gamma_sh, W_sh,
-                       commondispersion)
-      message("after left optimization= ",  l_pen)
+      message("after left optimization= ",  delayed_calc(cluster, children, model))
+      
     }
     
     o <- orthogonalizeTraceNorm(W_sh, alpha_sh, model@epsilon_W,
@@ -744,12 +770,8 @@ delayed_optimization <- function(Y, cluster, children, model ,
     
     
     if(verbose){
-      itermu <- exp(X_sh %*% beta_sh + t(V_sh %*% gamma_sh) +
-                      W_sh %*% alpha_sh)
-      l_pen <- ll_calc(mu = itermu, model  = model, Y_sh = as.matrix(Y_sh),
-                       z = zeta_sh, alpha_sh, beta_sh, gamma_sh, W_sh,
-                       commondispersion)
-      message("after orthogonalization = ",  l_pen)
+    
+      message("after orthogonalization = ",  delayed_calc(cluster, children, model))
     }
     
     m <- newmodel(X = model@X, V = model@V,
@@ -781,7 +803,7 @@ optimd <- function(Y_sh, mu, cluster, children, num_gene = NULL, commondispersio
     
     }
   
-    g=optimize(f=nb.loglik.dispersion, Y=as.matrix(Y_sh[,genes]), mu=mu,
+    g=optimize(f=nb.loglik.dispersion, Y=Y_sh[,genes], mu=mu,
         maximum=TRUE,
         interval=c(-50,50))
   
@@ -795,6 +817,42 @@ optimd <- function(Y_sh, mu, cluster, children, num_gene = NULL, commondispersio
 
 }
 
+
+optimd_delayed <- function(Y_sh, X,beta,V,gamma,W,alpha,zeta_sh,
+                           num_gene = ncol(Y_sh)/10){
+  
+  J <- ncol(Y_sh)
+  
+  genes <- sample(x = J, size = num_gene)
+  
+  Y_d <- as.matrix(Y_sh[,genes])
+  
+  mu <- exp(X %*% beta[,genes] +
+              t(V[genes,] %*% gamma) +  W %*% alpha[,genes])
+  
+  # del_disp_opt <- function(Y,mu){
+  #   
+  # }
+  # DelayedArray::blockApply(
+  #   x = Y_d,
+  #   FUN = over_gamma,
+  #   grid = DelayedArray::RegularArrayGrid(
+  #     refdim = dim(Y_d),
+  #     spacings = c( nrow(Y_d), ncol(Y_d))),
+  #   BPPARAM = BiocParallel::SerialParam(),
+  #   V_sh = V_sh, X_sh =X_sh[intervall,,drop=F], beta_sh = beta_sh,
+  #   gamma_sh = gamma_sh, epsilon_gamma = epsilon_gamma,
+  #   intervall = intervall)
+  
+    
+  g=optimize(f=nb.loglik.dispersion, Y=Y_d, mu=mu,
+               maximum=TRUE,
+               interval=c(-50,50))
+    
+  zeta_sh[] <- rep(g$maximum,J)
+    
+  
+}
 
 orthogonalizeTraceNorm <- function(U, V, a=1, b=1) {
 
@@ -839,6 +897,7 @@ nb.loglik.dispersion <- function(zeta, Y, mu){
 }
 
 
+
 ll_calc <- function(mu, model, Y_sh, z, alpha , beta, gamma, W,
                     commondispersion){
   
@@ -858,7 +917,15 @@ ll_calc <- function(mu, model, Y_sh, z, alpha , beta, gamma, W,
     loglik - penalty
 }
 
-
+delayed_calc <- function(cluster,children, m){
+  
+ ll <-sum(unlist(clusterApply(cluster, seq.int(children), "delayed_ll")))
+ penalty <- sum(newEpsilon_alpha(m) * (m@alpha)^2)/2 +
+   sum(newEpsilon_beta(m) * (m@beta)^2)/2 +
+   sum(newEpsilon_gamma(m)*(m@gamma)^2)/2 +
+   sum(newEpsilon_W(m)*t(m@W)^2)/2
+ ll - penalty
+}
 CleanEnvir <- function() {
     objs <- ls(pos = ".GlobalEnv")
     rm(list = objs[grep("_sh$", objs)], pos = ".GlobalEnv")
