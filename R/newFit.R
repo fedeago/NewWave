@@ -543,8 +543,17 @@ optimization <- function(Y, cluster, children, model ,
                 Y_sh = Y_sh, z = zeta_sh, alpha_sh, beta_sh,
                 gamma_sh, W_sh, commondispersion)
   
-            if(abs((total.lik[iter]-total.lik[iter-1]) / total.lik[iter-1])<stop_epsilon) break
-  
+            if(abs((total.lik[iter]-total.lik[iter-1]) / total.lik[iter-1])<stop_epsilon){
+              # m <- newmodel(X = unshare(model@X), V = unshare(model@V),
+              #               W = unshare(W_sh), beta = unshare(beta_sh),
+              #               gamma = unshare(gamma_sh),
+              #               alpha = unshare(alpha_sh), zeta = unshare(zeta_sh),
+              #               epsilon_beta = model@epsilon_beta,
+              #               epsilon_gamma = model@epsilon_gamma,
+              #               epsilon_W = model@epsilon_W, epsilon_alpha = model@epsilon_alpha,
+              #               epsilon_zeta = model@epsilon_zeta)
+              break
+            }
   
         }
 

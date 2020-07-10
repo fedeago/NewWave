@@ -28,13 +28,12 @@ gamma_init <- function(k) {
     j2 <- min(k * step, nrow(Y_sh))
     intervall <- seq.int(from = j1, to = j2)
     
-    for (j in intervall) {
-        out <- solveRidgeRegression(mat = V_sh, y = L_sh[j,] - Xbeta[j,],
-                                beta = gamma_sh[,j],
-                                epsilon = epsilon_gamma)
-  
-        gamma_sh[,j] <- out
-    }
+    lapply(intervall,function(x){
+      gamma_sh[,x] <- solveRidgeRegression( mat = V_sh, y = L_sh[x,] - Xbeta[x,],
+                 beta = gamma_sh[,x],
+                 epsilon = epsilon_gamma)
+      return()})
+
 
 }
 
@@ -80,14 +79,12 @@ beta_init <- function(k) {
     j2 <- min(k * step, ncol(Y_sh))
     intervall <- seq.int(from = j1, to = j2)
     
-    for (j in intervall) {
-        out <- solveRidgeRegression(mat=X_sh, y=L_sh[,j] - Vgamma[,j],
-                                beta = beta_sh[,j],
-                                epsilon = epsilon_beta)
-  
-  
-      beta_sh[,j] <- out
-    }
+    
+    lapply(intervall, function(x){
+      beta_sh[,x]<-solveRidgeRegression(mat=X_sh, y=L_sh[,x] - Vgamma[,x],
+      beta = beta_sh[,x],
+      epsilon = epsilon_beta)
+      return()})
 }
 
 
@@ -346,19 +343,19 @@ optim_genwise_dispersion <- function(k, num_gene, iter) {
   
     }
     
-    out <- list()
     
-    for (j in intervall){
-  
-        out <- optim(fn=locfun,
-                    gr=locgrad,
-                    par=zeta_sh[j],
-                    Y = Y_sh[,j],
-                    mu = mu_sh[,j],
-                    control=list(fnscale=-1,trace=0),
-                    method="BFGS")$par
-        zeta_sh[j] <- out
-    }
+    
+    lapply(intervall, function(x){
+      zeta_sh[x] <- optim(fn=locfun,
+            gr=locgrad,
+            par=zeta_sh[x],
+            Y = Y_sh[,x],
+            mu = mu_sh[,x],
+            control=list(fnscale=-1,trace=0),
+            method="BFGS")$par
+      return()
+    })
+    
   
   
 }
@@ -385,22 +382,34 @@ optimr <- function(k, num_gene,cross_batch=FALSE, iter) {
         cells <- seq.int(nrow(Y_sh))
     }
     
-    
-    for ( j in intervall){
-
-        out <- optimright_fun_nb(
-            beta_sh[,j,drop=FALSE], alpha_sh[,j,drop=FALSE],
-            Y_sh[cells,j,drop=FALSE], X_sh[cells,,drop=FALSE],
-            W_sh[cells,,drop=FALSE], V_sh[j,,drop=FALSE],
-            gamma_sh[,cells, drop=FALSE], zeta_sh[j],
-            length(cells), epsilonright)
-  
-        params <- split_params(out, "right")
-        beta_sh[,j] <- params$beta
-        alpha_sh[,j] <- params$alpha
-
-
-    }
+    lapply(intervall, function(x){
+      out <- optimright_fun_nb(
+        beta_sh[,x,drop=FALSE], alpha_sh[,x,drop=FALSE],
+        Y_sh[cells,x,drop=FALSE], X_sh[cells,,drop=FALSE],
+        W_sh[cells,,drop=FALSE], V_sh[x,,drop=FALSE],
+        gamma_sh[,cells, drop=FALSE], zeta_sh[x],
+        length(cells), epsilonright)
+      
+      params <- split_params(out, "right")
+      beta_sh[,x] <- params$beta
+      alpha_sh[,x] <- params$alpha
+      return()
+    })
+    # for ( j in intervall){
+    # 
+    #     out <- optimright_fun_nb(
+    #         beta_sh[,j,drop=FALSE], alpha_sh[,j,drop=FALSE],
+    #         Y_sh[cells,j,drop=FALSE], X_sh[cells,,drop=FALSE],
+    #         W_sh[cells,,drop=FALSE], V_sh[j,,drop=FALSE],
+    #         gamma_sh[,cells, drop=FALSE], zeta_sh[j],
+    #         length(cells), epsilonright)
+    # 
+    #     params <- split_params(out, "right")
+    #     beta_sh[,j] <- params$beta
+    #     alpha_sh[,j] <- params$alpha
+# 
+# 
+    # }
 
 
 }
@@ -490,17 +499,26 @@ optiml <- function(k, num_cell,cross_batch=FALSE, iter){
         genes <- seq.int(ncol(Y_sh))
     }
     
-    
-    for (i in intervall){
+    lapply(intervall, function(x){
+      out <- optimleft_fun_nb(gamma_sh[,x],
+                              W_sh[x,], Y_sh[x,] , V_sh, alpha_sh,
+                              X_sh[x,], beta_sh, zeta_sh, epsilonleft)
       
-        out <- optimleft_fun_nb(gamma_sh[,i],
-                            W_sh[i,], Y_sh[i,] , V_sh, alpha_sh,
-                            X_sh[i,], beta_sh, zeta_sh, epsilonleft)
-
-        par <- split_params(out, eq = "left")
-        gamma_sh[,i] <- par$gamma
-        W_sh[i,] <- par$W
-    }
+      par <- split_params(out, eq = "left")
+      gamma_sh[,x] <- par$gamma
+      W_sh[x,] <- par$W
+      return()
+    })
+    # for (i in intervall){
+    #   
+    #     out <- optimleft_fun_nb(gamma_sh[,i],
+    #                         W_sh[i,], Y_sh[i,] , V_sh, alpha_sh,
+    #                         X_sh[i,], beta_sh, zeta_sh, epsilonleft)
+    # 
+    #     par <- split_params(out, eq = "left")
+    #     gamma_sh[,i] <- par$gamma
+    #     W_sh[i,] <- par$W
+    # }
    
 }
 
