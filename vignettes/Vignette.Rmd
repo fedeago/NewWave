@@ -5,7 +5,7 @@ date: "22/6/2020"
 output: html_document
 vignette: >
   %\VignetteIndexEntry{NewWave example}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{rmarkdown::render}
   \usepackage[utf8]{inputenc}
 ---
 
