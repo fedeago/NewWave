@@ -24,7 +24,7 @@ To do this I am going to generate some data using splatter.
 
 ```{r}
 params <- newSplatParams()
-N=1000
+N=100
 set.seed(1234)
 data <- splatSimulateGroups(params,batchCells=c(N/2,N/2),
                            group.prob = rep(0.1,10),
@@ -38,7 +38,7 @@ NewWave takes as input raw data, not normalized.
 ```{r}
 set.seed(12359)
 data <- data[-which(rowSums(counts(data))==0),]
-data <- data[sample(1:nrow(data),1000),]
+data <- data[sample(1:nrow(data),100),]
 ```
 
 As you can see there is a variable called batch in the colData section.

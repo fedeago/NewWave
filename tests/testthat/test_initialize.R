@@ -3,7 +3,7 @@ set.seed(1234)
 
 
 test_that("W can be estimated from random matrix (no signal)", {
-  
+
     nS <- 100 # sample size
     nG <- 50  # number genes
     K  <- 2   # number of latent factors
@@ -15,25 +15,25 @@ test_that("W can be estimated from random matrix (no signal)", {
                     W = W,
                     gamma = matrix(1, ncol = nS),
                     beta = matrix(5, ncol=nG))
-    
+
     my_data <- newSim(mm)
-    
+
     expect_equal(W, newW(mm))
     expect_equal(X, newX(mm))
     expect_equal(V, newV(mm))
-    
+
     SE <- SummarizedExperiment(assays = list(counts=my_data$counts),
                                 rowDat = data.frame(V),
                                 colDat = data.frame(X))
     sf = newFit(SE,
                 V = "~V - 1",
                 K = 2)
-    
+
     round(cor(cbind(W, sf@W)), 2)
 })
 
 test_that("W can be estimated from two-dimensional signal (no signal)", {
-  
+    Sys.setenv("R_TESTS" = "")
     nS <- 100 # sample size
     nG <- 50  # number genes
     K  <- 2   # number of latent factors
@@ -46,25 +46,25 @@ test_that("W can be estimated from two-dimensional signal (no signal)", {
                 W = W,
                 gamma = matrix(1, ncol = nS),
                 beta = matrix(5, ncol=nG))
-    
+
     my_data <- newSim(mm)
-    
+
     expect_equal(W, newW(mm))
     expect_equal(X, newX(mm))
     expect_equal(V, newV(mm))
-    
+
     SE <- SummarizedExperiment(assays = list(counts=my_data$counts),
                             rowDat = data.frame(V),
                             colDat = data.frame(X))
     sf = newFit(SE,
                 V = "~V - 1",
                 K = 2)
-    
+
     round(cor(cbind(W, sf@W)), 2)
 })
 
 test_that("Initialization works with large epsilon", {
-  
+
     nS <- 100 # sample size
     nG <- 50  # number genes
     K  <- 2   # number of latent factors
@@ -77,14 +77,14 @@ test_that("Initialization works with large epsilon", {
                 W = W,
                 gamma = matrix(1, ncol = nS),
                 beta = matrix(5, ncol=nG))
-    
+
     my_data <- newSim(mm)
-    
+
     SE <- SummarizedExperiment(assays = list(counts=my_data$counts))
-    
+
     expect_silent(sf <- newFit(SE, K = 2, epsilon = 1e4))
     expect_silent(sf <- newFit(SE, K = 2, epsilon = 1e5))
     expect_silent(sf <- newFit(SE, K = 2, epsilon = 1e12))
-  
-  
+
+
 })

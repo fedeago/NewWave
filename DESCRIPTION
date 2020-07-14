@@ -27,6 +27,8 @@ Suggests:
     mclust,
     Rtsne,
     ggplot2,
+    Rcpp,
+    BiocStyle,
     knitr
 License: GPL-3
 VignetteBuilder: rmarkdown
