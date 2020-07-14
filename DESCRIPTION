@@ -31,7 +31,7 @@ Suggests:
     BiocStyle,
     knitr
 License: GPL-3
-VignetteBuilder: rmarkdown
+VignetteBuilder: knitr
 biocViews: Software,
     GeneExpression,
     Transcriptomics,
