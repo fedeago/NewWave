@@ -320,13 +320,7 @@ nb.loglik.dispersion.gradient <- function(zeta, Y, mu) {
 
 optim_genwise_dispersion <- function(k, num_gene, iter) {
   
-    locfun <- function(par, Y, mu){
-        nb.loglik.dispersion(zeta = par, Y, mu)
-    }
     
-    locgrad <- function(par, Y, mu){
-        nb.loglik.dispersion.gradient(zeta = par, Y, mu)
-    }
     
     step <- ceiling(ncol(Y_sh) / children)
     j1 <- (k-1) * step + 1
@@ -351,6 +345,14 @@ optim_genwise_dispersion <- function(k, num_gene, iter) {
   
 }
 f_temp_d <- function(x){
+  
+  locfun <- function(par, Y, mu){
+    nb.loglik.dispersion(zeta = par, Y, mu)
+  }
+  
+  locgrad <- function(par, Y, mu){
+    nb.loglik.dispersion.gradient(zeta = par, Y, mu)
+  }
     zeta_sh[x] <- optim(fn=locfun,
                         gr=locgrad,
                         par=zeta_sh[x],
