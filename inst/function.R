@@ -345,20 +345,21 @@ optim_genwise_dispersion <- function(k, num_gene, iter) {
     
     
     
-    lapply(intervall, function(x){
-      zeta_sh[x] <- optim(fn=locfun,
-            gr=locgrad,
-            par=zeta_sh[x],
-            Y = Y_sh[,x],
-            mu = mu_sh[,x],
-            control=list(fnscale=-1,trace=0),
-            method="BFGS")$par
-      return()
-    })
+    lapply(intervall, f_temp_d)
     
   
   
 }
+f_temp_d <- function(x){
+    zeta_sh[x] <- optim(fn=locfun,
+                        gr=locgrad,
+                        par=zeta_sh[x],
+                        Y = Y_sh[,x],
+                        mu = mu_sh[,x],
+                        control=list(fnscale=-1,trace=0),
+                        method="BFGS")$par
+    return()
+  }
 
 optimr <- function(k, num_gene,cross_batch=FALSE, iter) {
 
@@ -382,19 +383,7 @@ optimr <- function(k, num_gene,cross_batch=FALSE, iter) {
         cells <- seq.int(nrow(Y_sh))
     }
     
-    lapply(intervall, function(x){
-      out <- optimright_fun_nb(
-        beta_sh[,x,drop=FALSE], alpha_sh[,x,drop=FALSE],
-        Y_sh[cells,x,drop=FALSE], X_sh[cells,,drop=FALSE],
-        W_sh[cells,,drop=FALSE], V_sh[x,,drop=FALSE],
-        gamma_sh[,cells, drop=FALSE], zeta_sh[x],
-        length(cells), epsilonright)
-      
-      params <- split_params(out, "right")
-      beta_sh[,x] <- params$beta
-      alpha_sh[,x] <- params$alpha
-      return()
-    })
+    lapply(intervall, f_temp_r )
     # for ( j in intervall){
     # 
     #     out <- optimright_fun_nb(
@@ -414,6 +403,19 @@ optimr <- function(k, num_gene,cross_batch=FALSE, iter) {
 
 }
 
+f_temp_r <- function(x){
+  out <- optimright_fun_nb(
+    beta_sh[,x,drop=FALSE], alpha_sh[,x,drop=FALSE],
+    Y_sh[,x,drop=FALSE], X_sh[,,drop=FALSE],
+    W_sh[,,drop=FALSE], V_sh[x,,drop=FALSE],
+    gamma_sh[,, drop=FALSE], zeta_sh[x],
+    nrow(Y_sh), epsilonright)
+  
+  params <- split_params(out, "right")
+  beta_sh[,x] <- params$beta
+  alpha_sh[,x] <- params$alpha
+  return()
+}
 optimr_delayed <- function(k, num_gene) {
     
     step <- ceiling(ncol(Y_sh) / children)
@@ -499,16 +501,7 @@ optiml <- function(k, num_cell,cross_batch=FALSE, iter){
         genes <- seq.int(ncol(Y_sh))
     }
     
-    lapply(intervall, function(x){
-      out <- optimleft_fun_nb(gamma_sh[,x],
-                              W_sh[x,], Y_sh[x,] , V_sh, alpha_sh,
-                              X_sh[x,], beta_sh, zeta_sh, epsilonleft)
-      
-      par <- split_params(out, eq = "left")
-      gamma_sh[,x] <- par$gamma
-      W_sh[x,] <- par$W
-      return()
-    })
+    lapply(intervall, f_temp_l )
     # for (i in intervall){
     #   
     #     out <- optimleft_fun_nb(gamma_sh[,i],
@@ -522,7 +515,16 @@ optiml <- function(k, num_cell,cross_batch=FALSE, iter){
    
 }
 
-
+f_temp_l <- function(x){
+  out <- optimleft_fun_nb(gamma_sh[,x],
+                          W_sh[x,], Y_sh[x,] , V_sh, alpha_sh,
+                          X_sh[x,], beta_sh, zeta_sh, epsilonleft)
+  
+  par <- split_params(out, eq = "left")
+  gamma_sh[,x] <- par$gamma
+  W_sh[x,] <- par$W
+  return()
+}
 optiml_delayed <- function(k, num_cell){
     
     step <- ceiling( nrow(Y_sh) / children)
