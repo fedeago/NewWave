@@ -344,15 +344,18 @@ optim_genwise_dispersion <- function(k, num_gene, iter) {
   
   
 }
+
+locfun <- function(par, Y, mu){
+  nb.loglik.dispersion(zeta = par, Y, mu)
+}
+
+locgrad <- function(par, Y, mu){
+  nb.loglik.dispersion.gradient(zeta = par, Y, mu)
+}
+
 f_temp_d <- function(x){
   
-  locfun <- function(par, Y, mu){
-    nb.loglik.dispersion(zeta = par, Y, mu)
-  }
   
-  locgrad <- function(par, Y, mu){
-    nb.loglik.dispersion.gradient(zeta = par, Y, mu)
-  }
     zeta_sh[x] <- optim(fn=locfun,
                         gr=locgrad,
                         par=zeta_sh[x],
@@ -379,11 +382,11 @@ optimr <- function(k, num_gene,cross_batch=FALSE, iter) {
                           size = num_gene/children)
     }
 
-    if(cross_batch){
-        cells <- sample(x = nrow(Y_sh), size = 512)
-    } else {
-        cells <- seq.int(nrow(Y_sh))
-    }
+    # if(cross_batch){
+    #     cells <- sample(x = nrow(Y_sh), size = 512)
+    # } else {
+    #     cells <- seq.int(nrow(Y_sh))
+    # }
     
     lapply(intervall, f_temp_r )
     # for ( j in intervall){
@@ -497,11 +500,11 @@ optiml <- function(k, num_cell,cross_batch=FALSE, iter){
 
     }
 
-    if(cross_batch){
-        genes <- sample(x = ncol(Y_sh), size = 512)
-    } else {
-        genes <- seq.int(ncol(Y_sh))
-    }
+    # if(cross_batch){
+    #     genes <- sample(x = ncol(Y_sh), size = 512)
+    # } else {
+    #     genes <- seq.int(ncol(Y_sh))
+    # }
     
     lapply(intervall, f_temp_l )
     # for (i in intervall){
