@@ -24,7 +24,6 @@ newWave(Y, ...)
   n_gene_disp = NULL,
   n_cell_par = NULL,
   n_gene_par = NULL,
-  cross_batch = FALSE,
   ...
 )
 }
@@ -76,8 +75,6 @@ parameters estimation approach(default NULL > all cells are used)}
 
 \item{n_gene_par}{number of genes used in mini-batch genes related 
 parameters estimation approach(default NULL > all genes are used)}
-
-\item{cross_batch}{going to be eliminated}
 }
 \value{
 An object of class \code{SingleCellExperiment}; the dimensionality

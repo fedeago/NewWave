@@ -123,33 +123,6 @@ over_beta <- function(x, X_sh, V_sh,gamma_sh, beta_sh, epsilon_beta,
 }
 
 
-# create_D <- function(k, D){
-#   step <- ceiling(ncol(L_sh) / children)
-#   j1 <- (k-1) * step + 1
-#   j2 <- min(k * step, ncol(L_sh))
-#   intervall <- seq.int(from = j1, to = j2)
-#   
-#   # D[,intervall] <- 
-#     a<-DelayedArray::blockApply(
-#     x = L_sh[,intervall],
-#     FUN = over_D,
-#     grid = DelayedArray::RegularArrayGrid(
-#       refdim = dim(L_sh[,intervall]),
-#       spacings = c(nrow(L_sh[,intervall]), 1L)),
-#     BPPARAM = BiocParallel::SerialParam(),
-#     X_sh = X_sh, V_sh = V_sh[intervall,,drop=F], gamma_sh = gamma_sh,
-#     beta = beta_sh[,intervall,drop=F],  intervall = intervall)
-# }
-# 
-# over_D <- function(x, X_sh, V_sh,gamma_sh, beta,intervall){
-#   
-#   j = attr(x,"block_id")
-#   Vgamma <- t(V_sh[j,] %*% gamma_sh)
-#   Xbeta <- X_sh %*% beta_sh[,j]
-#   
-#   x - Xbeta -Vgamma
-# }
-
 nb.loglik <- function(Y, mu, theta) {
 
     # log-probabilities of counts under the NB model
@@ -320,8 +293,6 @@ nb.loglik.dispersion.gradient <- function(zeta, Y, mu) {
 
 optim_genwise_dispersion <- function(k, num_gene, iter) {
   
-    
-    
     step <- ceiling(ncol(Y_sh) / children)
     j1 <- (k-1) * step + 1
     j2 <- min(k * step, ncol(Y_sh))
@@ -337,13 +308,11 @@ optim_genwise_dispersion <- function(k, num_gene, iter) {
   
     }
     
-    
-    
     lapply(intervall, f_temp_d)
     
-  
-  
 }
+
+
 
 locfun <- function(par, Y, mu){
   nb.loglik.dispersion(zeta = par, Y, mu)
@@ -366,7 +335,7 @@ f_temp_d <- function(x){
     return()
   }
 
-optimr <- function(k, num_gene,cross_batch=FALSE, iter) {
+optimr <- function(k, num_gene, iter) {
 
     step <- ceiling(ncol(Y_sh) / children)
     j1 <- (k-1) * step + 1
@@ -382,30 +351,8 @@ optimr <- function(k, num_gene,cross_batch=FALSE, iter) {
                           size = num_gene/children)
     }
 
-    # if(cross_batch){
-    #     cells <- sample(x = nrow(Y_sh), size = 512)
-    # } else {
-    #     cells <- seq.int(nrow(Y_sh))
-    # }
-    
     lapply(intervall, f_temp_r )
-    # for ( j in intervall){
-    # 
-    #     out <- optimright_fun_nb(
-    #         beta_sh[,j,drop=FALSE], alpha_sh[,j,drop=FALSE],
-    #         Y_sh[cells,j,drop=FALSE], X_sh[cells,,drop=FALSE],
-    #         W_sh[cells,,drop=FALSE], V_sh[j,,drop=FALSE],
-    #         gamma_sh[,cells, drop=FALSE], zeta_sh[j],
-    #         length(cells), epsilonright)
-    # 
-    #     params <- split_params(out, "right")
-    #     beta_sh[,j] <- params$beta
-    #     alpha_sh[,j] <- params$alpha
-# 
-# 
-    # }
-
-
+    
 }
 
 f_temp_r <- function(x){
@@ -483,7 +430,7 @@ optimright_fun_nb <- function(beta, alpha, Y, X, W,
         method="BFGS")$par
 }
 
-optiml <- function(k, num_cell,cross_batch=FALSE, iter){
+optiml <- function(k, num_cell, iter){
 
     step <- ceiling( nrow(Y_sh) / children)
     j1 <- (k-1) * step + 1
@@ -500,24 +447,8 @@ optiml <- function(k, num_cell,cross_batch=FALSE, iter){
 
     }
 
-    # if(cross_batch){
-    #     genes <- sample(x = ncol(Y_sh), size = 512)
-    # } else {
-    #     genes <- seq.int(ncol(Y_sh))
-    # }
-    
     lapply(intervall, f_temp_l )
-    # for (i in intervall){
-    #   
-    #     out <- optimleft_fun_nb(gamma_sh[,i],
-    #                         W_sh[i,], Y_sh[i,] , V_sh, alpha_sh,
-    #                         X_sh[i,], beta_sh, zeta_sh, epsilonleft)
-    # 
-    #     par <- split_params(out, eq = "left")
-    #     gamma_sh[,i] <- par$gamma
-    #     W_sh[i,] <- par$W
-    # }
-   
+    
 }
 
 f_temp_l <- function(x){

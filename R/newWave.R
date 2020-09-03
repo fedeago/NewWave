@@ -56,7 +56,6 @@ nb.loglik.matrix <- function(model, x) {
 #' parameters estimation approach(default NULL > all cells are used)
 #' @param n_gene_par number of genes used in mini-batch genes related 
 #' parameters estimation approach(default NULL > all genes are used)
-#' @param cross_batch going to be eliminated
 #'
 #' @details For visualization (heatmaps, ...), please use the normalized values.
 #' It corresponds to the deviance residuals when the \code{W} is not included
@@ -98,8 +97,7 @@ setMethod("newWave", "SummarizedExperiment",
                     stop_epsilon=.0001,  children = 1,
                     random_init = FALSE, random_start = FALSE,
                     n_gene_disp = NULL,
-                    n_cell_par = NULL, n_gene_par = NULL,
-                    cross_batch = FALSE,...) {
+                    n_cell_par = NULL, n_gene_par = NULL, ...) {
               
             
             
@@ -109,7 +107,7 @@ setMethod("newWave", "SummarizedExperiment",
                             maxiter_optimize, stop_epsilon,
                             children, random_init, 
                             random_start, n_gene_disp,
-                            n_cell_par, n_gene_par, cross_batch, ...)
+                            n_cell_par, n_gene_par, ...)
               
               
               

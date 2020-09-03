@@ -37,7 +37,6 @@
 #' @param n_gene_par number of genes used in mini-batch
 #'  gene's related parameters estimation approach
 #'  (default NULL > all genes are used)
-#' @param cross_batch going to be eliminated
 #'
 #' @examples
 #' se <- SummarizedExperiment(matrix(rpois(60, lambda=5), nrow=10, ncol=6),
@@ -51,8 +50,7 @@ setMethod("newFit", "SummarizedExperiment",
                     stop_epsilon=.0001, children = 1,
                     random_init = FALSE, random_start = FALSE,
                     n_gene_disp = NULL,
-                    n_cell_par = NULL, n_gene_par = NULL,
-                    cross_batch = FALSE, ... ) {
+                    n_cell_par = NULL, n_gene_par = NULL, ... ) {
 
             if(missing(which_assay)) {
                 if("counts" %in% assayNames(Y)) {
@@ -103,10 +101,8 @@ setMethod("newFit", "SummarizedExperiment",
                         stop_epsilon = stop_epsilon, children = children,
                         random_init = random_init, random_start = random_start,
                         n_gene_disp = n_gene_disp , n_cell_par = n_cell_par,
-                        n_gene_par = n_gene_par,cross_batch=cross_batch)
+                        n_gene_par = n_gene_par)
               
-              
-               
             return(res)
 })
 
@@ -140,7 +136,6 @@ setMethod("newFit", "SummarizedExperiment",
 #'  parameters estimation approach(default NULL > all cells are used)
 #' @param n_gene_par number of genes used in mini-batch gene's related
 #'  parameters estimation approach(default NULL > all genes are used)
-#' @param cross_batch going to be eliminated
 #'
 #' @details By default, i.e., if no arguments other than \code{Y} are passed,
 #'   the model is fitted with an intercept for the regression across-samples and
@@ -164,8 +159,7 @@ setMethod("newFit", "matrix",
                 stop_epsilon=.0001, children = 1,
                 random_init = FALSE, random_start = FALSE,
                 n_gene_disp = NULL,
-                n_cell_par = NULL, n_gene_par = NULL,
-                cross_batch = FALSE, ... ) {
+                n_cell_par = NULL, n_gene_par = NULL, ... ) {
       
     # Check that Y contains whole numbers
     if(!all(.is_wholenumber(Y))) {
@@ -188,7 +182,6 @@ setMethod("newFit", "matrix",
 
     cl <- makePSOCKcluster(children)
     on.exit(stopCluster(cl), add = TRUE)
-    on.exit(CleanEnvir(), add=TRUE)
     # Exporting values to the main and the child process
     
     # If the set the value of parameters is zero we must do the initialization
@@ -215,8 +208,7 @@ setMethod("newFit", "matrix",
                         stop_epsilon = stop_epsilon,
                         commondispersion = commondispersion,
                         n_gene_disp = n_gene_disp, n_cell_par = n_cell_par,
-                        n_gene_par = n_gene_par, verbose =  verbose,
-                        mode = "matrix", cross_batch = cross_batch)
+                        n_gene_par = n_gene_par, verbose =  verbose)
     
     return(info)
 })
@@ -235,8 +227,7 @@ setMethod("newFit", "DelayedMatrix",
                    stop_epsilon=.0001, children = 1,
                    random_init = FALSE, random_start = FALSE,
                    n_gene_disp = NULL,
-                   n_cell_par = NULL, n_gene_par = NULL,
-                   cross_batch = FALSE, ... ) {
+                   n_cell_par = NULL, n_gene_par = NULL, ... ) {
           
     # if(!all(.is_wholenumber(Y))) {
     #   stop("The input matrix should contain only whole numbers.")
@@ -305,7 +296,6 @@ setMethod("newFit", "dgCMatrix",
 # @param random_init if TRUE no initializations is done(default FALSE)
 # @param verbose Print helpful messages(default FALSE).
 # @param Y matrix of counts
-# @param mode if Y is a matrix or a DelayedArray
 
 
 setup <- function(cluster, model, random_start, children,
@@ -377,9 +367,6 @@ setup <- function(cluster, model, random_start, children,
 # @param children Number of child process.
 # @param model The newmodel object
 # @param verbose Print proc time
-# 
-# 
-# 
 
 initialization <- function(cluster, children, model, verbose, Y){
     
@@ -429,9 +416,8 @@ initialization <- function(cluster, children, model, verbose, Y){
 # @param children Number of child process.
 # @param model The newmodel object
 # @param verbose Print proc time
-# 
-# 
-# 
+# @param Y Is the data matrix
+
 
 delayed_initialization <- function(cluster, children, model, verbose, Y){
   
@@ -445,17 +431,7 @@ delayed_initialization <- function(cluster, children, model, verbose, Y){
   clusterApply(cluster, seq.int(children), "delayed_gamma_init")
   
   clusterApply(cluster, seq.int(children), "delayed_beta_init")
-  
-  
-  # D<- L_sh
-  # 
-  # clusterExport(cluster,"D",envir = environment())
-  
-  # clusterApply(cluster, seq.int(children), "create_D")
-  
-  # D <- as.matrix(L_sh) - (model@X %*% model@beta) - t(model@V %*% model@gamma)
-  
-  # I am not able to create a DelayedArray object like D in the matrix framework
+
   
   R <- BiocSingular::runIrlbaSVD(L_sh, k=numberFactors(model))
   
@@ -497,8 +473,6 @@ delayed_initialization <- function(cluster, children, model, verbose, Y){
 # @param commondispersion Whether or not a single dispersion for all features
 #   is estimated (default TRUE).
 # @param verbose print information (default FALSE)
-# @param mode if Y is a matrix or a DelayedArray
-# @param cross_batch going to be eliminated
 # @return An object of class newmodel similar to the one given as argument
 #   with modified parameters alpha, beta, gamma, W.
 
@@ -506,7 +480,7 @@ optimization <- function(Y, cluster, children, model ,
                         max_iter, stop_epsilon,
                         n_gene_disp,
                         n_cell_par, n_gene_par,
-                        commondispersion, verbose, mode, cross_batch){
+                        commondispersion, verbose){
 
     iter = 0
 
@@ -582,7 +556,7 @@ optimization <- function(Y, cluster, children, model ,
 
         
         clusterApply(cluster, seq.int(children), "optimr",  
-                num_gene = n_gene_par, cross_batch = cross_batch, iter = iter)
+                num_gene = n_gene_par, iter = iter)
 
 
         if(verbose){
@@ -617,7 +591,7 @@ optimization <- function(Y, cluster, children, model ,
 
         
         clusterApply(cluster, seq.int(children), "optiml" , 
-            num_cell = n_cell_par, cross_batch = cross_batch, iter = iter) 
+            num_cell = n_cell_par, iter = iter) 
 
 
         if(verbose){
@@ -659,7 +633,7 @@ optimization <- function(Y, cluster, children, model ,
     return(m)
 }
 
-# Optimize the parameters of a Negative Binomial regression model
+# Optimize the parameters of a Negative Binomial regression model with Delayed Array object
 #
 # The parameters of the model given as argument are optimized by penalized
 # maximum likelihood on the count matrix given as argument.
@@ -678,8 +652,6 @@ optimization <- function(Y, cluster, children, model ,
 # @param commondispersion Whether or not a single dispersion for all features
 #   is estimated (default TRUE).
 # @param verbose print information (default FALSE)
-# @param mode if Y is a matrix or a DelayedArray
-# @param cross_batch going to be eliminated
 # @return An object of class newmodel similar to the one given as argument
 #   with modified parameters alpha, beta, gamma, W.
 
@@ -687,7 +659,7 @@ delayed_optimization <- function(Y, cluster, children, model ,
                          max_iter, stop_epsilon,
                          n_gene_disp,
                          n_cell_par, n_gene_par,
-                         commondispersion, verbose, cross_batch){
+                         commondispersion, verbose){
   
   iter = 0
   
@@ -934,10 +906,6 @@ delayed_calc <- function(cluster,children, m){
    sum(newEpsilon_gamma(m)*(m@gamma)^2)/2 +
    sum(newEpsilon_W(m)*t(m@W)^2)/2
  ll - penalty
-}
-CleanEnvir <- function() {
-    objs <- ls(pos = ".GlobalEnv")
-    rm(list = objs[grep("_sh$", objs)], pos = ".GlobalEnv")
 }
 
 
