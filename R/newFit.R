@@ -303,15 +303,15 @@ setup <- function(cluster, model, random_start, children,
 
     ptm <- proc.time()
     
-    X_sh <- SharedObject::share(model@X)
-    V_sh <- SharedObject::share(model@V)
+    X_sh <- SharedObject::share(newX(model))
+    V_sh <- SharedObject::share(newV(model))
 
     if (!random_start){
-        beta_sh <- SharedObject::share(model@beta, copyOnWrite=FALSE)
-        alpha_sh <- SharedObject::share(model@alpha, copyOnWrite=FALSE)
-        W_sh <- SharedObject::share(model@W, copyOnWrite=FALSE)
-        gamma_sh <- SharedObject::share(model@gamma, copyOnWrite=FALSE)
-        zeta_sh <- SharedObject::share(model@zeta, copyOnWrite=FALSE)
+        beta_sh <- SharedObject::share(newBeta(model), copyOnWrite=FALSE)
+        alpha_sh <- SharedObject::share(newAlpha(model), copyOnWrite=FALSE)
+        W_sh <- SharedObject::share(newW(model), copyOnWrite=FALSE)
+        gamma_sh <- SharedObject::share(newGamma(model), copyOnWrite=FALSE)
+        zeta_sh <- SharedObject::share(newZeta(model), copyOnWrite=FALSE)
     } else {
         beta_sh <- SharedObject::share(matrix(rnorm(ncol(X_sh)*ncol(Y_sh)), 
             nrow = ncol(X_sh)), copyOnWrite=FALSE)
@@ -346,10 +346,11 @@ setup <- function(cluster, model, random_start, children,
                   W = W_sh, beta = beta_sh,
                   gamma = gamma_sh,
                   alpha = alpha_sh, zeta = zeta_sh,
-                  epsilon_beta = model@epsilon_beta,
-                  epsilon_gamma = model@epsilon_gamma,
-                  epsilon_W = model@epsilon_W, epsilon_alpha = model@epsilon_alpha,
-                  epsilon_zeta = model@epsilon_zeta)
+                  epsilon_beta = newEpsilon_beta(model),
+                  epsilon_gamma = newEpsilon_gamma(model),
+                  epsilon_W = newEpsilon_W(model),
+                  epsilon_alpha = newEpsilon_alpha(model),
+                  epsilon_zeta = newEpsilon_zeta(model))
 
     if(verbose){
         cat("Time of setup\n")
@@ -382,7 +383,7 @@ initialization <- function(cluster, children, model, verbose, Y){
     clusterApply(cluster, seq.int(children), "beta_init")
 
   
-    D <- L_sh - (model@X %*% model@beta) - t(model@V %*% model@gamma)
+    D <- L_sh - (newX(model) %*% newBeta(model)) - t(newV(model) %*% newGamma(model))
 
 
     
@@ -487,13 +488,13 @@ optimization <- function(Y, cluster, children, model ,
     total.lik=rep(NA,max_iter)
     
     Y_sh <- Y
-    alpha_sh <- model@alpha
-    beta_sh <-model@beta
-    gamma_sh <- model@gamma
-    W_sh <- model@W
-    X_sh <- model@X
-    V_sh <- model@V
-    zeta_sh <-model@zeta
+    alpha_sh <- newAlpha(model)
+    beta_sh <-newBeta(model)
+    gamma_sh <- newGamma(model)
+    W_sh <- newW(model)
+    X_sh <- newX(model)
+    V_sh <- newV(model)
+    zeta_sh <-newZeta(model)
     
     mu_sh <- SharedObject::share(exp(X_sh %*% beta_sh +
                 t(V_sh %*% gamma_sh) +  W_sh %*% alpha_sh))
@@ -518,14 +519,15 @@ optimization <- function(Y, cluster, children, model ,
                 gamma_sh, W_sh, commondispersion)
   
             if(abs((total.lik[iter]-total.lik[iter-1]) / total.lik[iter-1])<stop_epsilon){
-              m <- newmodel(X = unshare(model@X), V = unshare(model@V),
+              m <- newmodel(X = unshare(newX(model)), V = unshare(newV(model)),
                             W = unshare(W_sh), beta = unshare(beta_sh),
                             gamma = unshare(gamma_sh),
                             alpha = unshare(alpha_sh), zeta = unshare(zeta_sh),
-                            epsilon_beta = model@epsilon_beta,
-                            epsilon_gamma = model@epsilon_gamma,
-                            epsilon_W = model@epsilon_W, epsilon_alpha = model@epsilon_alpha,
-                            epsilon_zeta = model@epsilon_zeta)
+                            epsilon_beta = newEpsilon_beta(model),
+                            epsilon_gamma = newGamma(model),
+                            epsilon_W = newW(model),
+                            epsilon_alpha = newAlpha(model),
+                            epsilon_zeta = newZeta(model))
               break
             }
   
@@ -570,8 +572,8 @@ optimization <- function(Y, cluster, children, model ,
             message("after right optimization= ",  l_pen)
         }
 
-        o <- orthogonalizeTraceNorm(W_sh, alpha_sh, model@epsilon_W,
-                model@epsilon_alpha)
+        o <- orthogonalizeTraceNorm(W_sh, alpha_sh, newEpsilon_W(model),
+                                    newEpsilon_alpha(model))
         
         W_sh[] <- o$U
         alpha_sh[] <- o$V
@@ -605,8 +607,8 @@ optimization <- function(Y, cluster, children, model ,
             message("after left optimization= ",  l_pen)
         }
 
-        o <- orthogonalizeTraceNorm(W_sh, alpha_sh, model@epsilon_W,
-                model@epsilon_alpha)
+        o <- orthogonalizeTraceNorm(W_sh, alpha_sh, newEpsilon_W(model),
+                                    newEpsilon_alpha(model))
         W_sh[] <- o$U
         alpha_sh[] <- o$V
 
@@ -620,14 +622,15 @@ optimization <- function(Y, cluster, children, model ,
             message("after orthogonalization = ",  l_pen)
         }
 
-        m <- newmodel(X = model@X, V = model@V,
+        m <- newmodel(X = newX(model), V = newV(model),
             W = W_sh, beta = beta_sh,
             gamma = gamma_sh,
             alpha = alpha_sh, zeta = zeta_sh,
-            epsilon_beta = model@epsilon_beta,
-            epsilon_gamma = model@epsilon_gamma,
-            epsilon_W = model@epsilon_W, epsilon_alpha = model@epsilon_alpha,
-            epsilon_zeta = model@epsilon_zeta)
+            epsilon_beta = newEpsilon_beta(model),
+            epsilon_gamma = newEpsilon_gamma(model),
+            epsilon_W = newEpsilon_W(model),
+            epsilon_alpha = newEpsilon_alpha(model),
+            epsilon_zeta = newZeta(model))
     }
 
     return(m)
@@ -666,13 +669,13 @@ delayed_optimization <- function(Y, cluster, children, model ,
   total.lik=rep(NA,max_iter)
   
   Y_sh <- Y
-  alpha_sh <- model@alpha
-  beta_sh <-model@beta
-  gamma_sh <- model@gamma
-  W_sh <- model@W
-  X_sh <- model@X
-  V_sh <- model@V
-  zeta_sh <-model@zeta
+  alpha_sh <- newAlpha(model)
+  beta_sh <-newBeta(model)
+  gamma_sh <- newGamma(model)
+  W_sh <- newW(model)
+  X_sh <- newX(model)
+  V_sh <- newV(model)
+  zeta_sh <-newZeta(model)
   
   
   total.lik[1] <- delayed_calc(cluster, children, model)
@@ -719,8 +722,8 @@ delayed_optimization <- function(Y, cluster, children, model ,
       message("after right optimization= ",  delayed_calc(cluster, children, model))
     }
     
-    o <- orthogonalizeTraceNorm(W_sh, alpha_sh, model@epsilon_W,
-                                model@epsilon_alpha)
+    o <- orthogonalizeTraceNorm(W_sh, alpha_sh, newEpsilon_W(model),
+                                newEpsilon_alpha(model))
     
     W_sh[] <- o$U
     alpha_sh[] <- o$V
@@ -744,8 +747,8 @@ delayed_optimization <- function(Y, cluster, children, model ,
       
     }
     
-    o <- orthogonalizeTraceNorm(W_sh, alpha_sh, model@epsilon_W,
-                                model@epsilon_alpha)
+    o <- orthogonalizeTraceNorm(W_sh, alpha_sh, newEpsilon_W(model),
+                                newEpsilon_alpha(model))
     W_sh[] <- o$U
     alpha_sh[] <- o$V
     
@@ -755,14 +758,15 @@ delayed_optimization <- function(Y, cluster, children, model ,
       message("after orthogonalization = ",  delayed_calc(cluster, children, model))
     }
     
-    m <- newmodel(X = model@X, V = model@V,
+    m <- newmodel(X = newX(model), V = newV(model),
                   W = W_sh, beta = beta_sh,
                   gamma = gamma_sh,
                   alpha = alpha_sh, zeta = zeta_sh,
-                  epsilon_beta = model@epsilon_beta,
-                  epsilon_gamma = model@epsilon_gamma,
-                  epsilon_W = model@epsilon_W, epsilon_alpha = model@epsilon_alpha,
-                  epsilon_zeta = model@epsilon_zeta)
+                  epsilon_beta = newEpsilon_beta(model),
+                  epsilon_gamma = newEpsilon_gamma(model),
+                  epsilon_W = newEpsilon_W(model),
+                  epsilon_alpha = newEpsilon_alpha(model),
+                  epsilon_zeta = newZeta(model))
   }
   
   return(m)
@@ -901,10 +905,10 @@ ll_calc <- function(mu, model, Y_sh, z, alpha , beta, gamma, W,
 delayed_calc <- function(cluster,children, m){
   
  ll <-sum(unlist(clusterApply(cluster, seq.int(children), "delayed_ll")))
- penalty <- sum(newEpsilon_alpha(m) * (m@alpha)^2)/2 +
-   sum(newEpsilon_beta(m) * (m@beta)^2)/2 +
-   sum(newEpsilon_gamma(m)*(m@gamma)^2)/2 +
-   sum(newEpsilon_W(m)*t(m@W)^2)/2
+ penalty <- sum(newEpsilon_alpha(m) * (newAlpha(m))^2)/2 +
+   sum(newEpsilon_beta(m) * (newBeta(m))^2)/2 +
+   sum(newEpsilon_gamma(m)*(newGamma(m))^2)/2 +
+   sum(newEpsilon_W(m)*t(newW(model))^2)/2
  ll - penalty
 }
 
