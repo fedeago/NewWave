@@ -346,11 +346,11 @@ setup <- function(cluster, model, random_start, children,
                   W = W_sh, beta = beta_sh,
                   gamma = gamma_sh,
                   alpha = alpha_sh, zeta = zeta_sh,
-                  epsilon_beta = newEpsilon_beta(model),
-                  epsilon_gamma = newEpsilon_gamma(model),
-                  epsilon_W = newEpsilon_W(model),
-                  epsilon_alpha = newEpsilon_alpha(model),
-                  epsilon_zeta = newEpsilon_zeta(model))
+                  epsilon_beta = model@epsilon_beta,
+                  epsilon_gamma = model@epsilon_gamma,
+                  epsilon_W = model@epsilon_W,
+                  epsilon_alpha = model@epsilon_alpha,
+                  epsilon_zeta = model@epsilon_zeta)
 
     if(verbose){
         cat("Time of setup\n")
@@ -523,11 +523,11 @@ optimization <- function(Y, cluster, children, model ,
                             W = unshare(W_sh), beta = unshare(beta_sh),
                             gamma = unshare(gamma_sh),
                             alpha = unshare(alpha_sh), zeta = unshare(zeta_sh),
-                            epsilon_beta = newEpsilon_beta(model),
-                            epsilon_gamma = newGamma(model),
-                            epsilon_W = newW(model),
-                            epsilon_alpha = newAlpha(model),
-                            epsilon_zeta = newZeta(model))
+                            epsilon_beta = model@epsilon_beta,
+                            epsilon_gamma = model@epsilon_gamma,
+                            epsilon_W = model@epsilon_W,
+                            epsilon_alpha = model@epsilon_alpha,
+                            epsilon_zeta = model@epsilon_zeta)
               break
             }
   
@@ -626,11 +626,11 @@ optimization <- function(Y, cluster, children, model ,
             W = W_sh, beta = beta_sh,
             gamma = gamma_sh,
             alpha = alpha_sh, zeta = zeta_sh,
-            epsilon_beta = newEpsilon_beta(model),
-            epsilon_gamma = newEpsilon_gamma(model),
-            epsilon_W = newEpsilon_W(model),
-            epsilon_alpha = newEpsilon_alpha(model),
-            epsilon_zeta = newZeta(model))
+            epsilon_beta = model@epsilon_beta,
+            epsilon_gamma = model@epsilon_gamma,
+            epsilon_W = model@epsilon_W,
+            epsilon_alpha = model@epsilon_alpha,
+            epsilon_zeta = model@epsilon_zeta)
     }
 
     return(m)
@@ -762,11 +762,11 @@ delayed_optimization <- function(Y, cluster, children, model ,
                   W = W_sh, beta = beta_sh,
                   gamma = gamma_sh,
                   alpha = alpha_sh, zeta = zeta_sh,
-                  epsilon_beta = newEpsilon_beta(model),
-                  epsilon_gamma = newEpsilon_gamma(model),
-                  epsilon_W = newEpsilon_W(model),
-                  epsilon_alpha = newEpsilon_alpha(model),
-                  epsilon_zeta = newZeta(model))
+                  epsilon_beta = model@epsilon_beta,
+                  epsilon_gamma = model@epsilon_gamma,
+                  epsilon_W = model@epsilon_W,
+                  epsilon_alpha = model@epsilon_alpha,
+                  epsilon_zeta = model@epsilon_zeta)
   }
   
   return(m)
@@ -908,7 +908,7 @@ delayed_calc <- function(cluster,children, m){
  penalty <- sum(newEpsilon_alpha(m) * (newAlpha(m))^2)/2 +
    sum(newEpsilon_beta(m) * (newBeta(m))^2)/2 +
    sum(newEpsilon_gamma(m)*(newGamma(m))^2)/2 +
-   sum(newEpsilon_W(m)*t(newW(model))^2)/2
+   sum(newEpsilon_W(m)*t(newW(m))^2)/2
  ll - penalty
 }
 
