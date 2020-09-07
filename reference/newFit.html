@@ -143,7 +143,6 @@
   n_gene_disp = <span class='kw'>NULL</span>,
   n_cell_par = <span class='kw'>NULL</span>,
   n_gene_par = <span class='kw'>NULL</span>,
-  cross_batch = <span class='fl'>FALSE</span>,
   <span class='kw'>...</span>
 )
 
@@ -163,7 +162,6 @@
   n_gene_disp = <span class='kw'>NULL</span>,
   n_cell_par = <span class='kw'>NULL</span>,
   n_gene_par = <span class='kw'>NULL</span>,
-  cross_batch = <span class='fl'>FALSE</span>,
   <span class='kw'>...</span>
 )
 
@@ -183,7 +181,6 @@
   n_gene_disp = <span class='kw'>NULL</span>,
   n_cell_par = <span class='kw'>NULL</span>,
   n_gene_par = <span class='kw'>NULL</span>,
-  cross_batch = <span class='fl'>FALSE</span>,
   <span class='kw'>...</span>
 )
 
@@ -269,10 +266,6 @@ parameters estimation approach(default NULL &gt; all cells are used)</p></td>
       <td><p>number of genes used in mini-batch gene's related
 parameters estimation approach(default NULL &gt; all genes are used)</p></td>
     </tr>
-    <tr>
-      <th>cross_batch</th>
-      <td><p>going to be eliminated</p></td>
-    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -309,7 +302,8 @@ parameters estimation approach(default NULL &gt; all genes are used)</p></td>
 <span class='kw'>m</span> <span class='op'>&lt;-</span> <span class='fu'>newFit</span>(<span class='kw'>se</span>, X=<span class='fu'><a href='https://rdrr.io/r/stats/model.matrix.html'>model.matrix</a></span>(<span class='op'>~</span><span class='kw'>bio</span>, data=<span class='fu'>colData</span>(<span class='kw'>se</span>)))
 <span class='kw'>bio</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/gl.html'>gl</a></span>(<span class='fl'>2</span>, <span class='fl'>3</span>)
 <span class='kw'>m</span> <span class='op'>&lt;-</span> <span class='fu'>newFit</span>(<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Poisson.html'>rpois</a></span>(<span class='fl'>60</span>, lambda=<span class='fl'>5</span>), nrow=<span class='fl'>10</span>, ncol=<span class='fl'>6</span>),
-             X=<span class='fu'><a href='https://rdrr.io/r/stats/model.matrix.html'>model.matrix</a></span>(<span class='op'>~</span><span class='kw'>bio</span>))</div></pre>
+             X=<span class='fu'><a href='https://rdrr.io/r/stats/model.matrix.html'>model.matrix</a></span>(<span class='op'>~</span><span class='kw'>bio</span>))
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -321,7 +315,7 @@ parameters estimation approach(default NULL &gt; all genes are used)</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Federico Agostinis.</p>
+  <p>Developed by Federico Agostinis, Chiara Romualdi, Gabriele Sales, Davide Risso.</p>
 </div>
 
 <div class="pkgdown">
