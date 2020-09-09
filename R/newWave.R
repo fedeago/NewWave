@@ -23,7 +23,7 @@ nb.loglik.matrix <- function(model, x) {
 
 
 #' @describeIn newWave Y is a
-#'   \code{\link[SummarizedExperiment]{SummarizedExperiment}}.
+#'   \code{SummarizedExperiment}.
 #' @export
 #' 
 #' @param Y The SummarizedExperiment with the data

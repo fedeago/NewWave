@@ -1,5 +1,5 @@
 #' @describeIn newFit Y is a
-#'   \code{\link[SummarizedExperiment]{SummarizedExperiment}}.
+#'   \code{SummarizedExperiment}.
 #' @export
 #'
 #' @import SharedObject
