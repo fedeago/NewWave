@@ -358,9 +358,9 @@ optimr <- function(k, num_gene, iter) {
 f_temp_r <- function(x){
   out <- optimright_fun_nb(
     beta_sh[,x,drop=FALSE], alpha_sh[,x,drop=FALSE],
-    Y_sh[,x,drop=FALSE], X_sh[,,drop=FALSE],
-    W_sh[,,drop=FALSE], V_sh[x,,drop=FALSE],
-    gamma_sh[,, drop=FALSE], zeta_sh[x],
+    Y_sh[,x,drop=FALSE], X_sh,
+    W_sh, V_sh[x,,drop=FALSE],
+    gamma_sh, zeta_sh[x],
     nrow(Y_sh), epsilonright)$par
   
   params <- split_params(out, "right")
