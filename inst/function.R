@@ -361,7 +361,7 @@ f_temp_r <- function(x){
     Y_sh[,x,drop=FALSE], X_sh[,,drop=FALSE],
     W_sh[,,drop=FALSE], V_sh[x,,drop=FALSE],
     gamma_sh[,, drop=FALSE], zeta_sh[x],
-    nrow(Y_sh), epsilonright)
+    nrow(Y_sh), epsilonright)$par
   
   params <- split_params(out, "right")
   beta_sh[,x] <- params$beta
@@ -408,7 +408,7 @@ over_optr <- function(x, beta, alpha, X , W,
     out <- optimright_fun_nb(
       beta[,j], alpha[,j], x, X,
       W, V[j,], gamma, zeta[j],
-      n, epsilonright)
+      n, epsilonright)$par
     
     params <- split_params(out, "right")
     beta_sh[,intervall[j]] <- params$beta
@@ -427,7 +427,7 @@ optimright_fun_nb <- function(beta, alpha, Y, X, W,
         C.theta=matrix(zeta, nrow =n, ncol=1),
         epsilon=epsilonright,
         control=list(fnscale = -1,trace=0),
-        method="BFGS")$par
+        method="BFGS")
 }
 
 optiml <- function(k, num_cell, iter){
@@ -454,7 +454,7 @@ optiml <- function(k, num_cell, iter){
 f_temp_l <- function(x){
   out <- optimleft_fun_nb(gamma_sh[,x],
                           W_sh[x,], Y_sh[x,] , V_sh, alpha_sh,
-                          X_sh[x,], beta_sh, zeta_sh, epsilonleft)
+                          X_sh[x,], beta_sh, zeta_sh, epsilonleft)$par
   
   par <- split_params(out, eq = "left")
   gamma_sh[,x] <- par$gamma
@@ -499,7 +499,7 @@ over_optl <- function(x, gamma,  W, V , alpha,
     i = attr(x,"block_id")
     out <- optimleft_fun_nb(gamma[,i],
                             W[i,], x , V, alpha,
-                            X[i,], beta, zeta, epsilonleft)
+                            X[i,], beta, zeta, epsilonleft)$par
     
     params <- split_params(out, eq = "left")
     gamma_sh[,intervall[i]] <- params$gamma
@@ -519,7 +519,7 @@ optimleft_fun_nb <- function(gamma, W, Y, V, alpha,
         C.theta=zeta,
         epsilon=epsilonleft,
         control=list(fnscale = -1,trace=0),
-        method="BFGS")$par
+        method="BFGS")
 }
 
 
