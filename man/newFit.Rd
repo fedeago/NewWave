@@ -133,7 +133,7 @@ Currently, if Y is a sparseMatrix, this calls the newFit method on
 \section{Methods (by class)}{
 \itemize{
 \item \code{SummarizedExperiment}: Y is a
-\code{\link[SummarizedExperiment]{SummarizedExperiment}}.
+\code{SummarizedExperiment}.
 
 \item \code{matrix}: Y is a matrix of counts (genes in rows).
 

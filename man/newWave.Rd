@@ -114,7 +114,7 @@ Note that if both \code{which_genes} is specified and at least one
 \section{Methods (by class)}{
 \itemize{
 \item \code{SummarizedExperiment}: Y is a
-\code{\link[SummarizedExperiment]{SummarizedExperiment}}.
+\code{SummarizedExperiment}.
 }}
 
 \examples{
