@@ -1,7 +1,7 @@
 Package: NewWave
 Type: Package
 Title: Negative binomial model for scRNA-seq
-Version: 0.99.3
+Version: 0.99.4
 Authors@R: c(person("Federico", "Agostinis", role = c("aut", "cre"),
                     email = "federico.agostinis@outlook.com"),
              person("Chiara", "Romualdi", role = "aut"),
