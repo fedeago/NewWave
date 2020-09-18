@@ -542,7 +542,9 @@ optimization <- function(Y, cluster, children, model ,
 
         optimd(Y_sh, mu = mu_sh, cluster = cluster,
             children = children, commondispersion = commondispersion,
-            num_gene = n_gene_disp, iter = iter, zeta_sh = zeta_sh)
+            num_gene = n_gene_disp, iter = iter, alpha_sh = alpha_sh,
+            beta_sh = beta_sh, gamma_sh = gamma_sh, 
+            W_sh = W_sh, zeta_sh = zeta_sh, model, total.lik)
 
         if(verbose){
             cat("Time of dispersion optimization\n")
@@ -773,7 +775,8 @@ delayed_optimization <- function(Y, cluster, children, model ,
 }
 
 optimd <- function(Y_sh, mu, cluster, children, num_gene = NULL, commondispersion,
-                   iter, zeta_sh){
+                   iter, alpha_sh,beta_sh,gamma_sh, 
+                   W_sh, zeta_sh, model, total.lik){
     
     J <- ncol(Y_sh)
     
@@ -784,15 +787,20 @@ optimd <- function(Y_sh, mu, cluster, children, num_gene = NULL, commondispersio
     if(!is.null(num_gene) && iter != 1){
     
         genes <- sample(x = J, size = num_gene)
-        mu <- mu[,genes]
     
     }
   
-    g=optimize(f=nb.loglik.dispersion, Y=Y_sh[,genes], mu=mu,
-        maximum=TRUE,
-        interval=c(-50,50))
-  
-    zeta_sh[] <- rep(g$maximum,J)
+    g=optimize(f=nb.loglik.dispersion, Y=Y_sh[,genes], mu=mu[,genes],
+                   maximum=TRUE,
+                   interval=c(-50,50))
+    penalty <- sum(newEpsilon_alpha(model) * (alpha_sh)^2)/2 +
+          sum(newEpsilon_beta(model) * (beta_sh)^2)/2 +
+          sum(newEpsilon_gamma(model)*(gamma_sh)^2)/2 +
+          sum(newEpsilon_W(model)*t(W_sh)^2)/2
+        
+    if(g$objective-penalty > total.lik[iter]){
+          zeta_sh[] <- rep(g$maximum,J)
+        }
   
     } else {
   
