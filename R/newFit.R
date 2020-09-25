@@ -433,8 +433,8 @@ delayed_initialization <- function(cluster, children, model, verbose, Y){
   
   clusterApply(cluster, seq.int(children), "delayed_beta_init")
 
-  
-  R <- BiocSingular::runIrlbaSVD(L_sh, k=numberFactors(model))
+  cl <- as(cluster,"SnowParam")
+  R <- BiocSingular::runExactSVD(L_sh, k=numberFactors(model), BPPARAM = cl)
   
   
   # Orthogonalize to get W and alpha
@@ -704,9 +704,8 @@ delayed_optimization <- function(Y, cluster, children, model ,
       message("penalized log-likelihood = ",  total.lik[iter])
     }
     
-    optimd_delayed(Y_sh, X=X_sh,beta=beta_sh,V=V_sh,
-                   gamma=gamma_sh,W=W_sh,alpha=alpha_sh,
-                   zeta_sh=zeta_sh)
+    clusterApply(cluster, seq.int(children), "optim_genwise_dispersion_delayed",
+                 Y,num_gene = n_gene_disp, iter = iter)
     
     if(verbose){
       cat("Time of dispersion optimization\n")
@@ -822,42 +821,7 @@ optimd <- function(Y_sh, mu, cluster, children, num_gene = NULL, commondispersio
 
 }
 
-
-optimd_delayed <- function(Y_sh, X,beta,V,gamma,W,alpha,zeta_sh,
-                           num_gene = ncol(Y_sh)/10){
   
-  J <- ncol(Y_sh)
-  
-  genes <- sample(x = J, size = num_gene)
-  
-  Y_d <- as.matrix(Y_sh[,genes])
-  
-  mu <- exp(X %*% beta[,genes] +
-              t(V[genes,] %*% gamma) +  W %*% alpha[,genes])
-  
-  # del_disp_opt <- function(Y,mu){
-  #   
-  # }
-  # DelayedArray::blockApply(
-  #   x = Y_d,
-  #   FUN = over_gamma,
-  #   grid = DelayedArray::RegularArrayGrid(
-  #     refdim = dim(Y_d),
-  #     spacings = c( nrow(Y_d), ncol(Y_d))),
-  #   BPPARAM = BiocParallel::SerialParam(),
-  #   V_sh = V_sh, X_sh =X_sh[intervall,,drop=F], beta_sh = beta_sh,
-  #   gamma_sh = gamma_sh, epsilon_gamma = epsilon_gamma,
-  #   intervall = intervall)
-  
-    
-  g=optimize(f=nb.loglik.dispersion, Y=Y_d, mu=mu,
-               maximum=TRUE,
-               interval=c(-50,50))
-    
-  zeta_sh[] <- rep(g$maximum,J)
-    
-  
-}
 
 orthogonalizeTraceNorm <- function(U, V, a=1, b=1) {
 
