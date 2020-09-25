@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r}
+```{r, echo=FALSE}
 library(splatter)
 library(NewWave)
 library(irlba)
@@ -23,6 +23,14 @@ library(ggplot2)
 library(mclust)
 ```
 
+```{r}
+library(splatter)
+library(NewWave)
+library(irlba)
+library(Rtsne)
+library(ggplot2)
+library(mclust)
+```
 I am going to show how to use NewWave with example data.
 To do this I am going to generate some data using splatter.
 
