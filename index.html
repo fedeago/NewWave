@@ -40,12 +40,6 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -89,20 +83,21 @@
 <a href="#how-to-install" class="anchor"></a>How to install</h2>
 <p>Clone this repository on your machine and than install it</p>
 <pre><code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages("path/to/NewWave", repos = NULL, type="source")</a></code></pre>
+<p>This package depends on SharedObject 1.3.15, it is a development version that can be found on Bioconductor-devel or on the github page linked below.</p>
 </div>
 <div id="how-to-use" class="section level2">
 <h2 class="hasAnchor">
 <a href="#how-to-use" class="anchor"></a>How to use</h2>
 <p>If you have your data stored in a SummarizedExperiment object with batch effect variable called “batch” stored in colData then:</p>
 <pre><code><a href="reference/newWave.html">newWave(data,X = "~batch")</a></code></pre>
-<p>A more deteiled case of use is showned in the vignette.</p>
+<p>In the X matrix you can teoretically store any variable related to the cell, both quantitative and qualitative. If you a batch variable, it must be a factor. A more deteiled case of use is shown in the vignette.</p>
 </div>
 <div id="useful-links" class="section level2">
 <h2 class="hasAnchor">
 <a href="#useful-links" class="anchor"></a>Useful links</h2>
 <p><a href="https://www.nature.com/articles/s41467-017-02554-5">ZINB-WaVE article</a></p>
 <p><a href="https://bioconductor.org/packages/release/bioc/html/zinbwave.html">ZINB-WaVE package</a></p>
-<p><a href="https://bioconductor.org/packages/release/bioc/html/SharedObject.html">SharedObject package</a></p>
+<p><a href="https://github.com/Jiefei-Wang/SharedObject">SharedObject package</a></p>
 </div>
 </div>
   </div>
