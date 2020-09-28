@@ -1,6 +1,8 @@
 ---
-title: "vignette"
-output: rmarkdown::html_vignette
+title: "Dimensionality reduction and batch effect removal using NewWave"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
 vignette: >
   %\VignetteIndexEntry{vignette}
   %\VignetteEngine{knitr::rmarkdown}
@@ -14,29 +16,39 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r, echo=FALSE}
-library(splatter)
-library(NewWave)
-library(irlba)
-library(Rtsne)
-library(ggplot2)
-library(mclust)
+# Installation
+
+First of all we need to install NewWave:
+
+```{r, eval = F}
+if(!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("NewWave")
 ```
 
 ```{r}
+suppressPackageStartupMessages(
+  {library(SingleCellExperiment)
 library(splatter)
-library(NewWave)
 library(irlba)
 library(Rtsne)
 library(ggplot2)
 library(mclust)
+library(NewWave)}
+)
 ```
-I am going to show how to use NewWave with example data.
-To do this I am going to generate some data using splatter.
+
+# Introduction
+
+NewWave is a new package that assumes a Negative Binomial distributions for dimensionality reduction and batch effect removal.
+In order to reduce the memory consumption it uses a PSOCK cluster combined with the R package SharedObject that allow to share a matrix between different cores without memory duplication. Thanks to that we can massively parallelize the estimation process with huge benefit in terms of time consumption.
+We can reduce even more the time consumption using some minibatch approaches on the different steps of the optimization.
+
+I am going to show how to use NewWave with example data generated with Splatter.
 
 ```{r}
 params <- newSplatParams()
-N=100
+N=500
 set.seed(1234)
 data <- splatSimulateGroups(params,batchCells=c(N/2,N/2),
                            group.prob = rep(0.1,10),
@@ -44,13 +56,14 @@ data <- splatSimulateGroups(params,batchCells=c(N/2,N/2),
                            verbose = FALSE) 
 ```
 
-Now we have a dataset with 1000 cells and 10000 genes, I will use only 1000.
+Now we have a dataset with 500 cells and 10000 genes, I will use only the 500 most variable genes.
 NewWave takes as input raw data, not normalized.
 
 ```{r}
 set.seed(12359)
-data <- data[-which(rowSums(counts(data))==0),]
-data <- data[sample(1:nrow(data),100),]
+hvg <- rowVars(counts(data))
+names(hvg) <- rownames(counts(data))
+data <- data[names(sort(hvg,decreasing=T))[1:500],]
 ```
 
 As you can see there is a variable called batch in the colData section.
@@ -88,29 +101,59 @@ Let's try to correct it.
 
 # NewWave
 
-The default options use 1 core and no mini-batch approaches, it don't use
-the verbose option but I set it TRUE for example purpose(not suggested with
-big dataset). The default number of latent variables is 2.
+I am going to show different implementation and the suggested way to use them with the given hardware.
+
+Some advise:
+
++ Verbose option has default FALSE, in this vignette I will change it for explanatory intentions, don't do it with big dataset because it can sensibly slower the computation
++ There are no concern about the dimension of mini-batches, I always used the 10\% of the observations
+
+## Standard usage
+
+This is the way to insert the batch variable, in the same manner can be inserted other cell-related variable and if you need some gene related variable those can be inserted in V.
+
 ```{r}
-res <- newWave(data,X = "~Batch", K=2, verbose = TRUE)
+res <- newWave(data,X = "~Batch", K=10, verbose = TRUE)
 ```
+
 In order to make it faster you can increase the number of cores using "children" parameter:
-```{r}
-res2 <- newWave(data,X = "~Batch", K=2, verbose = TRUE, children=2)
-```
-
-Or use some mini-batch approaches:
-    - n_gene_disp : Number of genes to use in the dispersion optimization
-    - n_cell_par : Number of cells to use in the cells related parameters
-        optimization
-    - n_gene_par : Number of genes to use in the genes related parameters
-        optimization
 
 ```{r}
-res3 <- newWave(data,X = "~Batch", verbose = TRUE,K=2, children=2,
-                n_gene_disp=100,  n_gene_par = 100, n_cell_par = 100,
-                commondispersion = FALSE)
+res2 <- newWave(data,X = "~Batch", K=10, verbose = TRUE, children=2)
 ```
+
+## Commonwise dispersion and minibatch approaches
+
+If you do not have an high number of cores to run newWave this is the fastest way to run.
+The optimization process is done by three process itereated until convercence.
+
++ Optimization of the dispersion parameters
++ Optimization of the gene related parameters
++ Optimization of the cell related parameters
+  
+Each of these three steps can be accelerated using mini batch, the number of observation is settled with these parameters:
+
++ n_gene_disp : Number of genes to use in the dispersion optimization
++ n_cell_par : Number of cells to use in the cells related parameters
+        optimization
++ n_gene_par : Number of genes to use in the genes related parameters
+        optimization
+
+```{r}
+res3 <- newWave(data,X = "~Batch", verbose = TRUE,K=10, children=2,
+                n_gene_disp = 100, n_gene_par = 100, n_cell_par = 100)
+```
+
+## Genewise dispersion mini-batch
+
+If you have a lot of core disposable or you want to estimate a genewise dispersion parameter this is the fastes configuration:
+
+```{r}
+res3 <- newWave(data,X = "~Batch", verbose = TRUE,K=10, children=2,
+                n_gene_par = 100, n_cell_par = 100, commondispersion = F)
+```
+
+NB: do not use n_gene_disp in this case, it will slower the computation.
 
 Now I can use the latent dimension rapresentation for visualization purpose:
 
@@ -133,3 +176,10 @@ cluster <- kmeans(latent, 10)
 
 adjustedRandIndex(cluster$cluster, data$Group)
 ```
+
+# Session Information
+
+```{r}
+sessionInfo()
+```
+
