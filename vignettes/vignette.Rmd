@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 First of all we need to install NewWave:
 
-```{r, eval = F}
+```{r, eval = FALSE}
 if(!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("NewWave")
@@ -63,7 +63,7 @@ NewWave takes as input raw data, not normalized.
 set.seed(12359)
 hvg <- rowVars(counts(data))
 names(hvg) <- rownames(counts(data))
-data <- data[names(sort(hvg,decreasing=T))[1:500],]
+data <- data[names(sort(hvg,decreasing=TRUE))[1:500],]
 ```
 
 As you can see there is a variable called batch in the colData section.
@@ -150,7 +150,7 @@ If you have a lot of core disposable or you want to estimate a genewise dispersi
 
 ```{r}
 res3 <- newWave(data,X = "~Batch", verbose = TRUE,K=10, children=2,
-                n_gene_par = 100, n_cell_par = 100, commondispersion = F)
+                n_gene_par = 100, n_cell_par = 100, commondispersion = FALSE)
 ```
 
 NB: do not use n_gene_disp in this case, it will slower the computation.

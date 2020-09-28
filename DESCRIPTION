@@ -44,7 +44,8 @@ biocViews: Software,
     SingleCell,
     BatchEffect,
     Sequencing,
-    Coverage
+    Coverage,
+    Regression
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1

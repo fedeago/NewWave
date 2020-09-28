@@ -338,7 +338,7 @@ optim_genwise_dispersion_delayed <- function(k,Y, num_gene, iter) {
     BPPARAM = BiocParallel::SerialParam(),
     zeta = zeta_sh[intervall],
     intervall = intervall, X = X_sh,
-    beta = beta_sh[,intervall,drop=F], V = V_sh[intervall,,drop=F],
+    beta = beta_sh[,intervall,drop=FALSE], V = V_sh[intervall,,drop=FALSE],
     gamma  = gamma_sh, W = W_sh, alpha = alpha_sh[,intervall])
   
 }
