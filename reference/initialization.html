@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Returns the vector of dispersion parameters — newPhi • NewWave</title>
+<title>Initialize the parameters of a Negative Binomial regression model — initialization • NewWave</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,8 @@
 
 
 
-<meta property="og:title" content="Returns the vector of dispersion parameters — newPhi" />
-<meta property="og:description" content="Given an object that describes a matrix of negative binomial negative binomial
-distributions, returns the vector of dispersion parameters phi." />
+<meta property="og:title" content="Initialize the parameters of a Negative Binomial regression model — initialization" />
+<meta property="og:description" content="It initialize gamma and beta using a Ridge Regression and W and alpha using PCA" />
 
 
 
@@ -115,36 +114,39 @@ distributions, returns the vector of dispersion parameters phi." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Returns the vector of dispersion parameters</h1>
-    <small class="dont-index">Source: <a href='https://github.com/fedeago/NewWave/blob/master/R/AllGenerics.R'><code>R/AllGenerics.R</code></a></small>
-    <div class="hidden name"><code>newPhi.Rd</code></div>
+    <h1>Initialize the parameters of a Negative Binomial regression model</h1>
+    <small class="dont-index">Source: <a href='https://github.com/fedeago/NewWave/blob/master/R/newFit.R'><code>R/newFit.R</code></a></small>
+    <div class="hidden name"><code>initialization.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Given an object that describes a matrix of negative binomial negative binomial
-distributions, returns the vector of dispersion parameters <code>phi</code>.</p>
+    <p>It initialize gamma and beta using a Ridge Regression and W and alpha using PCA</p>
     </div>
 
-    <pre class="usage"><span class='fu'>newPhi</span>(<span class='kw'>object</span>)</pre>
+    <pre class="usage"><span class='fu'>initialization</span>(<span class='kw'>cluster</span>, <span class='kw'>children</span>, <span class='kw'>model</span>, <span class='kw'>verbose</span>, <span class='kw'>Y</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>object</th>
-      <td><p>an object that describes a matrix of negative binomial.
-distributions.</p></td>
+      <th>cluster</th>
+      <td><p>The PSOCK cluster</p></td>
+    </tr>
+    <tr>
+      <th>children</th>
+      <td><p>Number of child process.</p></td>
+    </tr>
+    <tr>
+      <th>model</th>
+      <td><p>The newmodel object</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>Print proc time</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>the vector of dispersion parameters</p>
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>a</span> <span class='op'>&lt;-</span> <span class='fu'><a href='newmodel.html'>newmodel</a></span>(n=<span class='fl'>5</span>, J=<span class='fl'>10</span>)
-<span class='fu'>newPhi</span>(<span class='kw'>a</span>)
-</div><div class='output co'>#&gt;  [1] 1 1 1 1 1 1 1 1 1 1</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

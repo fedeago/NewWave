@@ -6,7 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Returns the vector of dispersion parameters — newPhi • NewWave</title>
+<title>Setup the parameters of a Negative Binomial regression model
+There are different type of starting values:
+1.You can set all values to 0.
+2.You can sample values from a gaussian distribution or a
+chisq distibution for the dispersion parameters, — setup • NewWave</title>
 
 
 <!-- jquery -->
@@ -39,9 +43,13 @@
 
 
 
-<meta property="og:title" content="Returns the vector of dispersion parameters — newPhi" />
-<meta property="og:description" content="Given an object that describes a matrix of negative binomial negative binomial
-distributions, returns the vector of dispersion parameters phi." />
+<meta property="og:title" content="Setup the parameters of a Negative Binomial regression model
+There are different type of starting values:
+1.You can set all values to 0.
+2.You can sample values from a gaussian distribution or a
+chisq distibution for the dispersion parameters, — setup" />
+<meta property="og:description" content="It creates different shared object and epxort them to the father
+and the child process." />
 
 
 
@@ -115,36 +123,57 @@ distributions, returns the vector of dispersion parameters phi." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Returns the vector of dispersion parameters</h1>
-    <small class="dont-index">Source: <a href='https://github.com/fedeago/NewWave/blob/master/R/AllGenerics.R'><code>R/AllGenerics.R</code></a></small>
-    <div class="hidden name"><code>newPhi.Rd</code></div>
+    <h1>Setup the parameters of a Negative Binomial regression model
+There are different type of starting values:
+1.You can set all values to 0.
+2.You can sample values from a gaussian distribution or a
+chisq distibution for the dispersion parameters,</h1>
+    <small class="dont-index">Source: <a href='https://github.com/fedeago/NewWave/blob/master/R/newFit.R'><code>R/newFit.R</code></a></small>
+    <div class="hidden name"><code>setup.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Given an object that describes a matrix of negative binomial negative binomial
-distributions, returns the vector of dispersion parameters <code>phi</code>.</p>
+    <p>It creates different shared object and epxort them to the father
+and the child process.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>newPhi</span>(<span class='kw'>object</span>)</pre>
+    <pre class="usage"><span class='fu'>setup</span>(<span class='kw'>cluster</span>, <span class='kw'>model</span>, <span class='kw'>random_start</span>, <span class='kw'>children</span>, <span class='kw'>random_init</span>, <span class='kw'>verbose</span>, <span class='kw'>Y_sh</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>object</th>
-      <td><p>an object that describes a matrix of negative binomial.
-distributions.</p></td>
+      <th>cluster</th>
+      <td><p>the PSOCK cluster object</p></td>
+    </tr>
+    <tr>
+      <th>model</th>
+      <td><p>The model of class newmodel</p></td>
+    </tr>
+    <tr>
+      <th>random_start</th>
+      <td><p>if TRUE the setup of parameters is a 
+random samplig(default FALSE)</p></td>
+    </tr>
+    <tr>
+      <th>children</th>
+      <td><p>Number of child process.</p></td>
+    </tr>
+    <tr>
+      <th>random_init</th>
+      <td><p>if TRUE no initializations is done(default FALSE)</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>Print helpful messages(default FALSE).</p></td>
+    </tr>
+    <tr>
+      <th>Y</th>
+      <td><p>matrix of counts</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>the vector of dispersion parameters</p>
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>a</span> <span class='op'>&lt;-</span> <span class='fu'><a href='newmodel.html'>newmodel</a></span>(n=<span class='fl'>5</span>, J=<span class='fl'>10</span>)
-<span class='fu'>newPhi</span>(<span class='kw'>a</span>)
-</div><div class='output co'>#&gt;  [1] 1 1 1 1 1 1 1 1 1 1</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
