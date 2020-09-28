@@ -296,6 +296,7 @@ setMethod("newFit", "dgCMatrix",
 #' @param random_init if TRUE no initializations is done(default FALSE)
 #' @param verbose Print helpful messages(default FALSE).
 #' @param Y matrix of counts
+#' @return A object of class newModel
 #' @keywords internal
 
 
@@ -369,6 +370,8 @@ setup <- function(cluster, model, random_start, children,
 #' @param children Number of child process.
 #' @param model The newmodel object
 #' @param verbose Print proc time
+#' @return It does not return anything, the parameters
+#'  are update internally as these are shared object
 #' @keywords internal
 initialization <- function(cluster, children, model, verbose, Y){
     
@@ -419,6 +422,8 @@ initialization <- function(cluster, children, model, verbose, Y){
 #' @param model The newmodel object
 #' @param verbose Print proc time
 #' @param Y Is the data matrix
+#' @return It does not return anything, the parameters
+#'  are update internally as these are shared object
 #' @keywords internal
 
 delayed_initialization <- function(cluster, children, model, verbose, Y){

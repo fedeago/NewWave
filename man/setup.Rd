@@ -26,6 +26,9 @@ random samplig(default FALSE)}
 
 \item{Y}{matrix of counts}
 }
+\value{
+A object of class newModel
+}
 \description{
 It creates different shared object and epxort them to the father
 and the child process.

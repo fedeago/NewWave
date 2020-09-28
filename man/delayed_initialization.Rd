@@ -18,6 +18,10 @@ delayed_initialization(cluster, children, model, verbose, Y)
 
 \item{Y}{Is the data matrix}
 }
+\value{
+It does not return anything, the parameters
+ are update internally as these are shared object
+}
 \description{
 It initialize gamma and beta using a Ridge Regression and W and alpha using PCA
 }
