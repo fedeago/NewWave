@@ -1,11 +1,7 @@
 Changes in Version 0.99.5 (2020-09-08)
-=====================================
-+ Modification to optimd function to prevent decreasing of the likelihood function when appling mini-batch with commonwise dispersion
+  + Modification to optimd function to prevent decreasing of the likelihood function when appling mini-batch with commonwise dispersion
 Changes in Version 0.99.0 (2020-09-08)
-=====================================
-+ Submit to bioconductor
+  + Submit to bioconductor
 Changes in Version 0.2.0 (2020-09-07)
-=====================================
-+ Matrix and Delayed array framework complete running
-Changes in Version 0.1.0 (2020-07-07)
-=====================================
+  + Matrix and Delayed array framework complete running
+
