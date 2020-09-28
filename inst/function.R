@@ -312,7 +312,55 @@ optim_genwise_dispersion <- function(k, num_gene, iter) {
     
 }
 
+optim_genwise_dispersion_delayed <- function(k,Y, num_gene, iter) {
+  
+  step <- ceiling(ncol(Y) / children)
+  j1 <- (k-1) * step + 1
+  j2 <- min(k * step, ncol(Y))
+  
+  if(is.null(num_gene) || iter == 1){
+    
+    intervall <- seq.int(from = j1, to = j2)
+    
+  } else {
+    
+    intervall <- sample(x = seq.int(from = j1, to = j2),
+                        size = num_gene/children)
+    
+  }
+  
+  DelayedArray::blockApply(
+    x = Y[,intervall],
+    FUN = over_optd,
+    grid = DelayedArray::RegularArrayGrid(
+      refdim = dim(Y[,intervall]),
+      spacings = c(nrow(Y[,intervall]), 1L)),
+    BPPARAM = BiocParallel::SerialParam(),
+    zeta = zeta_sh[intervall],
+    intervall = intervall, X = X_sh,
+    beta = beta_sh[,intervall,drop=F], V = V_sh[intervall,,drop=F],
+    gamma  = gamma_sh, W = W_sh, alpha = alpha_sh[,intervall])
+  
+}
 
+over_optd <- function(x, zeta, intervall, X,
+                      beta, V, gamma, W, alpha){
+  
+  j = attr(x,"block_id")
+  mu <- exp(X %*% beta[,j] + t(V[j,] %*% gamma) +
+              W %*% alpha[,j])
+  res <-optim(fn=locfun,
+        gr=locgrad,
+        par=zeta[j],
+        Y = x,
+        mu = mu,
+        control=list(fnscale=-1,trace=0),
+        method="BFGS")$par
+  
+  
+  zeta_sh[intervall[j]] <- res
+
+}
 
 locfun <- function(par, Y, mu){
   nb.loglik.dispersion(zeta = par, Y, mu)
