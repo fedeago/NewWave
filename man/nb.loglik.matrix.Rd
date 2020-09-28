@@ -2,7 +2,7 @@
 % Please edit documentation in R/newWave.R
 \name{nb.loglik.matrix}
 \alias{nb.loglik.matrix}
-\title{Log-likelihood of the zero-inflated negative binomial model for each entry
+\title{Log-likelihood of the negative binomial model for each entry
 in the matrix of counts}
 \usage{
 nb.loglik.matrix(model, x)
@@ -18,7 +18,8 @@ the matrix of log-likelihood of the model.
 \description{
 Given a matrix of counts, this function computes the
 log-probabilities of the counts under a zero-inflated negative binomial
-(NB) model. For each count, the NB distribution is parametrized by three
+(NB) model. For each count, the NB distribution is parametrized by two
 parameters: the mean value and the dispersion of the negative binomial
-distribution, and the probability of the zero component.
+distribution.
 }
+\keyword{internal}

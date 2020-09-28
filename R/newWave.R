@@ -1,16 +1,18 @@
-#' Log-likelihood of the zero-inflated negative binomial model for each entry
+#' Log-likelihood of the negative binomial model for each entry
 #' in the matrix of counts
 #'
 #' Given a matrix of counts, this function computes the
 #' log-probabilities of the counts under a zero-inflated negative binomial
-#' (NB) model. For each count, the NB distribution is parametrized by three
+#' (NB) model. For each count, the NB distribution is parametrized by two
 #' parameters: the mean value and the dispersion of the negative binomial
-#' distribution, and the probability of the zero component.
+#' distribution.
 #'
 #' @param model the newmodel
 #' @param x the matrix of counts
 #' @return the matrix of log-likelihood of the model.
 #' @importFrom stats dnbinom
+#' @keywords internal
+
 nb.loglik.matrix <- function(model, x) {
     mu <- newMu(model)
     theta <- newTheta(model)

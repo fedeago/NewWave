@@ -279,23 +279,24 @@ setMethod("newFit", "dgCMatrix",
             })
 
 
-# Setup the parameters of a Negative Binomial regression model
+#' Setup the parameters of a Negative Binomial regression model
 #
-# There are different type of starting values:
-# 1.You can set all values to 0.
-# 2.You can sample values from a gaussian distribution or a
-# chisq distibution for the dispersion parameters,
-#
-# It creates different shared object and epxort them to the father
-# and the child process.
-# @param cluster the PSOCK cluster object
-# @param model The model of class newmodel
-# @param random_start if TRUE the setup of parameters is a 
-#   random samplig(default FALSE)
-# @param children Number of child process.
-# @param random_init if TRUE no initializations is done(default FALSE)
-# @param verbose Print helpful messages(default FALSE).
-# @param Y matrix of counts
+#' There are different type of starting values:
+#' 1.You can set all values to 0.
+#' 2.You can sample values from a gaussian distribution or a
+#' chisq distibution for the dispersion parameters,
+#'
+#' It creates different shared object and epxort them to the father
+#' and the child process.
+#' @param cluster the PSOCK cluster object
+#' @param model The model of class newmodel
+#' @param random_start if TRUE the setup of parameters is a 
+#'   random samplig(default FALSE)
+#' @param children Number of child process.
+#' @param random_init if TRUE no initializations is done(default FALSE)
+#' @param verbose Print helpful messages(default FALSE).
+#' @param Y matrix of counts
+#' @keywords internal
 
 
 setup <- function(cluster, model, random_start, children,
@@ -361,14 +362,14 @@ setup <- function(cluster, model, random_start, children,
     return(m)
 }
 
-# Initialize the parameters of a Negative Binomial regression model
-#
-# It initialize gamma and beta using a Ridge Regression and W and alpha using PCA
-# @param cluster The PSOCK cluster
-# @param children Number of child process.
-# @param model The newmodel object
-# @param verbose Print proc time
-
+#' Initialize the parameters of a Negative Binomial regression model
+#'
+#' It initialize gamma and beta using a Ridge Regression and W and alpha using PCA
+#' @param cluster The PSOCK cluster
+#' @param children Number of child process.
+#' @param model The newmodel object
+#' @param verbose Print proc time
+#' @keywords internal
 initialization <- function(cluster, children, model, verbose, Y){
     
   
@@ -409,16 +410,16 @@ initialization <- function(cluster, children, model, verbose, Y){
 }
 
 
-# Initialize the parameters of a Negative Binomial regression model with a 
-# DelayedArray object
-#
-# It initialize gamma and beta using a Ridge Regression and W and alpha using PCA
-# @param cluster The PSOCK cluster
-# @param children Number of child process.
-# @param model The newmodel object
-# @param verbose Print proc time
-# @param Y Is the data matrix
-
+#' Initialize the parameters of a Negative Binomial regression model with a 
+#' DelayedArray object
+#'
+#' It initialize gamma and beta using a Ridge Regression and W and alpha using PCA
+#' @param cluster The PSOCK cluster
+#' @param children Number of child process.
+#' @param model The newmodel object
+#' @param verbose Print proc time
+#' @param Y Is the data matrix
+#' @keywords internal
 
 delayed_initialization <- function(cluster, children, model, verbose, Y){
   
@@ -455,28 +456,29 @@ delayed_initialization <- function(cluster, children, model, verbose, Y){
 }
 
 
-# Optimize the parameters of a Negative Binomial regression model
-#
-# The parameters of the model given as argument are optimized by penalized
-# maximum likelihood on the count matrix given as argument.
-# @param cluster The PSOCK cluster
-# @param children Number of child process
-# @param model newmodel item
-# @param max_iter maximum number of iterations
-# @param stop_epsilon stopping criterion, when the relative gain in
-#   likelihood is below epsilon
-# @param n_gene_disp number of genes used in mini-batch dispersion estimation
-#   approach(default NULL > all genes are used)
-# @param n_cell_par number of cells used in mini-batch cell's related
-#   parameters estimation approach(default NULL > all cells are used)
-# @param n_gene_par number of genes used in mini-batch gene's related
-#   parameters estimation approach(default NULL > all genes are used)
-# @param commondispersion Whether or not a single dispersion for all features
-#   is estimated (default TRUE).
-# @param verbose print information (default FALSE)
-# @return An object of class newmodel similar to the one given as argument
-#   with modified parameters alpha, beta, gamma, W.
-
+#' Optimize the parameters of a Negative Binomial regression model
+#'
+#' The parameters of the model given as argument are optimized by penalized
+#' maximum likelihood on the count matrix given as argument.
+#' @param cluster The PSOCK cluster
+#' @param children Number of child process
+#' @param model newmodel item
+#' @param max_iter maximum number of iterations
+#' @param stop_epsilon stopping criterion, when the relative gain in
+#'   likelihood is below epsilon
+#' @param n_gene_disp number of genes used in mini-batch dispersion estimation
+#'   approach(default NULL > all genes are used)
+#' @param n_cell_par number of cells used in mini-batch cell's related
+#'   parameters estimation approach(default NULL > all cells are used)
+#' @param n_gene_par number of genes used in mini-batch gene's related
+#'   parameters estimation approach(default NULL > all genes are used)
+#' @param commondispersion Whether or not a single dispersion for all features
+#'   is estimated (default TRUE).
+#' @param verbose print information (default FALSE)
+#' @return An object of class newmodel similar to the one given as argument
+#'   with modified parameters alpha, beta, gamma, W.
+#' @keywords internal
+#' 
 optimization <- function(Y, cluster, children, model ,
                         max_iter, stop_epsilon,
                         n_gene_disp,
@@ -640,28 +642,29 @@ optimization <- function(Y, cluster, children, model ,
     return(m)
 }
 
-# Optimize the parameters of a Negative Binomial regression model with Delayed Array object
-#
-# The parameters of the model given as argument are optimized by penalized
-# maximum likelihood on the count matrix given as argument.
-# @param cluster The PSOCK cluster
-# @param children Number of child process
-# @param model newmodel item
-# @param max_iter maximum number of iterations
-# @param stop_epsilon stopping criterion, when the relative gain in
-#   likelihood is below epsilon
-# @param n_gene_disp number of genes used in mini-batch dispersion estimation
-#   approach(default NULL > all genes are used)
-# @param n_cell_par number of cells used in mini-batch cell's related
-#   parameters estimation approach(default NULL > all cells are used)
-# @param n_gene_par number of genes used in mini-batch gene's related
-#   parameters estimation approach(default NULL > all genes are used)
-# @param commondispersion Whether or not a single dispersion for all features
-#   is estimated (default TRUE).
-# @param verbose print information (default FALSE)
-# @return An object of class newmodel similar to the one given as argument
-#   with modified parameters alpha, beta, gamma, W.
-
+#' Optimize the parameters of a Negative Binomial regression model with Delayed Array object
+#'
+#' The parameters of the model given as argument are optimized by penalized
+#' maximum likelihood on the count matrix given as argument.
+#' @param cluster The PSOCK cluster
+#' @param children Number of child process
+#' @param model newmodel item
+#' @param max_iter maximum number of iterations
+#' @param stop_epsilon stopping criterion, when the relative gain in
+#'   likelihood is below epsilon
+#' @param n_gene_disp number of genes used in mini-batch dispersion estimation
+#'   approach(default NULL > all genes are used)
+#' @param n_cell_par number of cells used in mini-batch cell's related
+#'   parameters estimation approach(default NULL > all cells are used)
+#' @param n_gene_par number of genes used in mini-batch gene's related
+#'   parameters estimation approach(default NULL > all genes are used)
+#' @param commondispersion Whether or not a single dispersion for all features
+#'   is estimated (default TRUE).
+#' @param verbose print information (default FALSE)
+#' @return An object of class newmodel similar to the one given as argument
+#'   with modified parameters alpha, beta, gamma, W.
+#' @keywords internal
+#' 
 delayed_optimization <- function(Y, cluster, children, model ,
                          max_iter, stop_epsilon,
                          n_gene_disp,
