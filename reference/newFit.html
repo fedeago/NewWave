@@ -123,68 +123,68 @@
     <p>Given an object with the data, it fits a nb model.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>newFit</span>(<span class='kw'>Y</span>, <span class='kw'>...</span>)
+    <pre class="usage"><span class='fu'>newFit</span><span class='op'>(</span><span class='va'>Y</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S4 method for SummarizedExperiment</span>
-<span class='fu'>newFit</span>(
-  <span class='kw'>Y</span>,
-  <span class='kw'>X</span>,
-  <span class='kw'>V</span>,
-  K = <span class='fl'>2</span>,
-  <span class='kw'>which_assay</span>,
-  commondispersion = <span class='fl'>TRUE</span>,
-  verbose = <span class='fl'>FALSE</span>,
-  maxiter_optimize = <span class='fl'>100</span>,
-  stop_epsilon = <span class='fl'>1e-04</span>,
-  children = <span class='fl'>1</span>,
-  random_init = <span class='fl'>FALSE</span>,
-  random_start = <span class='fl'>FALSE</span>,
-  n_gene_disp = <span class='kw'>NULL</span>,
-  n_cell_par = <span class='kw'>NULL</span>,
-  n_gene_par = <span class='kw'>NULL</span>,
-  <span class='kw'>...</span>
-)
+<span class='fu'>newFit</span><span class='op'>(</span>
+  <span class='va'>Y</span>,
+  <span class='va'>X</span>,
+  <span class='va'>V</span>,
+  K <span class='op'>=</span> <span class='fl'>2</span>,
+  <span class='va'>which_assay</span>,
+  commondispersion <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  maxiter_optimize <span class='op'>=</span> <span class='fl'>100</span>,
+  stop_epsilon <span class='op'>=</span> <span class='fl'>1e-04</span>,
+  children <span class='op'>=</span> <span class='fl'>1</span>,
+  random_init <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  random_start <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  n_gene_disp <span class='op'>=</span> <span class='cn'>NULL</span>,
+  n_cell_par <span class='op'>=</span> <span class='cn'>NULL</span>,
+  n_gene_par <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for matrix</span>
-<span class='fu'>newFit</span>(
-  <span class='kw'>Y</span>,
-  <span class='kw'>X</span>,
-  <span class='kw'>V</span>,
-  K = <span class='fl'>2</span>,
-  commondispersion = <span class='fl'>TRUE</span>,
-  verbose = <span class='fl'>FALSE</span>,
-  maxiter_optimize = <span class='fl'>100</span>,
-  stop_epsilon = <span class='fl'>1e-04</span>,
-  children = <span class='fl'>1</span>,
-  random_init = <span class='fl'>FALSE</span>,
-  random_start = <span class='fl'>FALSE</span>,
-  n_gene_disp = <span class='kw'>NULL</span>,
-  n_cell_par = <span class='kw'>NULL</span>,
-  n_gene_par = <span class='kw'>NULL</span>,
-  <span class='kw'>...</span>
-)
+<span class='fu'>newFit</span><span class='op'>(</span>
+  <span class='va'>Y</span>,
+  <span class='va'>X</span>,
+  <span class='va'>V</span>,
+  K <span class='op'>=</span> <span class='fl'>2</span>,
+  commondispersion <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  maxiter_optimize <span class='op'>=</span> <span class='fl'>100</span>,
+  stop_epsilon <span class='op'>=</span> <span class='fl'>1e-04</span>,
+  children <span class='op'>=</span> <span class='fl'>1</span>,
+  random_init <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  random_start <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  n_gene_disp <span class='op'>=</span> <span class='cn'>NULL</span>,
+  n_cell_par <span class='op'>=</span> <span class='cn'>NULL</span>,
+  n_gene_par <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for DelayedMatrix</span>
-<span class='fu'>newFit</span>(
-  <span class='kw'>Y</span>,
-  <span class='kw'>X</span>,
-  <span class='kw'>V</span>,
-  K = <span class='fl'>2</span>,
-  commondispersion = <span class='fl'>TRUE</span>,
-  verbose = <span class='fl'>FALSE</span>,
-  maxiter_optimize = <span class='fl'>100</span>,
-  stop_epsilon = <span class='fl'>1e-04</span>,
-  children = <span class='fl'>1</span>,
-  random_init = <span class='fl'>FALSE</span>,
-  random_start = <span class='fl'>FALSE</span>,
-  n_gene_disp = <span class='kw'>NULL</span>,
-  n_cell_par = <span class='kw'>NULL</span>,
-  n_gene_par = <span class='kw'>NULL</span>,
-  <span class='kw'>...</span>
-)
+<span class='fu'>newFit</span><span class='op'>(</span>
+  <span class='va'>Y</span>,
+  <span class='va'>X</span>,
+  <span class='va'>V</span>,
+  K <span class='op'>=</span> <span class='fl'>2</span>,
+  commondispersion <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  maxiter_optimize <span class='op'>=</span> <span class='fl'>100</span>,
+  stop_epsilon <span class='op'>=</span> <span class='fl'>1e-04</span>,
+  children <span class='op'>=</span> <span class='fl'>1</span>,
+  random_init <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  random_start <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  n_gene_disp <span class='op'>=</span> <span class='cn'>NULL</span>,
+  n_cell_par <span class='op'>=</span> <span class='cn'>NULL</span>,
+  n_gene_par <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for dgCMatrix</span>
-<span class='fu'>newFit</span>(<span class='kw'>Y</span>, <span class='kw'>...</span>)</pre>
+<span class='fu'>newFit</span><span class='op'>(</span><span class='va'>Y</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -295,13 +295,13 @@ parameters estimation approach(default NULL &gt; all genes are used)</p></td>
     <div class='dont-index'><p><code><a href='https://rdrr.io/r/stats/model.matrix.html'>model.matrix</a></code>.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>se</span> <span class='op'>&lt;-</span> <span class='fu'>SummarizedExperiment</span>(<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Poisson.html'>rpois</a></span>(<span class='fl'>60</span>, lambda=<span class='fl'>5</span>), nrow=<span class='fl'>10</span>, ncol=<span class='fl'>6</span>),
-                           colData = <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(bio = <span class='fu'><a href='https://rdrr.io/r/base/gl.html'>gl</a></span>(<span class='fl'>2</span>, <span class='fl'>3</span>)))
+    <pre class="examples"><div class='input'><span class='va'>se</span> <span class='op'>&lt;-</span> <span class='fu'>SummarizedExperiment</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Poisson.html'>rpois</a></span><span class='op'>(</span><span class='fl'>60</span>, lambda<span class='op'>=</span><span class='fl'>5</span><span class='op'>)</span>, nrow<span class='op'>=</span><span class='fl'>10</span>, ncol<span class='op'>=</span><span class='fl'>6</span><span class='op'>)</span>,
+                           colData <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>bio <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/gl.html'>gl</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='kw'>m</span> <span class='op'>&lt;-</span> <span class='fu'>newFit</span>(<span class='kw'>se</span>, X=<span class='fu'><a href='https://rdrr.io/r/stats/model.matrix.html'>model.matrix</a></span>(<span class='op'>~</span><span class='kw'>bio</span>, data=<span class='fu'>colData</span>(<span class='kw'>se</span>)))
-<span class='kw'>bio</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/gl.html'>gl</a></span>(<span class='fl'>2</span>, <span class='fl'>3</span>)
-<span class='kw'>m</span> <span class='op'>&lt;-</span> <span class='fu'>newFit</span>(<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Poisson.html'>rpois</a></span>(<span class='fl'>60</span>, lambda=<span class='fl'>5</span>), nrow=<span class='fl'>10</span>, ncol=<span class='fl'>6</span>),
-             X=<span class='fu'><a href='https://rdrr.io/r/stats/model.matrix.html'>model.matrix</a></span>(<span class='op'>~</span><span class='kw'>bio</span>))
+<span class='va'>m</span> <span class='op'>&lt;-</span> <span class='fu'>newFit</span><span class='op'>(</span><span class='va'>se</span>, X<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/model.matrix.html'>model.matrix</a></span><span class='op'>(</span><span class='op'>~</span><span class='va'>bio</span>, data<span class='op'>=</span><span class='fu'>colData</span><span class='op'>(</span><span class='va'>se</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>bio</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/gl.html'>gl</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='fl'>3</span><span class='op'>)</span>
+<span class='va'>m</span> <span class='op'>&lt;-</span> <span class='fu'>newFit</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Poisson.html'>rpois</a></span><span class='op'>(</span><span class='fl'>60</span>, lambda<span class='op'>=</span><span class='fl'>5</span><span class='op'>)</span>, nrow<span class='op'>=</span><span class='fl'>10</span>, ncol<span class='op'>=</span><span class='fl'>6</span><span class='op'>)</span>,
+             X<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/model.matrix.html'>model.matrix</a></span><span class='op'>(</span><span class='op'>~</span><span class='va'>bio</span><span class='op'>)</span><span class='op'>)</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
