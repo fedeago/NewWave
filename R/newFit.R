@@ -724,7 +724,7 @@ delayed_optimization <- function(Y, cluster, children, model ,
     ptm <- proc.time()
     
     clusterApply(cluster, seq.int(children), "optimr_delayed",  
-                      num_gene = n_gene_par)
+                      num_gene = n_gene_par, iter = iter)
     
     
     if(verbose){
@@ -748,7 +748,7 @@ delayed_optimization <- function(Y, cluster, children, model ,
     ptm <- proc.time()
     
     clusterApply(cluster, seq.int(children), "optiml_delayed" , 
-                      num_cell = n_cell_par)
+                      num_cell = n_cell_par, iter = iter)
     
     
     if(verbose){

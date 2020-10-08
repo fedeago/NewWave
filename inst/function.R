@@ -416,7 +416,7 @@ f_temp_r <- function(x){
   alpha_sh[,x] <- params$alpha
   return()
 }
-optimr_delayed <- function(k, num_gene) {
+optimr_delayed <- function(k, num_gene, iter) {
     
     step <- ceiling(ncol(Y_sh) / children)
     j1 <- (k-1) * step + 1
@@ -509,13 +509,13 @@ f_temp_l <- function(x){
   W_sh[x,] <- par$W
   return()
 }
-optiml_delayed <- function(k, num_cell){
+optiml_delayed <- function(k, num_cell, iter){
     
     step <- ceiling( nrow(Y_sh) / children)
     j1 <- (k-1) * step + 1
     j2 <- min(k * step, nrow(Y_sh))
     
-    if(is.null(num_cell)){
+    if(is.null(num_cell)|| iter == 1){
       
         intervall <- seq.int(from = j1, to = j2)
       
