@@ -895,13 +895,19 @@ ll_calc <- function(mu, model, Y_sh, z, alpha , beta, gamma, W,
 }
 
 delayed_calc <- function(cluster,children, m){
+
+  # llik <-sum(unlist(clusterApply(cluster, seq.int(children), "delayed_ll")))
   
- ll <-sum(unlist(clusterApply(cluster, seq.int(children), "delayed_ll")))
+  llik <-clusterEvalQ(cluster, ls())
+  print(llik)
+  llik <-clusterApply(cluster, seq.int(children), "delayed_ll")
+ 
+ 
  penalty <- sum(newEpsilon_alpha(m) * (newAlpha(m))^2)/2 +
    sum(newEpsilon_beta(m) * (newBeta(m))^2)/2 +
    sum(newEpsilon_gamma(m)*(newGamma(m))^2)/2 +
    sum(newEpsilon_W(m)*t(newW(m))^2)/2
- ll - penalty
+ llik - penalty
 }
 
 

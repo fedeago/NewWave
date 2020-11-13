@@ -50,7 +50,7 @@ delayed_gamma_init <- function(k) {
     grid = DelayedArray::RegularArrayGrid(
       refdim = dim(L_sh[intervall,]),
       spacings = c( 1L, ncol(L_sh[intervall,]))),
-    BPPARAM = BiocParallel::SerialParam(),
+    BPPARAM = NULL,
     V_sh = V_sh, X_sh =X_sh[intervall,,drop=FALSE], beta_sh = beta_sh,
     gamma_sh = gamma_sh, epsilon_gamma = epsilon_gamma,
     intervall = intervall)
@@ -61,7 +61,7 @@ delayed_gamma_init <- function(k) {
 
 over_gamma <- function(x, V_sh, X_sh, beta_sh, gamma_sh, epsilon_gamma,
                        intervall){
-  j = attr(x,"block_id")
+  j = currentBlockId()
   Xbeta <- X_sh[j,] %*% beta_sh
   
   out <- solveRidgeRegression(mat = V_sh, y = as.vector(x - Xbeta),
@@ -101,7 +101,7 @@ delayed_beta_init <- function(k) {
     grid = DelayedArray::RegularArrayGrid(
       refdim = dim(L_sh[,intervall]),
       spacings = c(nrow(L_sh[,intervall]), 1L)),
-    BPPARAM = BiocParallel::SerialParam(),
+    BPPARAM = NULL,
     X_sh = X_sh, V_sh = V_sh[intervall,,drop=FALSE], gamma_sh = gamma_sh,
     beta_sh = beta_sh, epsilon_beta = epsilon_beta,
     intervall = intervall)
@@ -112,7 +112,7 @@ delayed_beta_init <- function(k) {
 
 over_beta <- function(x, X_sh, V_sh,gamma_sh, beta_sh, epsilon_beta,
                       intervall){
-  j = attr(x,"block_id")
+  j = currentBlockId()
 
   Vgamma <- t(V_sh[j,] %*% gamma_sh)
   out <- solveRidgeRegression(mat=X_sh, y=as.vector(x - Vgamma),
@@ -132,33 +132,36 @@ nb.loglik <- function(Y, mu, theta) {
 }
 
 delayed_ll <- function(k){
+  
   step <- ceiling(ncol(Y_sh) / children)
   j1 <- (k-1) * step + 1
   j2 <- min(k * step, ncol(Y_sh))
   intervall <- seq.int(from = j1, to = j2)
   
+  
   val <- sum(unlist(DelayedArray::blockApply(
     x = Y_sh[,intervall],
-    FUN = over_ll,
+    FUN = "over_ll",
     grid = DelayedArray::RegularArrayGrid(
       refdim = dim(Y_sh[,intervall]),
       spacings = c(nrow(Y_sh[,intervall]), 1L)),
-    BPPARAM = BiocParallel::SerialParam(),
+    BPPARAM = NULL,
     X = X_sh, V = V_sh[intervall,,drop=FALSE], gamma = gamma_sh,
     beta = beta_sh[,intervall,drop=FALSE], W = W_sh, alpha = alpha_sh[,intervall],
     zeta = zeta_sh[intervall], intervall = intervall)))
-  
+
   val
 }
+print_env <- function(){ls}
 
 over_ll <- function(x, X, V, gamma, beta, W, alpha, zeta, intervall){
   
-  j = attr(x,"block_id")
+  t = currentBlockId()
   
-  theta <- exp(zeta[j])
+  theta <- exp(zeta[t])
 
-  mu <- exp(X %*% beta[,j] + t(V[j,] %*% gamma) +
-              W %*% alpha[,j])
+  mu <- exp(X %*% beta[,t] + t(V[t,] %*% gamma) +
+              W %*% alpha[,t])
   
   loglik <- nb.loglik(x, mu=mu, theta)
   
@@ -335,7 +338,7 @@ optim_genwise_dispersion_delayed <- function(k,Y, num_gene, iter) {
     grid = DelayedArray::RegularArrayGrid(
       refdim = dim(Y[,intervall]),
       spacings = c(nrow(Y[,intervall]), 1L)),
-    BPPARAM = BiocParallel::SerialParam(),
+    BPPARAM = NULL,
     zeta = zeta_sh[intervall],
     intervall = intervall, X = X_sh,
     beta = beta_sh[,intervall,drop=FALSE], V = V_sh[intervall,,drop=FALSE],
@@ -345,8 +348,7 @@ optim_genwise_dispersion_delayed <- function(k,Y, num_gene, iter) {
 
 over_optd <- function(x, zeta, intervall, X,
                       beta, V, gamma, W, alpha){
-  
-  j = attr(x,"block_id")
+  j = currentBlockId()
   mu <- exp(X %*% beta[,j] + t(V[j,] %*% gamma) +
               W %*% alpha[,j])
   res <-optim(fn=locfun,
@@ -452,7 +454,7 @@ optimr_delayed <- function(k, num_gene, iter) {
 over_optr <- function(x, beta, alpha, X , W,
                       V , gamma , zeta,
                       n , epsilonright, intervall ){
-    j = attr(x,"block_id")
+    j = currentBlockId()
     out <- optimright_fun_nb(
       beta[,j], alpha[,j], x, X,
       W, V[j,], gamma, zeta[j],
@@ -544,7 +546,7 @@ optiml_delayed <- function(k, num_cell, iter){
 over_optl <- function(x, gamma,  W, V , alpha,
                       X ,beta, zeta ,
                       epsilonleft, intervall){
-    i = attr(x,"block_id")
+    j = currentBlockId()
     out <- optimleft_fun_nb(gamma[,i],
                             W[i,], x , V, alpha,
                             X[i,], beta, zeta, epsilonleft)$par
