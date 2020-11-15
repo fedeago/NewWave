@@ -339,21 +339,21 @@ optim_genwise_dispersion_delayed <- function(k,Y, num_gene, iter) {
       refdim = dim(Y[,intervall]),
       spacings = c(nrow(Y[,intervall]), 1L)),
     BPPARAM = NULL,
-    zeta_sh = zeta_sh[intervall],
+    zeta_tmp = zeta_sh[intervall],
     intervall = intervall, X_tmp = X_sh,
     beta_tmp = beta_sh[,intervall,drop=FALSE], V_tmp = V_sh[intervall,,drop=FALSE],
     gamma_tmp  = gamma_sh, W_tmp = W_sh, alpha_tmp = alpha_sh[,intervall])
   
 }
 
-over_optd <- function(x, zeta_sh, intervall, X_tmp,
+over_optd <- function(x, zeta_tmp, intervall, X_tmp,
                       beta_tmp, V_tmp, gamma_tmp, W_tmp, alpha_tmp){
   j = currentBlockId()
   mu <- exp(X_tmp %*% beta_tmp[,j] + t(V_tmp[j,] %*% gamma_tmp) +
               W_tmp %*% alpha_tmp[,j])
   res <-optim(fn=locfun,
         gr=locgrad,
-        par=zeta_sh[j],
+        par=zeta_tmp[j],
         Y = x,
         mu = mu,
         control=list(fnscale=-1,trace=0),
