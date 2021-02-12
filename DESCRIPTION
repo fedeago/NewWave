@@ -15,6 +15,7 @@ Description: A model designed for dimensionality reduction and batch effect
     parameter that can be both commonwise across gene both genewise. 
 Depends: 
     R (>= 4.0),
+    SummarizedExperiment
 Imports:
     methods,
     SingleCellExperiment,
@@ -23,7 +24,6 @@ Imports:
     Matrix,
     DelayedArray,
     BiocSingular,
-    SummarizedExperiment,
     SharedObject,
     stats
 Suggests:
