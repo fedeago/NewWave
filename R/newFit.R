@@ -26,7 +26,6 @@
 #' @param stop_epsilon stopping criterion in the optimization step,
 #'   when the relative gain in likelihood is below epsilon (default 0.0001).
 #' @param children number of cores of the used cluster(default 1)
-#' @param random_init if TRUE no initializations is done(default FALSE)
 #' @param random_start if TRUE the setup of parameters is
 #'  a random samplig(default FALSE)
 #' @param n_gene_disp number of genes used in mini-batch dispersion estimation
@@ -48,7 +47,7 @@ setMethod("newFit", "SummarizedExperiment",
                     commondispersion = TRUE, verbose=FALSE,
                     maxiter_optimize = 100,
                     stop_epsilon=.0001, children = 1,
-                    random_init = FALSE, random_start = FALSE,
+                    random_start = FALSE,
                     n_gene_disp = NULL,
                     n_cell_par = NULL, n_gene_par = NULL, ... ) {
 
@@ -99,7 +98,7 @@ setMethod("newFit", "SummarizedExperiment",
                         verbose = verbose,
                         maxiter_optimize = maxiter_optimize,
                         stop_epsilon = stop_epsilon, children = children,
-                        random_init = random_init, random_start = random_start,
+                        random_start = random_start,
                         n_gene_disp = n_gene_disp , n_cell_par = n_cell_par,
                         n_gene_par = n_gene_par)
               
@@ -127,7 +126,6 @@ setMethod("newFit", "SummarizedExperiment",
 #' @param stop_epsilon stopping criterion in the optimization step,
 #'   when the relative gain in likelihood is below epsilon (default 0.0001).
 #' @param children number of cores of the used cluster(default 1)
-#' @param random_init if TRUE no initializations is done(default FALSE)
 #' @param random_start if TRUE the setup of parameters is
 #'  a random samplig(default FALSE)
 #' @param n_gene_disp number of genes used in mini-batch dispersion estimation
@@ -157,7 +155,7 @@ setMethod("newFit", "matrix",
                 commondispersion = TRUE, verbose=FALSE,
                 maxiter_optimize = 100,
                 stop_epsilon=.0001, children = 1,
-                random_init = FALSE, random_start = FALSE,
+                random_start = FALSE,
                 n_gene_disp = NULL,
                 n_cell_par = NULL, n_gene_par = NULL, ... ) {
       
@@ -184,21 +182,16 @@ setMethod("newFit", "matrix",
     on.exit(stopCluster(cl), add = TRUE)
     # Exporting values to the main and the child process
     
-    # If the set the value of parameters is zero we must do the initialization
-    if(random_init){ random_start = TRUE}
-    
     m <- setup(cluster = cl, model = m, random_start = random_start,
-        children = children, random_init = random_init, verbose = verbose,
+        children = children, verbose = verbose,
         Y_sh = Y_sh)
     
     # Initializize value
 
-    if (!random_init){
-
         initialization(cluster = cl, children = children, model = m,
                     verbose = verbose, Y = Y_sh)
 
-    }
+
     
     
     # Optimize value
@@ -225,13 +218,9 @@ setMethod("newFit", "DelayedMatrix",
                    commondispersion = TRUE, verbose=FALSE,
                    maxiter_optimize = 100,
                    stop_epsilon=.0001, children = 1,
-                   random_init = FALSE, random_start = FALSE,
+                   random_start = FALSE,
                    n_gene_disp = NULL,
                    n_cell_par = NULL, n_gene_par = NULL, ... ) {
-          
-    # if(!all(.is_wholenumber(Y))) {
-    #   stop("The input matrix should contain only whole numbers.")
-    # }
 
     # Transpose Y: UI wants genes in rows, internals genes in columns!
     Y <- t(Y)
@@ -243,13 +232,11 @@ setMethod("newFit", "DelayedMatrix",
     on.exit(stopCluster(cl), add = TRUE)
     clusterEvalQ(cl, library(DelayedArray))
 
-    # If the set the value of parameters is zero we must do the initialization
-    # random_init = TRUE
-    # random_start = TRUE
+
 
     # Exporting values to the main and the child process
     m <- setup(cluster = cl, model = m, random_start = random_start,
-        children = children, random_init = random_init, verbose = verbose,
+        children = children, verbose = verbose,
         Y_sh = Y)
     
     delayed_initialization(cluster = cl, children = children, model = m,
@@ -293,7 +280,6 @@ setMethod("newFit", "dgCMatrix",
 #' @param random_start if TRUE the setup of parameters is a 
 #'   random samplig(default FALSE)
 #' @param children Number of child process.
-#' @param random_init if TRUE no initializations is done(default FALSE)
 #' @param verbose Print helpful messages(default FALSE).
 #' @param Y matrix of counts
 #' @return A object of class newModel
@@ -301,7 +287,7 @@ setMethod("newFit", "dgCMatrix",
 
 
 setup <- function(cluster, model, random_start, children,
-                  random_init, verbose, Y_sh) {
+                  verbose, Y_sh) {
 
     ptm <- proc.time()
     

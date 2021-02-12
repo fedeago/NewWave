@@ -49,7 +49,6 @@ nb.loglik.matrix <- function(model, x) {
 #' @param stop_epsilon stopping criterion in the optimization step,
 #'   when the relative gain in likelihood is below epsilon (default 0.0001).
 #' @param children number of cores of the used cluster(default 1)
-#' @param random_init if TRUE no initializations is done(default FALSE)
 #' @param random_start if TRUE the setup of parameters is a random samplig
 #' (default FALSE)
 #' @param n_gene_disp number of genes used in mini-batch dispersion 
@@ -97,7 +96,7 @@ setMethod("newWave", "SummarizedExperiment",
                     commondispersion = TRUE, verbose=FALSE,
                     maxiter_optimize=100,
                     stop_epsilon=.0001,  children = 1,
-                    random_init = FALSE, random_start = FALSE,
+                    random_start = FALSE,
                     n_gene_disp = NULL,
                     n_cell_par = NULL, n_gene_par = NULL, ...) {
               
@@ -107,8 +106,7 @@ setMethod("newWave", "SummarizedExperiment",
                             which_assay, commondispersion,
                             verbose,
                             maxiter_optimize, stop_epsilon,
-                            children, random_init, 
-                            random_start, n_gene_disp,
+                            children,random_start, n_gene_disp,
                             n_cell_par, n_gene_par, ...)
               
               
