@@ -335,14 +335,11 @@ setup <- function(cluster, model, random_start, children,
     epsilonright <- c(newEpsilon_beta(model), newEpsilon_alpha(model))
     epsilonleft <- c(newEpsilon_gamma(model), newEpsilon_W(model))
     
-    fun_path <- system.file("function.R", package = "NewWave")
     clusterExport(cluster, c("beta_sh" ,"alpha_sh","Y_sh","X_sh","W_sh","V_sh",
         "gamma_sh","zeta_sh", "epsilonright",
         "epsilonleft","children", "epsilon_gamma",
-        "epsilon_beta", "epsilon_alpha", "epsilon_W", "fun_path"),
+        "epsilon_beta", "epsilon_alpha", "epsilon_W"),
         envir = environment())
-    
-    clusterEvalQ(cluster, source(fun_path))
     
     m <- newmodel(X = X_sh, V = V_sh,
                   W = W_sh, beta = beta_sh,
@@ -382,9 +379,9 @@ initialization <- function(cluster, children, model, verbose, Y){
     
     clusterExport(cluster,"L_sh",envir = environment())
     
-    clusterApply(cluster, seq.int(children), "gamma_init")
+    clusterApply(cluster, x = seq.int(children), funs$gamma_init)
 
-    clusterApply(cluster, seq.int(children), "beta_init")
+    clusterApply(cluster, seq.int(children), funs$beta_init)
 
   
     D <- L_sh - (newX(model) %*% newBeta(model)) - t(newV(model) %*% newGamma(model))
@@ -435,9 +432,9 @@ delayed_initialization <- function(cluster, children, model, verbose, Y){
   
   clusterExport(cluster,"L_sh",envir = environment())
   
-  clusterApply(cluster, seq.int(children), "delayed_gamma_init")
+  clusterApply(cluster, seq.int(children), funs$delayed_gamma_init)
   
-  clusterApply(cluster, seq.int(children), "delayed_beta_init")
+  clusterApply(cluster, seq.int(children), funs$delayed_beta_init)
 
   cl <- as(cluster,"SnowParam")
   R <- BiocSingular::runExactSVD(L_sh, k=numberFactors(model), BPPARAM = cl)
@@ -568,7 +565,7 @@ optimization <- function(Y, cluster, children, model ,
         ptm <- proc.time()
 
         
-        clusterApply(cluster, seq.int(children), "optimr",  
+        clusterApply(cluster, seq.int(children), funs$optimr,  
                 num_gene = n_gene_par, iter = iter)
 
 
@@ -603,7 +600,7 @@ optimization <- function(Y, cluster, children, model ,
         ptm <- proc.time()
 
         
-        clusterApply(cluster, seq.int(children), "optiml" , 
+        clusterApply(cluster, seq.int(children), funs$optiml , 
             num_cell = n_cell_par, iter = iter) 
 
 
@@ -712,7 +709,7 @@ delayed_optimization <- function(Y, cluster, children, model ,
       message("penalized log-likelihood = ",  total.lik[iter])
     }
     
-    clusterApply(cluster, seq.int(children), "optim_genwise_dispersion_delayed",
+    clusterApply(cluster, seq.int(children), funs$optim_genwise_dispersion_delayed,
                  Y,num_gene = n_gene_disp, iter = iter)
     
     if(verbose){
@@ -723,7 +720,7 @@ delayed_optimization <- function(Y, cluster, children, model ,
     
     ptm <- proc.time()
     
-    clusterApply(cluster, seq.int(children), "optimr_delayed",  
+    clusterApply(cluster, seq.int(children), funs$optimr_delayed,  
                       num_gene = n_gene_par, iter = iter)
     
     
@@ -747,7 +744,7 @@ delayed_optimization <- function(Y, cluster, children, model ,
     
     ptm <- proc.time()
     
-    clusterApply(cluster, seq.int(children), "optiml_delayed" , 
+    clusterApply(cluster, seq.int(children), funs$optiml_delayed , 
                       num_cell = n_cell_par, iter = iter)
     
     
@@ -823,7 +820,7 @@ optimd <- function(Y_sh, mu, cluster, children, num_gene = NULL, commondispersio
   
     } else {
   
-        clusterApply(cluster, seq.int(children), "optim_genwise_dispersion",
+        clusterApply(cluster, seq.int(children), funs$optim_genwise_dispersion,
                      num_gene = num_gene, iter = iter)
     }
 
@@ -896,7 +893,7 @@ ll_calc <- function(mu, model, Y_sh, z, alpha , beta, gamma, W,
 
 delayed_calc <- function(cluster,children, m){
 
- llik <-sum(unlist(clusterApply(cluster, seq.int(children), "delayed_ll")))
+ llik <-sum(unlist(clusterApply(cluster, seq.int(children), funs$delayed_ll)))
 
  penalty <- sum(newEpsilon_alpha(m) * (newAlpha(m))^2)/2 +
    sum(newEpsilon_beta(m) * (newBeta(m))^2)/2 +
