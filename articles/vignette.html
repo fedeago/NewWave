@@ -57,7 +57,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/fedeago/NewWave/">
+  <a href="https://github.com/fedeago/NewWave/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -72,13 +72,13 @@
 
       
 
-      </header><script src="vignette_files/header-attrs-2.6/header-attrs.js"></script><div class="row">
+      </header><script src="vignette_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Dimensionality reduction and batch effect removal using NewWave</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/fedeago/NewWave/blob/master/vignettes/vignette.Rmd"><code>vignettes/vignette.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/fedeago/NewWave/blob/master/vignettes/vignette.Rmd" class="external-link"><code>vignettes/vignette.Rmd</code></a></small>
       <div class="hidden name"><code>vignette.Rmd</code></div>
 
     </div>
@@ -90,18 +90,18 @@
 <a href="#installation" class="anchor"></a>Installation</h1>
 <p>First of all we need to install NewWave:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
-<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"NewWave"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"NewWave"</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/message.html">suppressPackageStartupMessages</a></span><span class="op">(</span>
-  <span class="op">{</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">SingleCellExperiment</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Oshlack/splatter">splatter</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">irlba</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jkrijthe/Rtsne">Rtsne</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://mclust-org.github.io/mclust/">mclust</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">NewWave</span><span class="op">)</span><span class="op">}</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span>
+  <span class="op">{</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">SingleCellExperiment</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Oshlack/splatter" class="external-link">splatter</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">irlba</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jkrijthe/Rtsne" class="external-link">Rtsne</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mclust-org.github.io/mclust/" class="external-link">mclust</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">NewWave</span><span class="op">)</span><span class="op">}</span>
 <span class="op">)</span></code></pre></div>
 </div>
 <div id="introduction" class="section level1">
@@ -110,49 +110,49 @@
 <p>NewWave is a new package that assumes a Negative Binomial distributions for dimensionality reduction and batch effect removal. In order to reduce the memory consumption it uses a PSOCK cluster combined with the R package SharedObject that allow to share a matrix between different cores without memory duplication. Thanks to that we can massively parallelize the estimation process with huge benefit in terms of time consumption. We can reduce even more the time consumption using some minibatch approaches on the different steps of the optimization.</p>
 <p>I am going to show how to use NewWave with example data generated with Splatter.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/splatter/man/newParams.html">newSplatParams</a></span><span class="op">(</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/splatter/man/newParams.html" class="external-link">newSplatParams</a></span><span class="op">(</span><span class="op">)</span>
 <span class="va">N</span><span class="op">=</span><span class="fl">500</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span>
-<span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/splatter/man/splatSimulate.html">splatSimulateGroups</a></span><span class="op">(</span><span class="va">params</span>,batchCells<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">N</span><span class="op">/</span><span class="fl">2</span>,<span class="va">N</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span>,
-                           group.prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">0.1</span>,<span class="fl">10</span><span class="op">)</span>,
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span>
+<span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/splatter/man/splatSimulate.html" class="external-link">splatSimulateGroups</a></span><span class="op">(</span><span class="va">params</span>,batchCells<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">N</span><span class="op">/</span><span class="fl">2</span>,<span class="va">N</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span>,
+                           group.prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.1</span>,<span class="fl">10</span><span class="op">)</span>,
                            de.prob <span class="op">=</span> <span class="fl">0.2</span>,
                            verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> </code></pre></div>
 <p>Now we have a dataset with 500 cells and 10000 genes, I will use only the 500 most variable genes. NewWave takes as input raw data, not normalized.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">12359</span><span class="op">)</span>
-<span class="va">hvg</span> <span class="op">&lt;-</span> <span class="fu">rowVars</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/assays.html">counts</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">hvg</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/assays.html">counts</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span>
-<span class="va">data</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span><span class="op">(</span><span class="va">hvg</span>,decreasing<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">500</span><span class="op">]</span>,<span class="op">]</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">12359</span><span class="op">)</span>
+<span class="va">hvg</span> <span class="op">&lt;-</span> <span class="fu">rowVars</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/assays.html" class="external-link">counts</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">hvg</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/assays.html" class="external-link">counts</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span>
+<span class="va">data</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">hvg</span>,decreasing<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">500</span><span class="op">]</span>,<span class="op">]</span></code></pre></div>
 <p>As you can see there is a variable called batch in the colData section.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">colData</span><span class="op">(</span><span class="va">data</span><span class="op">)</span>
 <span class="co">#&gt; DataFrame with 500 rows and 4 columns</span>
 <span class="co">#&gt;                Cell       Batch    Group ExpLibSize</span>
 <span class="co">#&gt;         &lt;character&gt; &lt;character&gt; &lt;factor&gt;  &lt;numeric&gt;</span>
-<span class="co">#&gt; Cell1         Cell1      Batch1   Group9    56943.6</span>
-<span class="co">#&gt; Cell2         Cell2      Batch1   Group5    57377.6</span>
-<span class="co">#&gt; Cell3         Cell3      Batch1   Group1    54673.7</span>
-<span class="co">#&gt; Cell4         Cell4      Batch1   Group9    55623.7</span>
-<span class="co">#&gt; Cell5         Cell5      Batch1   Group8    65139.0</span>
+<span class="co">#&gt; Cell1         Cell1      Batch1  Group9     49433.2</span>
+<span class="co">#&gt; Cell2         Cell2      Batch1  Group4     66328.7</span>
+<span class="co">#&gt; Cell3         Cell3      Batch1  Group10    63875.4</span>
+<span class="co">#&gt; Cell4         Cell4      Batch1  Group1     53103.9</span>
+<span class="co">#&gt; Cell5         Cell5      Batch1  Group9     60619.6</span>
 <span class="co">#&gt; ...             ...         ...      ...        ...</span>
-<span class="co">#&gt; Cell496     Cell496      Batch2  Group9     91630.9</span>
-<span class="co">#&gt; Cell497     Cell497      Batch2  Group5     61981.1</span>
-<span class="co">#&gt; Cell498     Cell498      Batch2  Group10    56165.4</span>
-<span class="co">#&gt; Cell499     Cell499      Batch2  Group1     63523.7</span>
-<span class="co">#&gt; Cell500     Cell500      Batch2  Group2     69286.5</span></code></pre></div>
+<span class="co">#&gt; Cell496     Cell496      Batch2  Group10    66613.5</span>
+<span class="co">#&gt; Cell497     Cell497      Batch2  Group9     86703.9</span>
+<span class="co">#&gt; Cell498     Cell498      Batch2  Group4     62112.4</span>
+<span class="co">#&gt; Cell499     Cell499      Batch2  Group7     38061.1</span>
+<span class="co">#&gt; Cell500     Cell500      Batch2  Group10    72127.1</span></code></pre></div>
 <p><strong>IMPORTANT:</strong> For batch effecr removal the batch variable must be a factor</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">data</span><span class="op">$</span><span class="va">Batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">Batch</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">data</span><span class="op">$</span><span class="va">Batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">Batch</span><span class="op">)</span></code></pre></div>
 <p>We also have a variable called Group that represent the cell type labels.</p>
 <p>We can see the how the cells are distributed between group and batch</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pca</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/irlba/man/prcomp_irlba.html">prcomp_irlba</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/assays.html">counts</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span>,n<span class="op">=</span><span class="fl">10</span><span class="op">)</span>
-<span class="va">plot_data</span> <span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Rtsne/man/Rtsne.html">Rtsne</a></span><span class="op">(</span><span class="va">pca</span><span class="op">$</span><span class="va">x</span><span class="op">)</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">pca</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/irlba/man/prcomp_irlba.html" class="external-link">prcomp_irlba</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/assays.html" class="external-link">counts</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span>,n<span class="op">=</span><span class="fl">10</span><span class="op">)</span>
+<span class="va">plot_data</span> <span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Rtsne/man/Rtsne.html" class="external-link">Rtsne</a></span><span class="op">(</span><span class="va">pca</span><span class="op">$</span><span class="va">x</span><span class="op">)</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">plot_data</span><span class="op">$</span><span class="va">batch</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">$</span><span class="va">Batch</span>
 <span class="va">plot_data</span><span class="op">$</span><span class="va">group</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">$</span><span class="va">Group</span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">plot_data</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">X1</span>,y<span class="op">=</span><span class="va">X2</span>,col<span class="op">=</span><span class="va">group</span>, shape<span class="op">=</span><span class="va">batch</span><span class="op">)</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">plot_data</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">X1</span>,y<span class="op">=</span><span class="va">X2</span>,col<span class="op">=</span><span class="va">group</span>, shape<span class="op">=</span><span class="va">batch</span><span class="op">)</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="vignette_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 <p>There is a clear batch effect between the cells.</p>
 <p>Let’s try to correct it.</p>
@@ -174,83 +174,83 @@
 <code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/newWave.html">newWave</a></span><span class="op">(</span><span class="va">data</span>,X <span class="op">=</span> <span class="st">"~Batch"</span>, K<span class="op">=</span><span class="fl">10</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="co">#&gt; Time of setup</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.004   0.004   0.254 </span>
+<span class="co">#&gt;   0.005   0.004   0.264 </span>
 <span class="co">#&gt; Time of initialization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.032   0.005   0.439</span>
+<span class="co">#&gt;   0.028   0.004   0.537</span>
 <span class="co">#&gt; Iteration 1</span>
-<span class="co">#&gt; penalized log-likelihood = -1282084.9794899</span>
+<span class="co">#&gt; penalized log-likelihood = -1300551.95329784</span>
 <span class="co">#&gt; Time of dispersion optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.662   0.047   0.626</span>
-<span class="co">#&gt; after optimize dispersion = -1047941.38284849</span>
+<span class="co">#&gt;   0.653   0.048   0.617</span>
+<span class="co">#&gt; after optimize dispersion = -1058877.62085308</span>
 <span class="co">#&gt; Time of right optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.001   0.001   6.206</span>
-<span class="co">#&gt; after right optimization= -1047229.68882256</span>
-<span class="co">#&gt; after orthogonalization = -1047229.65642993</span>
+<span class="co">#&gt;   0.001   0.000   6.087</span>
+<span class="co">#&gt; after right optimization= -1058181.35517076</span>
+<span class="co">#&gt; after orthogonalization = -1058181.34133193</span>
 <span class="co">#&gt; Time of left optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.043   0.032   5.730</span>
-<span class="co">#&gt; after left optimization= -1046864.28660004</span>
-<span class="co">#&gt; after orthogonalization = -1046864.28187376</span>
+<span class="co">#&gt;   0.044   0.032   5.808</span>
+<span class="co">#&gt; after left optimization= -1057961.29935212</span>
+<span class="co">#&gt; after orthogonalization = -1057961.29782202</span>
 <span class="co">#&gt; Iteration 2</span>
-<span class="co">#&gt; penalized log-likelihood = -1046864.28187376</span>
+<span class="co">#&gt; penalized log-likelihood = -1057961.29782202</span>
 <span class="co">#&gt; Time of dispersion optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.789   0.064   0.724</span>
-<span class="co">#&gt; after optimize dispersion = -1046856.99213426</span>
+<span class="co">#&gt;   0.702   0.080   0.653</span>
+<span class="co">#&gt; after optimize dispersion = -1057956.67980029</span>
 <span class="co">#&gt; Time of right optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.000   0.001   5.473</span>
-<span class="co">#&gt; after right optimization= -1046820.29073707</span>
-<span class="co">#&gt; after orthogonalization = -1046820.28935113</span>
+<span class="co">#&gt;   0.001   0.000   5.545</span>
+<span class="co">#&gt; after right optimization= -1057932.98317566</span>
+<span class="co">#&gt; after orthogonalization = -1057932.98142554</span>
 <span class="co">#&gt; Time of left optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.043   0.037   4.624</span>
-<span class="co">#&gt; after left optimization= -1046807.95090452</span>
-<span class="co">#&gt; after orthogonalization = -1046807.95073308</span></code></pre></div>
+<span class="co">#&gt;   0.032   0.052   4.387</span>
+<span class="co">#&gt; after left optimization= -1057923.37287803</span>
+<span class="co">#&gt; after orthogonalization = -1057923.37278493</span></code></pre></div>
 <p>In order to make it faster you can increase the number of cores using “children” parameter:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">res2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/newWave.html">newWave</a></span><span class="op">(</span><span class="va">data</span>,X <span class="op">=</span> <span class="st">"~Batch"</span>, K<span class="op">=</span><span class="fl">10</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, children<span class="op">=</span><span class="fl">2</span><span class="op">)</span>
 <span class="co">#&gt; Time of setup</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.010   0.000   0.291 </span>
+<span class="co">#&gt;   0.009   0.001   0.263 </span>
 <span class="co">#&gt; Time of initialization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.032   0.003   0.438</span>
+<span class="co">#&gt;   0.029   0.004   0.368</span>
 <span class="co">#&gt; Iteration 1</span>
-<span class="co">#&gt; penalized log-likelihood = -1282084.97957121</span>
+<span class="co">#&gt; penalized log-likelihood = -1300551.95316317</span>
 <span class="co">#&gt; Time of dispersion optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.680   0.036   0.633</span>
-<span class="co">#&gt; after optimize dispersion = -1047941.38089044</span>
+<span class="co">#&gt;   0.672   0.044   0.631</span>
+<span class="co">#&gt; after optimize dispersion = -1058877.62090961</span>
 <span class="co">#&gt; Time of right optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.001   0.000   3.286</span>
-<span class="co">#&gt; after right optimization= -1047229.68764998</span>
-<span class="co">#&gt; after orthogonalization = -1047229.65525909</span>
+<span class="co">#&gt;   0.001   0.000   3.287</span>
+<span class="co">#&gt; after right optimization= -1058181.35551404</span>
+<span class="co">#&gt; after orthogonalization = -1058181.34171514</span>
 <span class="co">#&gt; Time of left optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.034   0.028   2.958</span>
-<span class="co">#&gt; after left optimization= -1046864.27382276</span>
-<span class="co">#&gt; after orthogonalization = -1046864.26910838</span>
+<span class="co">#&gt;   0.024   0.040   3.060</span>
+<span class="co">#&gt; after left optimization= -1057961.32364572</span>
+<span class="co">#&gt; after orthogonalization = -1057961.3221221</span>
 <span class="co">#&gt; Iteration 2</span>
-<span class="co">#&gt; penalized log-likelihood = -1046864.26910838</span>
+<span class="co">#&gt; penalized log-likelihood = -1057961.3221221</span>
 <span class="co">#&gt; Time of dispersion optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.746   0.064   0.681</span>
-<span class="co">#&gt; after optimize dispersion = -1046856.97787245</span>
+<span class="co">#&gt;   0.741   0.072   0.684</span>
+<span class="co">#&gt; after optimize dispersion = -1057956.70413406</span>
 <span class="co">#&gt; Time of right optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.002   0.001   2.901</span>
-<span class="co">#&gt; after right optimization= -1046820.20293685</span>
-<span class="co">#&gt; after orthogonalization = -1046820.20156463</span>
+<span class="co">#&gt;   0.001   0.000   2.974</span>
+<span class="co">#&gt; after right optimization= -1057932.99901328</span>
+<span class="co">#&gt; after orthogonalization = -1057932.99723651</span>
 <span class="co">#&gt; Time of left optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.030   0.013   2.414</span>
-<span class="co">#&gt; after left optimization= -1046807.85540409</span>
-<span class="co">#&gt; after orthogonalization = -1046807.85524643</span></code></pre></div>
+<span class="co">#&gt;   0.027   0.017   2.307</span>
+<span class="co">#&gt; after left optimization= -1057923.35833545</span>
+<span class="co">#&gt; after orthogonalization = -1057923.3582469</span></code></pre></div>
 </div>
 <div id="commonwise-dispersion-and-minibatch-approaches" class="section level2">
 <h2 class="hasAnchor">
@@ -272,42 +272,42 @@
                 n_gene_disp <span class="op">=</span> <span class="fl">100</span>, n_gene_par <span class="op">=</span> <span class="fl">100</span>, n_cell_par <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
 <span class="co">#&gt; Time of setup</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.009   0.001   0.263 </span>
+<span class="co">#&gt;   0.005   0.005   0.265 </span>
 <span class="co">#&gt; Time of initialization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.024   0.012   0.362</span>
+<span class="co">#&gt;   0.033   0.000   0.357</span>
 <span class="co">#&gt; Iteration 1</span>
-<span class="co">#&gt; penalized log-likelihood = -1282084.97951118</span>
+<span class="co">#&gt; penalized log-likelihood = -1300551.95299981</span>
 <span class="co">#&gt; Time of dispersion optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.663   0.048   0.626</span>
-<span class="co">#&gt; after optimize dispersion = -1047941.38199129</span>
+<span class="co">#&gt;   0.662   0.053   0.629</span>
+<span class="co">#&gt; after optimize dispersion = -1058877.6240979</span>
 <span class="co">#&gt; Time of right optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.001   0.000   3.174</span>
-<span class="co">#&gt; after right optimization= -1047229.68849414</span>
-<span class="co">#&gt; after orthogonalization = -1047229.65609896</span>
+<span class="co">#&gt;   0.002   0.000   3.261</span>
+<span class="co">#&gt; after right optimization= -1058181.3602574</span>
+<span class="co">#&gt; after orthogonalization = -1058181.34645436</span>
 <span class="co">#&gt; Time of left optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.037   0.020   2.939</span>
-<span class="co">#&gt; after left optimization= -1046864.25998943</span>
-<span class="co">#&gt; after orthogonalization = -1046864.25526457</span>
+<span class="co">#&gt;   0.024   0.017   3.016</span>
+<span class="co">#&gt; after left optimization= -1057961.32052351</span>
+<span class="co">#&gt; after orthogonalization = -1057961.31900563</span>
 <span class="co">#&gt; Iteration 2</span>
-<span class="co">#&gt; penalized log-likelihood = -1046864.25526457</span>
+<span class="co">#&gt; penalized log-likelihood = -1057961.31900563</span>
 <span class="co">#&gt; Time of dispersion optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.272   0.072   0.215</span>
-<span class="co">#&gt; after optimize dispersion = -1046864.25526457</span>
+<span class="co">#&gt;   0.277   0.068   0.214</span>
+<span class="co">#&gt; after optimize dispersion = -1057961.31900563</span>
 <span class="co">#&gt; Time of right optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.002   0.000   0.562</span>
-<span class="co">#&gt; after right optimization= -1046858.47513336</span>
-<span class="co">#&gt; after orthogonalization = -1046858.47430823</span>
+<span class="co">#&gt;   0.001   0.000   0.573</span>
+<span class="co">#&gt; after right optimization= -1057954.07901386</span>
+<span class="co">#&gt; after orthogonalization = -1057954.07139642</span>
 <span class="co">#&gt; Time of left optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.021   0.025   0.353</span>
-<span class="co">#&gt; after left optimization= -1046858.25924373</span>
-<span class="co">#&gt; after orthogonalization = -1046858.25921985</span></code></pre></div>
+<span class="co">#&gt;   0.012   0.029   0.434</span>
+<span class="co">#&gt; after left optimization= -1057953.51333616</span>
+<span class="co">#&gt; after orthogonalization = -1057953.51314203</span></code></pre></div>
 </div>
 <div id="genewise-dispersion-mini-batch" class="section level2">
 <h2 class="hasAnchor">
@@ -318,83 +318,83 @@
                 n_gene_par <span class="op">=</span> <span class="fl">100</span>, n_cell_par <span class="op">=</span> <span class="fl">100</span>, commondispersion <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 <span class="co">#&gt; Time of setup</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.009   0.001   0.266 </span>
+<span class="co">#&gt;   0.009   0.001   0.264 </span>
 <span class="co">#&gt; Time of initialization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.043   0.000   0.422</span>
+<span class="co">#&gt;   0.030   0.008   0.372</span>
 <span class="co">#&gt; Iteration 1</span>
-<span class="co">#&gt; penalized log-likelihood = -1282084.9795113</span>
+<span class="co">#&gt; penalized log-likelihood = -1300551.95277374</span>
 <span class="co">#&gt; Time of dispersion optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.672   0.040   0.629</span>
-<span class="co">#&gt; after optimize dispersion = -1047941.38213416</span>
+<span class="co">#&gt;   0.669   0.040   0.625</span>
+<span class="co">#&gt; after optimize dispersion = -1058877.62589593</span>
 <span class="co">#&gt; Time of right optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.002   0.000   3.344</span>
-<span class="co">#&gt; after right optimization= -1047229.68856604</span>
-<span class="co">#&gt; after orthogonalization = -1047229.65617369</span>
+<span class="co">#&gt;   0.002   0.000   3.273</span>
+<span class="co">#&gt; after right optimization= -1058181.36121254</span>
+<span class="co">#&gt; after orthogonalization = -1058181.34740935</span>
 <span class="co">#&gt; Time of left optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.032   0.020   2.967</span>
-<span class="co">#&gt; after left optimization= -1046864.25579601</span>
-<span class="co">#&gt; after orthogonalization = -1046864.25108411</span>
+<span class="co">#&gt;   0.032   0.048   3.058</span>
+<span class="co">#&gt; after left optimization= -1057961.31739436</span>
+<span class="co">#&gt; after orthogonalization = -1057961.31587362</span>
 <span class="co">#&gt; Iteration 2</span>
-<span class="co">#&gt; penalized log-likelihood = -1046864.25108411</span>
+<span class="co">#&gt; penalized log-likelihood = -1057961.31587362</span>
 <span class="co">#&gt; Time of dispersion optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.087   0.057   0.585</span>
-<span class="co">#&gt; after optimize dispersion = -1042734.57135662</span>
+<span class="co">#&gt;   0.090   0.053   0.549</span>
+<span class="co">#&gt; after optimize dispersion = -1054512.35354633</span>
 <span class="co">#&gt; Time of right optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.001   0.000   0.599</span>
-<span class="co">#&gt; after right optimization= -1042728.97440604</span>
-<span class="co">#&gt; after orthogonalization = -1042728.97375443</span>
+<span class="co">#&gt;   0.002   0.000   0.577</span>
+<span class="co">#&gt; after right optimization= -1054508.53415571</span>
+<span class="co">#&gt; after orthogonalization = -1054508.53383768</span>
 <span class="co">#&gt; Time of left optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.025   0.017   0.666</span>
-<span class="co">#&gt; after left optimization= -1042694.30848111</span>
-<span class="co">#&gt; after orthogonalization = -1042694.30738977</span>
+<span class="co">#&gt;   0.031   0.013   0.681</span>
+<span class="co">#&gt; after left optimization= -1054481.60650069</span>
+<span class="co">#&gt; after orthogonalization = -1054481.60608754</span>
 <span class="co">#&gt; Iteration 3</span>
-<span class="co">#&gt; penalized log-likelihood = -1042694.30738977</span>
+<span class="co">#&gt; penalized log-likelihood = -1054481.60608754</span>
 <span class="co">#&gt; Time of dispersion optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.089   0.050   0.275</span>
-<span class="co">#&gt; after optimize dispersion = -1042694.31982487</span>
+<span class="co">#&gt;   0.096   0.046   0.261</span>
+<span class="co">#&gt; after optimize dispersion = -1054481.61548001</span>
 <span class="co">#&gt; Time of right optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.002   0.000   0.580</span>
-<span class="co">#&gt; after right optimization= -1042687.60062421</span>
-<span class="co">#&gt; after orthogonalization = -1042687.60018023</span>
+<span class="co">#&gt;   0.000   0.001   0.576</span>
+<span class="co">#&gt; after right optimization= -1054477.63135638</span>
+<span class="co">#&gt; after orthogonalization = -1054477.6308228</span>
 <span class="co">#&gt; Time of left optimization</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.016   0.025   0.618</span>
-<span class="co">#&gt; after left optimization= -1042660.60257459</span>
-<span class="co">#&gt; after orthogonalization = -1042660.60180229</span></code></pre></div>
+<span class="co">#&gt;   0.032   0.021   0.611</span>
+<span class="co">#&gt; after left optimization= -1054457.01066196</span>
+<span class="co">#&gt; after orthogonalization = -1054457.01018719</span></code></pre></div>
 <p>NB: do not use n_gene_disp in this case, it will slower the computation.</p>
 <p>Now I can use the latent dimension rapresentation for visualization purpose:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">latent</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/reducedDims.html">reducedDim</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">latent</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/reducedDims.html" class="external-link">reducedDim</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span>
 
-<span class="va">tsne_latent</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Rtsne/man/Rtsne.html">Rtsne</a></span><span class="op">(</span><span class="va">latent</span><span class="op">)</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span>
+<span class="va">tsne_latent</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/Rtsne/man/Rtsne.html" class="external-link">Rtsne</a></span><span class="op">(</span><span class="va">latent</span><span class="op">)</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span>
 <span class="va">tsne_latent</span><span class="op">$</span><span class="va">batch</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">$</span><span class="va">Batch</span>
 <span class="va">tsne_latent</span><span class="op">$</span><span class="va">group</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">$</span><span class="va">Group</span></code></pre></div>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">tsne_latent</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">X1</span>,y<span class="op">=</span><span class="va">X2</span>,col<span class="op">=</span><span class="va">group</span>, shape<span class="op">=</span><span class="va">batch</span><span class="op">)</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">tsne_latent</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">X1</span>,y<span class="op">=</span><span class="va">X2</span>,col<span class="op">=</span><span class="va">group</span>, shape<span class="op">=</span><span class="va">batch</span><span class="op">)</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="vignette_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
 <p>or for clustering:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">cluster</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/kmeans.html">kmeans</a></span><span class="op">(</span><span class="va">latent</span>, <span class="fl">10</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">cluster</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/kmeans.html" class="external-link">kmeans</a></span><span class="op">(</span><span class="va">latent</span>, <span class="fl">10</span><span class="op">)</span>
 
-<span class="fu"><a href="https://mclust-org.github.io/mclust/reference/adjustedRandIndex.html">adjustedRandIndex</a></span><span class="op">(</span><span class="va">cluster</span><span class="op">$</span><span class="va">cluster</span>, <span class="va">data</span><span class="op">$</span><span class="va">Group</span><span class="op">)</span>
-<span class="co">#&gt; [1] 0.6488769</span></code></pre></div>
+<span class="fu"><a href="https://mclust-org.github.io/mclust/reference/adjustedRandIndex.html" class="external-link">adjustedRandIndex</a></span><span class="op">(</span><span class="va">cluster</span><span class="op">$</span><span class="va">cluster</span>, <span class="va">data</span><span class="op">$</span><span class="va">Group</span><span class="op">)</span>
+<span class="co">#&gt; [1] 0.8749465</span></code></pre></div>
 </div>
 </div>
 <div id="session-information" class="section level1">
 <h1 class="hasAnchor">
 <a href="#session-information" class="anchor"></a>Session Information</h1>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; R Under development (unstable) (2021-02-11 r79990)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; R Under development (unstable) (2021-02-18 r80027)</span>
 <span class="co">#&gt; Platform: x86_64-pc-linux-gnu (64-bit)</span>
 <span class="co">#&gt; Running under: Ubuntu 20.04.2 LTS</span>
 <span class="co">#&gt; </span>
@@ -417,7 +417,7 @@
 <span class="co">#&gt;  [1] NewWave_1.1.2                mclust_5.4.7                </span>
 <span class="co">#&gt;  [3] ggplot2_3.3.3                Rtsne_0.15                  </span>
 <span class="co">#&gt;  [5] irlba_2.3.3                  Matrix_1.3-2                </span>
-<span class="co">#&gt;  [7] splatter_1.15.1              SingleCellExperiment_1.13.10</span>
+<span class="co">#&gt;  [7] splatter_1.15.1              SingleCellExperiment_1.13.12</span>
 <span class="co">#&gt;  [9] SummarizedExperiment_1.21.1  Biobase_2.51.0              </span>
 <span class="co">#&gt; [11] GenomicRanges_1.43.3         GenomeInfoDb_1.27.6         </span>
 <span class="co">#&gt; [13] IRanges_2.25.6               S4Vectors_0.29.7            </span>
@@ -430,18 +430,18 @@
 <span class="co">#&gt;  [7] digest_0.6.27          R6_2.5.0               backports_1.2.1       </span>
 <span class="co">#&gt; [10] evaluate_0.14          highr_0.8              pillar_1.4.7          </span>
 <span class="co">#&gt; [13] zlibbioc_1.37.0        rlang_0.4.10           checkmate_2.0.0       </span>
-<span class="co">#&gt; [16] rmarkdown_2.6          pkgdown_1.6.1.9000     labeling_0.4.2        </span>
+<span class="co">#&gt; [16] rmarkdown_2.7          pkgdown_1.6.1.9000     labeling_0.4.2        </span>
 <span class="co">#&gt; [19] textshaping_0.3.0      desc_1.2.0             BiocParallel_1.25.4   </span>
 <span class="co">#&gt; [22] stringr_1.4.0          SharedObject_1.5.5     beachmat_2.7.6        </span>
-<span class="co">#&gt; [25] RCurl_1.98-1.2         munsell_0.5.0          DelayedArray_0.17.7   </span>
+<span class="co">#&gt; [25] RCurl_1.98-1.2         munsell_0.5.0          DelayedArray_0.17.8   </span>
 <span class="co">#&gt; [28] BiocSingular_1.7.2     compiler_4.1.0         xfun_0.21             </span>
 <span class="co">#&gt; [31] pkgconfig_2.0.3        systemfonts_1.0.1      htmltools_0.5.1.1     </span>
 <span class="co">#&gt; [34] tibble_3.0.6           GenomeInfoDbData_1.2.4 crayon_1.4.1          </span>
 <span class="co">#&gt; [37] withr_2.4.1            bitops_1.0-6           grid_4.1.0            </span>
-<span class="co">#&gt; [40] gtable_0.3.0           lifecycle_0.2.0        magrittr_2.0.1        </span>
+<span class="co">#&gt; [40] gtable_0.3.0           lifecycle_1.0.0        magrittr_2.0.1        </span>
 <span class="co">#&gt; [43] scales_1.1.1           ScaledMatrix_0.99.2    stringi_1.5.3         </span>
 <span class="co">#&gt; [46] cachem_1.0.4           farver_2.0.3           XVector_0.31.1        </span>
-<span class="co">#&gt; [49] fs_1.5.0               ellipsis_0.3.1         ragg_0.4.1            </span>
+<span class="co">#&gt; [49] fs_1.5.0               ellipsis_0.3.1         ragg_1.1.0            </span>
 <span class="co">#&gt; [52] vctrs_0.3.6            tools_4.1.0            glue_1.4.2            </span>
 <span class="co">#&gt; [55] fastmap_1.1.0          yaml_2.2.1             colorspace_2.0-0      </span>
 <span class="co">#&gt; [58] memoise_2.0.0          knitr_1.31</span></code></pre></div>
@@ -459,11 +459,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Federico Agostinis, Chiara Romualdi, Gabriele Sales, Davide Risso.</p>
+  <p></p>
+<p>Developed by Federico Agostinis, Chiara Romualdi, Gabriele Sales, Davide Risso.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>
