@@ -23,6 +23,11 @@
 on:
   push:
   pull_request:
+    branches:
+      - master
+      - 'RELEASE_*'
+  schedule:
+    - cron: '0 8 * * 1'
 
 name: R-CMD-check-bioc
 
