@@ -29,7 +29,7 @@ example of the usage with DelayedArray and HDF5 files.
 
 ## Useful links
 
-[EuroBioc2020 workshop](https://fedeago.github.io/SurfingNewWave/)
+[Bioc2021 workshop](https://fedeago.github.io/SurfingNewWave/articles/vignette.html)
 
 [ZINB-WaVE article](https://www.nature.com/articles/s41467-017-02554-5)
 
