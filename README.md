@@ -1,3 +1,7 @@
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/fedeago/NewWave/workflows/R-CMD-check/badge.svg)](https://github.com/fedeago/NewWave/actions)
+<!-- badges: end -->
+
 # NewWave
 
 A scalable R package for dimensionality reduction and batch effect removal
